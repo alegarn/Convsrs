@@ -56,9 +56,7 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -128,126 +126,133 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                         ],
                       ),
                     ),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
-                      height: MediaQuery.sizeOf(context).height * 1.0,
-                      decoration: const BoxDecoration(),
-                      child: Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0.0, 1.0, 0.0, 0.0),
-                        child: FutureBuilder<List<PersonasREADAllRow>>(
-                          future: SQLiteManager.instance.personasREADAll(
-                            userId: FFAppState().userUuid,
-                          ),
-                          builder: (context, snapshot) {
-                            // Customize what your widget looks like when it's loading.
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: SizedBox(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      FlutterFlowTheme.of(context).primary,
+                    Flexible(
+                      child: Container(
+                        width: MediaQuery.sizeOf(context).width * 1.0,
+                        height: MediaQuery.sizeOf(context).height * 0.87,
+                        decoration: const BoxDecoration(),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              0.0, 1.0, 0.0, 0.0),
+                          child: FutureBuilder<List<PersonasREADAllRow>>(
+                            future: SQLiteManager.instance.personasREADAll(
+                              userId: FFAppState().userUuid,
+                            ),
+                            builder: (context, snapshot) {
+                              // Customize what your widget looks like when it's loading.
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: SizedBox(
+                                    width: 50.0,
+                                    height: 50.0,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        FlutterFlowTheme.of(context).primary,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            }
-                            final listViewPersonasREADAllRowList =
-                                snapshot.data!;
-                            return ListView.builder(
-                              padding: EdgeInsets.zero,
-                              scrollDirection: Axis.vertical,
-                              itemCount: listViewPersonasREADAllRowList.length,
-                              itemBuilder: (context, listViewIndex) {
-                                final listViewPersonasREADAllRow =
-                                    listViewPersonasREADAllRowList[
-                                        listViewIndex];
-                                return wrapWithModel(
-                                  model: _model.listCrudRowModels.getModel(
-                                    listViewIndex.toString(),
-                                    listViewIndex,
-                                  ),
-                                  updateCallback: () => setState(() {}),
-                                  updateOnChange: true,
-                                  child: ListCrudRowWidget(
-                                    key: Key(
-                                      'Keyjwn_${listViewIndex.toString()}',
-                                    ),
-                                    rowName: listViewPersonasREADAllRow.name,
-                                    elementdId: listViewPersonasREADAllRow.id,
-                                    navigateAction: () async {
-                                      if (widget.isConversation!) {
-                                        // To Deck screen
-
-                                        context.pushNamed(
-                                          'DecksScreen',
-                                          queryParameters: {
-                                            'isConversation': serializeParam(
-                                              true,
-                                              ParamType.bool,
-                                            ),
-                                            'personaId': serializeParam(
-                                              listViewPersonasREADAllRow.id,
-                                              ParamType.int,
-                                            ),
-                                            'conversationMode': serializeParam(
-                                              widget.conversationMode,
-                                              ParamType.String,
-                                            ),
-                                          }.withoutNulls,
-                                        );
-
-                                        return;
-                                      } else {
-                                        // Update persona
-
-                                        context.pushNamed(
-                                          'PersonaScreen',
-                                          queryParameters: {
-                                            'personaId': serializeParam(
-                                              listViewPersonasREADAllRow.id,
-                                              ParamType.int,
-                                            ),
-                                            'userId': serializeParam(
-                                              listViewPersonasREADAllRow.userId,
-                                              ParamType.String,
-                                            ),
-                                            'name': serializeParam(
-                                              listViewPersonasREADAllRow.name,
-                                              ParamType.String,
-                                            ),
-                                            'infos': serializeParam(
-                                              listViewPersonasREADAllRow.infos,
-                                              ParamType.String,
-                                            ),
-                                            'subject': serializeParam(
-                                              listViewPersonasREADAllRow
-                                                  .subject,
-                                              ParamType.String,
-                                            ),
-                                          }.withoutNulls,
-                                        );
-
-                                        return;
-                                      }
-                                    },
-                                    deleteRowQueryAction: () async {
-                                      // CheatsheetRow Delete
-                                      await SQLiteManager.instance
-                                          .personasDELETEUsingId(
-                                        id: listViewPersonasREADAllRow.id,
-                                      );
-                                      // Display new data
-
-                                      setState(() {});
-                                    },
                                   ),
                                 );
-                              },
-                            );
-                          },
+                              }
+                              final listViewPersonasREADAllRowList =
+                                  snapshot.data!;
+
+                              return ListView.builder(
+                                padding: EdgeInsets.zero,
+                                scrollDirection: Axis.vertical,
+                                itemCount:
+                                    listViewPersonasREADAllRowList.length,
+                                itemBuilder: (context, listViewIndex) {
+                                  final listViewPersonasREADAllRow =
+                                      listViewPersonasREADAllRowList[
+                                          listViewIndex];
+                                  return wrapWithModel(
+                                    model: _model.listCrudRowModels.getModel(
+                                      listViewIndex.toString(),
+                                      listViewIndex,
+                                    ),
+                                    updateCallback: () => safeSetState(() {}),
+                                    updateOnChange: true,
+                                    child: ListCrudRowWidget(
+                                      key: Key(
+                                        'Keyjwn_${listViewIndex.toString()}',
+                                      ),
+                                      rowName: listViewPersonasREADAllRow.name,
+                                      elementdId: listViewPersonasREADAllRow.id,
+                                      navigateAction: () async {
+                                        if (widget.isConversation!) {
+                                          // To Deck screen
+
+                                          context.pushNamed(
+                                            'DecksScreen',
+                                            queryParameters: {
+                                              'isConversation': serializeParam(
+                                                true,
+                                                ParamType.bool,
+                                              ),
+                                              'personaId': serializeParam(
+                                                listViewPersonasREADAllRow.id,
+                                                ParamType.int,
+                                              ),
+                                              'conversationMode':
+                                                  serializeParam(
+                                                widget.conversationMode,
+                                                ParamType.String,
+                                              ),
+                                            }.withoutNulls,
+                                          );
+
+                                          return;
+                                        } else {
+                                          // Update persona
+
+                                          context.pushNamed(
+                                            'PersonaScreen',
+                                            queryParameters: {
+                                              'personaId': serializeParam(
+                                                listViewPersonasREADAllRow.id,
+                                                ParamType.int,
+                                              ),
+                                              'userId': serializeParam(
+                                                listViewPersonasREADAllRow
+                                                    .userId,
+                                                ParamType.String,
+                                              ),
+                                              'name': serializeParam(
+                                                listViewPersonasREADAllRow.name,
+                                                ParamType.String,
+                                              ),
+                                              'infos': serializeParam(
+                                                listViewPersonasREADAllRow
+                                                    .infos,
+                                                ParamType.String,
+                                              ),
+                                              'subject': serializeParam(
+                                                listViewPersonasREADAllRow
+                                                    .subject,
+                                                ParamType.String,
+                                              ),
+                                            }.withoutNulls,
+                                          );
+
+                                          return;
+                                        }
+                                      },
+                                      deleteRowQueryAction: () async {
+                                        // CheatsheetRow Delete
+                                        await SQLiteManager.instance
+                                            .personasDELETEUsingId(
+                                          id: listViewPersonasREADAllRow.id,
+                                        );
+                                        // Display new data
+
+                                        safeSetState(() {});
+                                      },
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -255,7 +260,7 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                 ),
               ),
               Align(
-                alignment: const AlignmentDirectional(0.8, 0.9),
+                alignment: const AlignmentDirectional(0.8, 0.85),
                 child: FlutterFlowIconButton(
                   borderColor: FlutterFlowTheme.of(context).alternate,
                   borderRadius: 50.0,
@@ -269,7 +274,7 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                   ),
                   onPressed: () async {
                     _model.isCreatingPersona = !_model.isCreatingPersona;
-                    setState(() {});
+                    safeSetState(() {});
                   },
                 ),
               ),
@@ -310,7 +315,7 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.personaNameFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: true,
                               textInputAction: TextInputAction.done,
@@ -384,7 +389,7 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.personaInfosFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: true,
                               textInputAction: TextInputAction.done,
@@ -459,7 +464,7 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.personaSubjectFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: true,
                               textInputAction: TextInputAction.done,
@@ -534,7 +539,13 @@ class _PersonasScreenWidgetState extends State<PersonasScreenWidget> {
                             );
                             _model.isCreatingPersona =
                                 !_model.isCreatingPersona;
-                            setState(() {});
+                            safeSetState(() {});
+                            // Reset field
+                            safeSetState(() {
+                              _model.personaNameFieldTextController?.clear();
+                              _model.personaInfosFieldTextController?.clear();
+                              _model.personaSubjectFieldTextController?.clear();
+                            });
                           },
                           text: 'Validate',
                           options: FFButtonOptions(

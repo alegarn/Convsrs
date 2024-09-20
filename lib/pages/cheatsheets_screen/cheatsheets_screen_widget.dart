@@ -56,9 +56,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -128,13 +126,11 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                         ],
                       ),
                     ),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
-                      height: MediaQuery.sizeOf(context).height * 1.0,
-                      decoration: const BoxDecoration(),
-                      child: Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0.0, 1.0, 0.0, 0.0),
+                    Flexible(
+                      child: Container(
+                        width: MediaQuery.sizeOf(context).width * 1.0,
+                        height: MediaQuery.sizeOf(context).height * 0.87,
+                        decoration: const BoxDecoration(),
                         child:
                             FutureBuilder<List<CheatsheetsREADListIdNameRow>>(
                           future:
@@ -158,6 +154,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                             }
                             final listViewCheatsheetsREADListIdNameRowList =
                                 snapshot.data!;
+
                             return ListView.builder(
                               padding: EdgeInsets.zero,
                               scrollDirection: Axis.vertical,
@@ -173,7 +170,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                                     listViewIndex.toString(),
                                     listViewIndex,
                                   ),
-                                  updateCallback: () => setState(() {}),
+                                  updateCallback: () => safeSetState(() {}),
                                   updateOnChange: true,
                                   child: ListCrudRowWidget(
                                     key: Key(
@@ -250,7 +247,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                                       );
                                       // Update component
 
-                                      setState(() {});
+                                      safeSetState(() {});
                                     },
                                   ),
                                 );
@@ -279,7 +276,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                   onPressed: () async {
                     // Show Modal
                     _model.isCreatingCheatsheet = !_model.isCreatingCheatsheet;
-                    setState(() {});
+                    safeSetState(() {});
                   },
                 ),
               ),
@@ -324,7 +321,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.cheatsheetNameFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: true,
                               textInputAction: TextInputAction.done,
@@ -405,7 +402,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                                 // Hide Modal
                                 _model.isCreatingCheatsheet =
                                     !_model.isCreatingCheatsheet;
-                                setState(() {});
+                                safeSetState(() {});
                               },
                               text: 'Validate',
                               options: FFButtonOptions(
@@ -437,7 +434,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                                 // Hide Modal
                                 _model.isCreatingCheatsheet =
                                     !_model.isCreatingCheatsheet;
-                                setState(() {});
+                                safeSetState(() {});
                               },
                               text: 'Cancel',
                               options: FFButtonOptions(

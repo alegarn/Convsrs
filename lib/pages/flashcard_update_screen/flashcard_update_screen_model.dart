@@ -38,7 +38,6 @@ class FlashcardUpdateScreenModel
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in FlashcardUpdateScreen widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId1;
   // Stores action output result for [Backend Call - SQLite (flashcard Read 1 with id)] action in FlashcardUpdateScreen widget.
@@ -74,7 +73,6 @@ class FlashcardUpdateScreenModel
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     cardNameFieldFocusNode?.dispose();
     cardNameFieldTextController?.dispose();
 

@@ -45,12 +45,6 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      // Loaded Flashcards animation
-      if (animationsMap['columnOnActionTriggerAnimation1'] != null) {
-        animationsMap['columnOnActionTriggerAnimation1']!
-            .controller
-            .forward(from: 0.0);
-      }
       // Reset counter
       _model.counter = 0;
       while (_model.counter <
@@ -74,7 +68,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           ),
           textVerso: valueOrDefault<String>(
             widget.flashcards?[_model.counter].textVerso,
-            'textVerso0',
+            'textVerso',
           ),
           currentRetrievalStep: valueOrDefault<int>(
             widget.flashcards?[_model.counter].currentRetrievalStep,
@@ -86,15 +80,15 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           ),
           toRecall: valueOrDefault<int>(
             widget.flashcards?[_model.counter].toRecall,
-            0,
+            1,
           ),
           currentSpeakingDate: valueOrDefault<String>(
             widget.flashcards?[_model.counter].currentSpeakingDate,
-            '0',
+            'none',
           ),
           nextSpeakingDate: valueOrDefault<String>(
             widget.flashcards?[_model.counter].currentSpeakingDate,
-            '0',
+            'none',
           ),
           successCount: valueOrDefault<int>(
             widget.flashcards?[_model.counter].successCount,
@@ -106,7 +100,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           ),
           mentalImageBool: valueOrDefault<int>(
             widget.flashcards?[_model.counter].mentalImageBool,
-            0,
+            1,
           ),
           audioRectoUrl: 'none',
           audioVersoUrl: 'none',
@@ -114,17 +108,17 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           imageVersoUrl: 'none',
           currentRecallDate: valueOrDefault<String>(
             widget.flashcards?[_model.counter].currentRecallDate,
-            '0',
+            'none',
           ),
           nextRecallDate: valueOrDefault<String>(
             widget.flashcards?[_model.counter].nextRecallDate,
-            '0',
+            'none',
           ),
           userId: FFAppState().userUuid,
         ));
         // +1 counter
         _model.counter = _model.counter + 1;
-        setState(() {});
+        safeSetState(() {});
       }
       // Loaded FlashcardsToReview
       if (animationsMap['columnOnActionTriggerAnimation2'] != null) {
@@ -183,7 +177,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
         'none',
       );
       _model.currentCardFaceShown = false;
-      setState(() {});
+      safeSetState(() {});
       // Launch timer
       _model.retrievalTimerController.onStartTimer();
     });
@@ -235,9 +229,9 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           FlipEffect(
             curve: Curves.easeInOut,
             delay: 0.0.ms,
-            duration: 600.0.ms,
+            duration: 300.0.ms,
             begin: 0.0,
-            end: 2.0,
+            end: 1.0,
           ),
         ],
       ),
@@ -249,7 +243,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
       this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -264,9 +258,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -282,7 +274,8 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           ),
           actions: [
             Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
               child: FlutterFlowIconButton(
                 borderColor: Colors.transparent,
                 borderRadius: 30.0,
@@ -328,31 +321,31 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Flexible(
-                            flex: 1,
+                            flex: 2,
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Align(
-                                  alignment: const AlignmentDirectional(-1.0, 0.0),
-                                  child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 0.0, 0.0, 0.0),
-                                    child: Text(
-                                      'Cards Reviewed',
-                                      style: FlutterFlowTheme.of(context)
-                                          .labelMedium
-                                          .override(
-                                            fontFamily: 'Readex Pro',
-                                            letterSpacing: 0.0,
-                                          ),
-                                    ),
+                                  alignment:
+                                      const AlignmentDirectional(-1.0, 0.0),
+                                  child: Text(
+                                    'Cards Reviewed',
+                                    style: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
                                   ),
                                 ),
                                 Align(
-                                  alignment: const AlignmentDirectional(-1.0, 0.0),
+                                  alignment:
+                                      const AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 0.0, 0.0, 0.0),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            16.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       valueOrDefault<String>(
                                         _model.cardReviewedList.length
@@ -363,32 +356,38 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                           .labelMedium
                                           .override(
                                             fontFamily: 'Readex Pro',
+                                            fontSize: 18.0,
                                             letterSpacing: 0.0,
                                           ),
                                     ),
                                   ),
                                 ),
                                 Align(
-                                  alignment: const AlignmentDirectional(-1.0, 0.0),
+                                  alignment:
+                                      const AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        3.0, 0.0, 0.0, 0.0),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            3.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       '/',
                                       style: FlutterFlowTheme.of(context)
                                           .labelMedium
                                           .override(
                                             fontFamily: 'Readex Pro',
+                                            fontSize: 16.0,
                                             letterSpacing: 0.0,
                                           ),
                                     ),
                                   ),
                                 ),
                                 Align(
-                                  alignment: const AlignmentDirectional(-1.0, 0.0),
+                                  alignment:
+                                      const AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        3.0, 0.0, 0.0, 0.0),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            3.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       valueOrDefault<String>(
                                         _model.totalCardsCount.toString(),
@@ -398,6 +397,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                           .labelMedium
                                           .override(
                                             fontFamily: 'Readex Pro',
+                                            fontSize: 18.0,
                                             letterSpacing: 0.0,
                                           ),
                                     ),
@@ -424,7 +424,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                 onChanged: (value, displayTime, shouldUpdate) {
                                   _model.retrievalTimerMilliseconds = value;
                                   _model.retrievalTimerValue = displayTime;
-                                  if (shouldUpdate) setState(() {});
+                                  if (shouldUpdate) safeSetState(() {});
                                 },
                                 textAlign: TextAlign.start,
                                 style: FlutterFlowTheme.of(context)
@@ -445,18 +445,18 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                         animationsMap['rowOnActionTriggerAnimation']!,
                       ),
                     ),
-                    Expanded(
+                    Flexible(
                       flex: 10,
-                      child: Align(
-                        alignment: const AlignmentDirectional(0.0, 0.0),
-                        child: Container(
-                          width: MediaQuery.sizeOf(context).width * 1.0,
-                          height: MediaQuery.sizeOf(context).height * 1.0,
-                          decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
-                          ),
-                          alignment: const AlignmentDirectional(0.0, 0.0),
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          color:
+                              FlutterFlowTheme.of(context).secondaryBackground,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: double.infinity,
                           child: Stack(
                             children: [
                               if (_model.currentCardFaceShown == false)
@@ -480,14 +480,20 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                       // Flip Card
                                       _model.currentCardFaceShown =
                                           !_model.currentCardFaceShown;
-                                      setState(() {});
+                                      safeSetState(() {});
+                                      // Card animation
+                                      if (animationsMap[
+                                              'containerOnActionTriggerAnimation'] !=
+                                          null) {
+                                        animationsMap[
+                                                'containerOnActionTriggerAnimation']!
+                                            .controller
+                                            .reset();
+                                      }
                                     },
                                     child: Container(
-                                      width: MediaQuery.sizeOf(context).width *
-                                          1.0,
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              1.0,
+                                      width: double.infinity,
+                                      height: double.infinity,
                                       decoration: BoxDecoration(
                                         color: FlutterFlowTheme.of(context)
                                             .tertiary,
@@ -495,13 +501,14 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                             BorderRadius.circular(25.0),
                                       ),
                                       child: Align(
-                                        alignment:
-                                            const AlignmentDirectional(0.0, 0.0),
+                                        alignment: const AlignmentDirectional(
+                                            0.0, 0.0),
                                         child: Text(
                                           valueOrDefault<String>(
                                             _model.currentCard?.textRecto,
                                             'textRecto',
                                           ),
+                                          textAlign: TextAlign.start,
                                           style: FlutterFlowTheme.of(context)
                                               .bodyMedium
                                               .override(
@@ -509,7 +516,9 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                                 color:
                                                     FlutterFlowTheme.of(context)
                                                         .primaryText,
+                                                fontSize: 21.0,
                                                 letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                         ),
                                       ),
@@ -523,17 +532,16 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Container(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 1.0,
-                                    height:
-                                        MediaQuery.sizeOf(context).height * 1.0,
+                                    width: double.infinity,
+                                    height: double.infinity,
                                     decoration: BoxDecoration(
                                       color:
                                           FlutterFlowTheme.of(context).tertiary,
                                       borderRadius: BorderRadius.circular(25.0),
                                     ),
                                     child: Align(
-                                      alignment: const AlignmentDirectional(0.0, 0.0),
+                                      alignment:
+                                          const AlignmentDirectional(0.0, 0.0),
                                       child: Text(
                                         valueOrDefault<String>(
                                           _model.currentCard?.textVerso,
@@ -546,7 +554,9 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                               color:
                                                   FlutterFlowTheme.of(context)
                                                       .primaryText,
+                                              fontSize: 21.0,
                                               letterSpacing: 0.0,
+                                              fontWeight: FontWeight.w500,
                                             ),
                                       ),
                                     ),
@@ -627,12 +637,16 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                 // set currentCard update fields
                                 _model.updateCurrentCardStruct(
                                   (e) => e
-                                    ..currentRetrievalStep = 1
+                                    ..currentRetrievalStep = 0
                                     ..incrementTotalReviewCount(1)
-                                    ..currentSpeakingStep = 1,
+                                    ..currentSpeakingStep = 0,
                                 );
                                 _model.cardFailedCount =
                                     _model.cardFailedCount + 1;
+                                _model.mentImageBool = valueOrDefault<int>(
+                                  _model.currentCard?.mentalImageBool,
+                                  0,
+                                );
                                 // update cardReviewedList, add currentCard
                                 _model
                                     .addToCardReviewedList(_model.currentCard!);
@@ -671,9 +685,10 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                 // Add next flashard to currentCard
                                 _model.currentCard =
                                     _model.cardToReviewListState.first;
-                                // Reset currentCardFaceShown
+                                // Reset currentCardFaceShown mentalImageBool
                                 _model.currentCardFaceShown =
                                     !_model.currentCardFaceShown;
+                                _model.mentImageBool = 0;
                                 // Display new cardInfos, update states
                                 _model.currentCardFrontText =
                                     valueOrDefault<String>(
@@ -689,7 +704,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                   _model.currentCard?.id,
                                   0,
                                 );
-                                setState(() {});
+                                safeSetState(() {});
                               }
                             },
                             text: 'Not remember',
@@ -744,7 +759,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                           valueOrDefault<int>(
                                         _model.cardsStatus[_model.counter]
                                                     .currentRetrievalStep ==
-                                                1
+                                                0
                                             ? valueOrDefault<int>(
                                                 _model
                                                         .cardsStatus[
@@ -779,7 +794,11 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                   (e) => e
                                     ..incrementTotalReviewCount(1)
                                     ..incrementSuccessCount(1)
-                                    ..toRecall = 1,
+                                    ..toRecall = 1
+                                    ..mentalImageBool = valueOrDefault<int>(
+                                      _model.currentCard?.mentalImageBool,
+                                      0,
+                                    ),
                                 );
                                 // Add Validated Count +1
                                 _model.cardValidatedCount =
@@ -825,7 +844,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                   _model.currentCard?.id,
                                   0,
                                 );
-                                setState(() {});
+                                safeSetState(() {});
                                 return;
                               }
                             },
@@ -856,6 +875,52 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                         ),
                       ),
                     ),
+                    if (_model.currentCard != null &&
+                        valueOrDefault<bool>(
+                          functions.isCurrentcardToReviewAgainThisSession(
+                              _model.currentCard!, _model.cardsStatus.toList()),
+                          false,
+                        ))
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            10.0, 32.0, 10.0, 28.0),
+                        child: FFButtonWidget(
+                          onPressed: () async {
+                            // Add mental Image true
+                            _model.updateCurrentCardStruct(
+                              (e) => e..mentalImageBool = 1,
+                            );
+                          },
+                          text: '?',
+                          icon: const Icon(
+                            Icons.image_sharp,
+                            size: 48.0,
+                          ),
+                          options: FFButtonOptions(
+                            width: MediaQuery.sizeOf(context).width * 0.2,
+                            height: MediaQuery.sizeOf(context).height * 0.07,
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                5.0, 0.0, 5.0, 0.0),
+                            iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                0.0, 5.0, 0.0, 5.0),
+                            color: FlutterFlowTheme.of(context).secondary,
+                            textStyle: FlutterFlowTheme.of(context)
+                                .titleSmall
+                                .override(
+                                  fontFamily: 'Readex Pro',
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                  letterSpacing: 0.0,
+                                ),
+                            elevation: 3.0,
+                            borderSide: const BorderSide(
+                              color: Colors.transparent,
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
             ],

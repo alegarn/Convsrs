@@ -116,7 +116,7 @@ class ConversationStruct extends BaseStruct {
   set validatedCardIds(List<String>? val) => _validatedCardIds = val;
 
   void updateValidatedCardIds(Function(List<String>) updateFn) {
-    updateFn(validatedCardIds ??= []);
+    updateFn(_validatedCardIds ??= []);
   }
 
   bool hasValidatedCardIds() => _validatedCardIds != null;

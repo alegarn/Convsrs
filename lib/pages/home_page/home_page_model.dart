@@ -12,7 +12,6 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - SQLite (cardsToBeRetrievedCount)] action in HomePage widget.
   List<CardsToBeRetrievedCountRow>? cardsToBeRetrievedCount;
   // Stores action output result for [Backend Call - SQLite (cardsToBePracticeCount)] action in HomePage widget.
@@ -22,7 +21,5 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   void initState(BuildContext context) {}
 
   @override
-  void dispose() {
-    unfocusNode.dispose();
-  }
+  void dispose() {}
 }

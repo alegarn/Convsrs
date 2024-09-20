@@ -86,7 +86,7 @@ class _ListCrudRowWidgetState extends State<ListCrudRowWidget> {
                     onLongPress: () async {
                       // Show/Hide options
                       _model.isShowingOptions = !_model.isShowingOptions;
-                      setState(() {});
+                      safeSetState(() {});
                     },
                     child: Container(
                       width: 100.0,
@@ -142,11 +142,11 @@ class _ListCrudRowWidgetState extends State<ListCrudRowWidget> {
                 onTap: () async {
                   // Display/Hide isShowOptions state
                   _model.isShowingOptions = !_model.isShowingOptions;
-                  setState(() {});
+                  safeSetState(() {});
                 },
                 child: wrapWithModel(
                   model: _model.listButtonModel,
-                  updateCallback: () => setState(() {}),
+                  updateCallback: () => safeSetState(() {}),
                   child: const ListButtonWidget(),
                 ),
               ),

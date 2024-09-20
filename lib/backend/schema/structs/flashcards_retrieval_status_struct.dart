@@ -11,10 +11,12 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
     String? status,
     int? toReviewAgainThisSessionCount,
     int? currentRetrievalStep,
+    bool? hasMentalImage,
   })  : _id = id,
         _status = status,
         _toReviewAgainThisSessionCount = toReviewAgainThisSessionCount,
-        _currentRetrievalStep = currentRetrievalStep;
+        _currentRetrievalStep = currentRetrievalStep,
+        _hasMentalImage = hasMentalImage;
 
   // "id" field.
   int? _id;
@@ -46,13 +48,20 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
 
   // "currentRetrievalStep" field.
   int? _currentRetrievalStep;
-  int get currentRetrievalStep => _currentRetrievalStep ?? 1;
+  int get currentRetrievalStep => _currentRetrievalStep ?? 0;
   set currentRetrievalStep(int? val) => _currentRetrievalStep = val;
 
   void incrementCurrentRetrievalStep(int amount) =>
       currentRetrievalStep = currentRetrievalStep + amount;
 
   bool hasCurrentRetrievalStep() => _currentRetrievalStep != null;
+
+  // "hasMentalImage" field.
+  bool? _hasMentalImage;
+  bool get hasMentalImage => _hasMentalImage ?? false;
+  set hasMentalImage(bool? val) => _hasMentalImage = val;
+
+  bool hasHasMentalImage() => _hasMentalImage != null;
 
   static FlashcardsRetrievalStatusStruct fromMap(Map<String, dynamic> data) =>
       FlashcardsRetrievalStatusStruct(
@@ -61,6 +70,7 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
         toReviewAgainThisSessionCount:
             castToType<int>(data['toReviewAgainThisSessionCount']),
         currentRetrievalStep: castToType<int>(data['currentRetrievalStep']),
+        hasMentalImage: data['hasMentalImage'] as bool?,
       );
 
   static FlashcardsRetrievalStatusStruct? maybeFromMap(dynamic data) => data
@@ -73,6 +83,7 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
         'status': _status,
         'toReviewAgainThisSessionCount': _toReviewAgainThisSessionCount,
         'currentRetrievalStep': _currentRetrievalStep,
+        'hasMentalImage': _hasMentalImage,
       }.withoutNulls;
 
   @override
@@ -92,6 +103,10 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
         'currentRetrievalStep': serializeParam(
           _currentRetrievalStep,
           ParamType.int,
+        ),
+        'hasMentalImage': serializeParam(
+          _hasMentalImage,
+          ParamType.bool,
         ),
       }.withoutNulls;
 
@@ -118,6 +133,11 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
           ParamType.int,
           false,
         ),
+        hasMentalImage: deserializeParam(
+          data['hasMentalImage'],
+          ParamType.bool,
+          false,
+        ),
       );
 
   @override
@@ -129,12 +149,18 @@ class FlashcardsRetrievalStatusStruct extends BaseStruct {
         id == other.id &&
         status == other.status &&
         toReviewAgainThisSessionCount == other.toReviewAgainThisSessionCount &&
-        currentRetrievalStep == other.currentRetrievalStep;
+        currentRetrievalStep == other.currentRetrievalStep &&
+        hasMentalImage == other.hasMentalImage;
   }
 
   @override
-  int get hashCode => const ListEquality()
-      .hash([id, status, toReviewAgainThisSessionCount, currentRetrievalStep]);
+  int get hashCode => const ListEquality().hash([
+        id,
+        status,
+        toReviewAgainThisSessionCount,
+        currentRetrievalStep,
+        hasMentalImage
+      ]);
 }
 
 FlashcardsRetrievalStatusStruct createFlashcardsRetrievalStatusStruct({
@@ -142,10 +168,12 @@ FlashcardsRetrievalStatusStruct createFlashcardsRetrievalStatusStruct({
   String? status,
   int? toReviewAgainThisSessionCount,
   int? currentRetrievalStep,
+  bool? hasMentalImage,
 }) =>
     FlashcardsRetrievalStatusStruct(
       id: id,
       status: status,
       toReviewAgainThisSessionCount: toReviewAgainThisSessionCount,
       currentRetrievalStep: currentRetrievalStep,
+      hasMentalImage: hasMentalImage,
     );

@@ -93,7 +93,7 @@ List<FlashcardsRetrievalStatusStruct> updateFlashcardsStatusList(
     if (flashcard.id == currentCard.id) {
       String newStatus =
           currentCardIsRemembered == true ? "succeeded" : "failed";
-      int newToRetrieveCount = flashcard.currentRetrievalStep == 0
+      int newToRetrieveCount = flashcard.currentRetrievalStep == 1
           ? flashcard.toReviewAgainThisSessionCount - 1
           : 0;
 
@@ -191,6 +191,7 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
           FlashcardConversationStatusStruct(
         id: cardData.flashcardID,
         textVerso: cardData.textVerso,
+        textRecto: cardData.textRecto,
         timesValidatedByClickCount: 0,
         isFullyValidated: false,
       );
@@ -638,4 +639,15 @@ String? csvFromRetrievalSessions(
   }
 
   return csvLines.join('\n');
+}
+
+String? extractFlashcards(
+    List<FlashcardConversationStatusStruct>? flashcardConversationStatusList) {
+  String flashcardData = '';
+  if (flashcardConversationStatusList != null) {
+    for (var status in flashcardConversationStatusList) {
+      flashcardData += '${status.textRecto} : ${status.textVerso}\n';
+    }
+  }
+  return flashcardData.isNotEmpty ? flashcardData.trim() : null;
 }

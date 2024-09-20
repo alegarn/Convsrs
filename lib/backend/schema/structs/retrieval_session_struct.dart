@@ -93,7 +93,7 @@ class RetrievalSessionStruct extends BaseStruct {
       _speakingRetrievalDates = val;
 
   void updateSpeakingRetrievalDates(Function(List<String>) updateFn) {
-    updateFn(speakingRetrievalDates ??= []);
+    updateFn(_speakingRetrievalDates ??= []);
   }
 
   bool hasSpeakingRetrievalDates() => _speakingRetrievalDates != null;

@@ -59,8 +59,8 @@ class _FlashcardUpdateScreenWidgetState
           audioVersoUrl: 'none',
           imageRectoUrl: 'none',
           imageVersoUrl: 'none',
-          currentRetrievalStep: 1,
-          currentSpeakingStep: 1,
+          currentRetrievalStep: 0,
+          currentSpeakingStep: 0,
           toRecall: 0,
           currentRecallDate: 'none',
           nextRecallDate: 'none',
@@ -98,7 +98,7 @@ class _FlashcardUpdateScreenWidgetState
         _model.currentRetrievalStep = 1;
         _model.currentSpeakingStep = 1;
         _model.toRecall = 0;
-        setState(() {});
+        safeSetState(() {});
       } else {
         // read Flashcard with Id
         _model.listSQLite1flashcard =
@@ -155,13 +155,13 @@ class _FlashcardUpdateScreenWidgetState
           _model.listSQLite1flashcard?.first.currentRecallDate,
           'none',
         );
-        setState(() {});
+        safeSetState(() {});
       }
 
       await Future.wait([
         Future(() async {
           // Update name field
-          setState(() {
+          safeSetState(() {
             _model.cardNameFieldTextController?.text = _model.name;
             _model.cardNameFieldTextController?.selection =
                 TextSelection.collapsed(
@@ -170,7 +170,7 @@ class _FlashcardUpdateScreenWidgetState
         }),
         Future(() async {
           // Modify textRecto
-          setState(() {
+          safeSetState(() {
             _model.textRectoFieldTextController?.text = _model.textRecto;
             _model.textRectoFieldTextController?.selection =
                 TextSelection.collapsed(
@@ -179,7 +179,7 @@ class _FlashcardUpdateScreenWidgetState
         }),
         Future(() async {
           // Modify textVerso
-          setState(() {
+          safeSetState(() {
             _model.textVersoFieldTextController?.text = _model.textVerso;
             _model.textVersoFieldTextController?.selection =
                 TextSelection.collapsed(
@@ -195,7 +195,7 @@ class _FlashcardUpdateScreenWidgetState
       'name',
     ));
     _model.cardNameFieldFocusNode ??= FocusNode();
-    _model.cardNameFieldFocusNode!.addListener(() => setState(() {}));
+    _model.cardNameFieldFocusNode!.addListener(() => safeSetState(() {}));
     _model.textRectoFieldTextController ??=
         TextEditingController(text: _model.textRecto);
     _model.textRectoFieldFocusNode ??= FocusNode();
@@ -239,9 +239,7 @@ class _FlashcardUpdateScreenWidgetState
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -295,7 +293,7 @@ class _FlashcardUpdateScreenWidgetState
                         const Duration(milliseconds: 2000),
                         () async {
                           _model.name = _model.cardNameFieldTextController.text;
-                          setState(() {});
+                          safeSetState(() {});
                         },
                       ),
                       autofocus: true,
@@ -408,7 +406,7 @@ class _FlashcardUpdateScreenWidgetState
                                                               .text,
                                                           'textRectoState',
                                                         );
-                                                        setState(() {});
+                                                        safeSetState(() {});
                                                       },
                                                     ),
                                                     autofocus: true,
@@ -638,7 +636,7 @@ class _FlashcardUpdateScreenWidgetState
                                                       model: _model
                                                           .insertAudioFlashcardModel1,
                                                       updateCallback: () =>
-                                                          setState(() {}),
+                                                          safeSetState(() {}),
                                                       updateOnChange: true,
                                                       child:
                                                           const InsertAudioFlashcardWidget(),
@@ -681,7 +679,7 @@ class _FlashcardUpdateScreenWidgetState
                                                               .text,
                                                           'textVersoState',
                                                         );
-                                                        setState(() {});
+                                                        safeSetState(() {});
                                                       },
                                                     ),
                                                     autofocus: true,
@@ -906,7 +904,7 @@ class _FlashcardUpdateScreenWidgetState
                                                       model: _model
                                                           .insertAudioFlashcardModel2,
                                                       updateCallback: () =>
-                                                          setState(() {}),
+                                                          safeSetState(() {}),
                                                       child:
                                                           const InsertAudioFlashcardWidget(),
                                                     ),
@@ -951,7 +949,7 @@ class _FlashcardUpdateScreenWidgetState
                           onPressed: () async {
                             // Toggle card face state
                             _model.showRecto = !_model.showRecto;
-                            setState(() {});
+                            safeSetState(() {});
                           },
                           text: 'Flip',
                           icon: const Icon(
@@ -1093,7 +1091,7 @@ class _FlashcardUpdateScreenWidgetState
                                           .controller
                                           .forward(from: 0.0);
                                     }
-                                    if (shouldSetState) setState(() {});
+                                    if (shouldSetState) safeSetState(() {});
                                     return;
                                   } else {
                                     // Update Flashcard
@@ -1118,10 +1116,14 @@ class _FlashcardUpdateScreenWidgetState
                                       audioVersoUrl: _model.audioVersoUrl,
                                       imageRectoUrl: _model.imageRectoUrl,
                                       imageVersoUrl: _model.imageVersoUrl,
-                                      currentRetrievalStep:
-                                          _model.currentRetrievalStep,
-                                      currentSpeakingStep:
-                                          _model.currentSpeakingStep,
+                                      currentRetrievalStep: valueOrDefault<int>(
+                                        _model.currentRetrievalStep,
+                                        0,
+                                      ),
+                                      currentSpeakingStep: valueOrDefault<int>(
+                                        _model.currentSpeakingStep,
+                                        0,
+                                      ),
                                       toRecall: _model.toRecall,
                                       currentRecallDate: valueOrDefault<String>(
                                         _model.currentRecallDate,
@@ -1166,11 +1168,11 @@ class _FlashcardUpdateScreenWidgetState
                                       }.withoutNulls,
                                     );
 
-                                    if (shouldSetState) setState(() {});
+                                    if (shouldSetState) safeSetState(() {});
                                     return;
                                   }
 
-                                  if (shouldSetState) setState(() {});
+                                  if (shouldSetState) safeSetState(() {});
                                 },
                               ).animateOnActionTrigger(
                                 animationsMap[

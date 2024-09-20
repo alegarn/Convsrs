@@ -36,7 +36,7 @@ class _AuthScreenWidgetState extends State<AuthScreenWidget>
       vsync: this,
       length: 2,
       initialIndex: 0,
-    )..addListener(() => setState(() {}));
+    )..addListener(() => safeSetState(() {}));
     _model.emailAddressTextController ??= TextEditingController();
     _model.emailAddressFocusNode ??= FocusNode();
 
@@ -140,9 +140,7 @@ class _AuthScreenWidgetState extends State<AuthScreenWidget>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -486,7 +484,8 @@ class _AuthScreenWidgetState extends State<AuthScreenWidget>
                                                       contentPadding:
                                                           const EdgeInsets.all(24.0),
                                                       suffixIcon: InkWell(
-                                                        onTap: () => setState(
+                                                        onTap: () =>
+                                                            safeSetState(
                                                           () => _model
                                                                   .passwordVisibility =
                                                               !_model
@@ -933,7 +932,8 @@ class _AuthScreenWidgetState extends State<AuthScreenWidget>
                                                       contentPadding:
                                                           const EdgeInsets.all(24.0),
                                                       suffixIcon: InkWell(
-                                                        onTap: () => setState(
+                                                        onTap: () =>
+                                                            safeSetState(
                                                           () => _model
                                                                   .passwordCreateVisibility =
                                                               !_model
@@ -1058,7 +1058,8 @@ class _AuthScreenWidgetState extends State<AuthScreenWidget>
                                                       contentPadding:
                                                           const EdgeInsets.all(24.0),
                                                       suffixIcon: InkWell(
-                                                        onTap: () => setState(
+                                                        onTap: () =>
+                                                            safeSetState(
                                                           () => _model
                                                                   .passwordConfirmVisibility =
                                                               !_model
@@ -1297,7 +1298,7 @@ class _AuthScreenWidgetState extends State<AuthScreenWidget>
                                                           'HomePage',
                                                           context.mounted);
 
-                                                      setState(() {});
+                                                      safeSetState(() {});
                                                     },
                                                     text: 'Create Account',
                                                     options: FFButtonOptions(

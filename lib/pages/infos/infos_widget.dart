@@ -83,7 +83,7 @@ class _InfosWidgetState extends State<InfosWidget> {
           _model.srsParameters!.toList().cast<SRSParametersREADAllRow>();
       _model.conversationsState =
           _model.conversations!.toList().cast<ConversationsREADAllRow>();
-      setState(() {});
+      safeSetState(() {});
     });
   }
 
@@ -99,9 +99,7 @@ class _InfosWidgetState extends State<InfosWidget> {
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -227,6 +225,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                             child: Builder(
                               builder: (context) {
                                 final decksList = _model.decks.toList();
+
                                 return ListView.builder(
                                   padding: EdgeInsets.zero,
                                   primary: false,
@@ -290,6 +289,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                 if (flashcardsData.isEmpty) {
                                   return const ListButtonWidget();
                                 }
+
                                 return FlutterFlowDataTable<
                                     FlashcardReadAllRow>(
                                   controller:
@@ -506,7 +506,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                           selected,
                                           onSelectChanged) =>
                                       DataRow(
-                                    color: MaterialStateProperty.all(
+                                    color: WidgetStateProperty.all(
                                       flashcardsDataIndex % 2 == 0
                                           ? FlutterFlowTheme.of(context)
                                               .secondaryBackground
@@ -699,6 +699,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                           if (retrievalSessionsDataTable.isEmpty) {
                             return const ListButtonWidget();
                           }
+
                           return FlutterFlowDataTable<
                               RetrievalSessionsREADAllFromUserIdRow>(
                             controller: _model.flashCardDataTableController2,
@@ -774,7 +775,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                     selected,
                                     onSelectChanged) =>
                                 DataRow(
-                              color: MaterialStateProperty.all(
+                              color: WidgetStateProperty.all(
                                 retrievalSessionsDataTableIndex % 2 == 0
                                     ? FlutterFlowTheme.of(context)
                                         .secondaryBackground
@@ -880,6 +881,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                           if (sessionsDecksData.isEmpty) {
                             return const ListButtonWidget();
                           }
+
                           return FlutterFlowDataTable<
                               RetrievalSessionsDecksREADAllRow>(
                             controller: _model.flashCardDataTableController3,
@@ -939,7 +941,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                     selected,
                                     onSelectChanged) =>
                                 DataRow(
-                              color: MaterialStateProperty.all(
+                              color: WidgetStateProperty.all(
                                 sessionsDecksDataIndex % 2 == 0
                                     ? FlutterFlowTheme.of(context)
                                         .secondaryBackground
@@ -1030,6 +1032,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                           if (srsParametersTable.isEmpty) {
                             return const ListButtonWidget();
                           }
+
                           return FlutterFlowDataTable<SRSParametersREADAllRow>(
                             controller: _model.flashCardDataTableController4,
                             data: srsParametersTable,
@@ -1104,7 +1107,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                     selected,
                                     onSelectChanged) =>
                                 DataRow(
-                              color: MaterialStateProperty.all(
+                              color: WidgetStateProperty.all(
                                 srsParametersTableIndex % 2 == 0
                                     ? FlutterFlowTheme.of(context)
                                         .secondaryBackground
@@ -1215,6 +1218,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                 if (conversationsTable.isEmpty) {
                                   return const ListButtonWidget();
                                 }
+
                                 return FlutterFlowDataTable<
                                     ConversationsREADAllRow>(
                                   controller:
@@ -1397,7 +1401,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                           selected,
                                           onSelectChanged) =>
                                       DataRow(
-                                    color: MaterialStateProperty.all(
+                                    color: WidgetStateProperty.all(
                                       conversationsTableIndex % 2 == 0
                                           ? FlutterFlowTheme.of(context)
                                               .secondaryBackground

@@ -63,9 +63,12 @@ class ConversationScreenModel
 
   int? loopCounter = 0;
 
+  bool showVerso = true;
+
+  bool showOptionButtons = false;
+
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - SQLite (Flashcards for conversation with deckId)] action in ConversationScreen widget.
   List<FlashcardsForConversationWithDeckIdRow>? flashcardsTextId;
   // State field(s) for ConversationPagesViews widget.
@@ -116,7 +119,6 @@ class ConversationScreenModel
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     flipCardComponentModel.dispose();
     timerController.dispose();
     totalTimerController.dispose();

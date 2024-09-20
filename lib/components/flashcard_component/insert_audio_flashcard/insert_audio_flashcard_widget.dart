@@ -71,7 +71,7 @@ class _InsertAudioFlashcardWidgetState
                   const Duration(milliseconds: 2000),
                   () async {
                     _model.audioFileName = _model.textController.text;
-                    setState(() {});
+                    safeSetState(() {});
                   },
                 ),
                 autofocus: true,
@@ -150,7 +150,7 @@ class _InsertAudioFlashcardWidgetState
                 _model.audioFile = _model.audioRecord;
               }
 
-              setState(() {});
+              safeSetState(() {});
             },
             text: 'Record',
             icon: const Icon(

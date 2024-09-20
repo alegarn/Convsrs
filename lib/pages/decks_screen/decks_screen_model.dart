@@ -22,21 +22,19 @@ class DecksScreenModel extends FlutterFlowModel<DecksScreenWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - SQLite (Flashcards infos for retrieval session)] action in RetrievalButton widget.
   List<FlashcardsInfosForRetrievalSessionRow>? deckRetrieval;
-  // State field(s) for TextField widget.
-  FocusNode? textFieldFocusNode;
-  TextEditingController? textController;
-  String? Function(BuildContext, String?)? textControllerValidator;
+  // State field(s) for DeckNameField widget.
+  FocusNode? deckNameFieldFocusNode;
+  TextEditingController? deckNameFieldTextController;
+  String? Function(BuildContext, String?)? deckNameFieldTextControllerValidator;
 
   @override
   void initState(BuildContext context) {}
 
   @override
   void dispose() {
-    unfocusNode.dispose();
-    textFieldFocusNode?.dispose();
-    textController?.dispose();
+    deckNameFieldFocusNode?.dispose();
+    deckNameFieldTextController?.dispose();
   }
 }

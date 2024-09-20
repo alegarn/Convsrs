@@ -430,6 +430,7 @@ Future<List<FlashcardsInfosForRetrievalSessionRow>>
   Database database, {
   String? userId,
   int? deckId,
+  int? numberOfCard,
 }) {
   final query = '''
 SELECT 
@@ -452,7 +453,8 @@ FROM flashcards f
 JOIN decksFlashcards df ON f.id = df.flashcardId
 WHERE f.userId = '$userId'
 AND df.deckId = $deckId
-AND (f.currentRecallDate = 'none' OR julianday(f.currentRecallDate) <= julianday('now')); 
+AND (f.currentRecallDate = 'none' OR julianday(f.currentRecallDate) <= julianday('now'))
+LIMIT $numberOfCard; 
 ''';
   return _readQuery(
       database, query, (d) => FlashcardsInfosForRetrievalSessionRow(d));
@@ -638,7 +640,8 @@ Future<List<FlashcardsForConversationWithDeckIdRow>>
   final query = '''
 SELECT 
   f.id as flashcardID, 
-  f.textVerso as textVerso
+  f.textVerso as textVerso,
+  f.textRecto  as textRecto
 FROM flashcards as f
 INNER JOIN
   decksFlashcards as df ON f.id = df.flashcardId
@@ -654,6 +657,7 @@ class FlashcardsForConversationWithDeckIdRow extends SqliteRow {
 
   int? get flashcardID => data['flashcardID'] as int?;
   String? get textVerso => data['textVerso'] as String?;
+  String? get textRecto => data['textRecto'] as String?;
 }
 
 /// END FLASHCARDS FOR CONVERSATION WITH DECKID

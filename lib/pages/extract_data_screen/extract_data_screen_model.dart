@@ -37,7 +37,6 @@ class ExtractDataScreenModel extends FlutterFlowModel<ExtractDataScreenWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // State field(s) for PaginatedDataTable widget.
   final paginatedDataTableController =
       FlutterFlowDataTableController<DataExtractREADAllNoDataRow>();
@@ -79,6 +78,6 @@ class ExtractDataScreenModel extends FlutterFlowModel<ExtractDataScreenWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
+    paginatedDataTableController.dispose();
   }
 }

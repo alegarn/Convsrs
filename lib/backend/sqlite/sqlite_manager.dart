@@ -161,11 +161,13 @@ class SQLiteManager {
       flashcardsInfosForRetrievalSession({
     String? userId,
     int? deckId,
+    int? numberOfCard,
   }) =>
           performFlashcardsInfosForRetrievalSession(
             _database,
             userId: userId,
             deckId: deckId,
+            numberOfCard: numberOfCard,
           );
 
   Future<List<SRSParametersGetConversationStepsIntervalsSecFromStepNumberRow>>
@@ -859,6 +861,14 @@ class SQLiteManager {
 
   Future dataExtractDELETEAll() => performDataExtractDELETEAll(
         _database,
+      );
+
+  Future decksFlashcardsDELETERowByFlashcardId({
+    int? flashcardId,
+  }) =>
+      performDecksFlashcardsDELETERowByFlashcardId(
+        _database,
+        flashcardId: flashcardId,
       );
 
   /// END UPDATE QUERY CALLS
