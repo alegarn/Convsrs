@@ -92,7 +92,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                           _model.nameState,
                           'name',
                         );
-                        setState(() {});
+                        safeSetState(() {});
                       },
                     ),
                     autofocus: true,
@@ -196,7 +196,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                                     () async {
                                       _model.textRectoState = _model
                                           .textRectoFieldTextController.text;
-                                      setState(() {});
+                                      safeSetState(() {});
                                     },
                                   ),
                                   autofocus: false,
@@ -310,7 +310,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                                             selectedMedia.every((m) =>
                                                 validateFileFormat(
                                                     m.storagePath, context))) {
-                                          setState(() =>
+                                          safeSetState(() =>
                                               _model.isDataUploading = true);
                                           var selectedUploadedFiles =
                                               <FFUploadedFile>[];
@@ -335,12 +335,12 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                                           }
                                           if (selectedUploadedFiles.length ==
                                               selectedMedia.length) {
-                                            setState(() {
+                                            safeSetState(() {
                                               _model.uploadedLocalFile =
                                                   selectedUploadedFiles.first;
                                             });
                                           } else {
-                                            setState(() {});
+                                            safeSetState(() {});
                                             return;
                                           }
                                         }
@@ -381,7 +381,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                                   flex: 1,
                                   child: wrapWithModel(
                                     model: _model.insertAudioFlashcardModel1,
-                                    updateCallback: () => setState(() {}),
+                                    updateCallback: () => safeSetState(() {}),
                                     updateOnChange: true,
                                     child: const InsertAudioFlashcardWidget(),
                                   ),
@@ -436,7 +436,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                                       // Change state
                                       _model.textVersoState = _model
                                           .textVersoFieldTextController.text;
-                                      setState(() {});
+                                      safeSetState(() {});
                                     },
                                   ),
                                   autofocus: false,
@@ -576,7 +576,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
                                   flex: 1,
                                   child: wrapWithModel(
                                     model: _model.insertAudioFlashcardModel2,
-                                    updateCallback: () => setState(() {}),
+                                    updateCallback: () => safeSetState(() {}),
                                     child: const InsertAudioFlashcardWidget(),
                                   ),
                                 ),
@@ -616,7 +616,7 @@ class _CardCreationFaceWidgetState extends State<CardCreationFaceWidget> {
             child: FFButtonWidget(
               onPressed: () async {
                 _model.showRecto = !_model.showRecto;
-                setState(() {});
+                safeSetState(() {});
               },
               text: 'Flip',
               icon: Icon(

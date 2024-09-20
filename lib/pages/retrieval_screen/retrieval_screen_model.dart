@@ -88,9 +88,10 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
 
   int counter = 0;
 
+  int? mentImageBool = 0;
+
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // State field(s) for RetrievalTimer widget.
   final retrievalTimerInitialTimeMs = 0;
   int retrievalTimerMilliseconds = 0;
@@ -107,7 +108,6 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     retrievalTimerController.dispose();
   }
 
@@ -157,7 +157,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
     );
     // Insert retrievalSessionsDecks
     await SQLiteManager.instance.retrievalSessionsDecksCreateINSERTANewRecord(
-      deckId: widget.deckId,
+      deckId: widget!.deckId,
     );
     while (cardReviewedList.isNotEmpty) {
       // get first item to currentCard
@@ -165,13 +165,24 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
       // Get conversationStepsIntervalsSec string from current Flashcard's stepNumber
       speakingStepsIntervals = await SQLiteManager.instance
           .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
-        stepNumber: currentCard!.currentRetrievalStep,
+        stepNumber: valueOrDefault<int>(
+          valueOrDefault<int>(
+                currentCard?.currentRetrievalStep,
+                0,
+              ) +
+              1,
+          1,
+        ),
       );
       // Get retrievalIntervalDurationSec
       retrievalIntervalDurationSec = await SQLiteManager.instance
           .sRSParametersGetRetrievalIntervalDurationSecFromStepNumber(
         stepNumber: valueOrDefault<int>(
-          currentCard?.currentRetrievalStep,
+          valueOrDefault<int>(
+                currentCard?.currentRetrievalStep,
+                0,
+              ) +
+              1,
           1,
         ),
       );
@@ -180,7 +191,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         currentRetrievalStep: valueOrDefault<int>(
           valueOrDefault<int>(
                 currentCard?.currentRetrievalStep,
-                1,
+                0,
               ) +
               1,
           1,
@@ -188,14 +199,18 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         currentSpeakingStep: 0,
         successCount: currentCard?.successCount,
         toRecall: 1,
-        totalReviewCount: currentCard?.totalReviewCount,
+        totalReviewCount: valueOrDefault<int>(
+          valueOrDefault<int>(
+                currentCard?.totalReviewCount,
+                0,
+              ) +
+              1,
+          0,
+        ),
         currentSpeakingDate: functions.dateNow(),
         nextSpeakingDate: valueOrDefault<String>(
-          functions.getNextSpeakingDateFromIntervals(valueOrDefault<String>(
-            speakingStepsIntervals.first.conversationStepsIntervalsSec,
-            '[0]',
-          )),
-          '0',
+          functions.dateNow(),
+          'none',
         ),
         flashcardId: currentCard?.id,
         name: currentCard?.name,
@@ -215,7 +230,10 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
               .first.retrievalIntervalDurationSec),
           'none',
         ),
-        mentalImageBool: 0,
+        mentalImageBool: valueOrDefault<int>(
+          currentCard?.mentalImageBool,
+          0,
+        ),
       );
       // Remove ReviewedList item
       removeAtIndexFromCardReviewedList(0);
@@ -240,7 +258,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
           ParamType.int,
         ),
         'deckId': serializeParam(
-          widget.deckId,
+          widget!.deckId,
           ParamType.int,
         ),
         'sessionWordsCount': serializeParam(
@@ -263,7 +281,8 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
     flashcardsToReviewRowsCopy =
         await SQLiteManager.instance.flashcardsInfosForRetrievalSession(
       userId: FFAppState().userUuid,
-      deckId: widget.deckId,
+      deckId: widget!.deckId,
+      numberOfCard: FFAppState().cardPerRetrieval,
     );
     // Rows to cardToReviewListState
     cardToReviewListState = functions

@@ -85,7 +85,7 @@ class FlashcardStruct extends BaseStruct {
 
   // "currentRetrievalStep" field.
   int? _currentRetrievalStep;
-  int get currentRetrievalStep => _currentRetrievalStep ?? 1;
+  int get currentRetrievalStep => _currentRetrievalStep ?? 0;
   set currentRetrievalStep(int? val) => _currentRetrievalStep = val;
 
   void incrementCurrentRetrievalStep(int amount) =>

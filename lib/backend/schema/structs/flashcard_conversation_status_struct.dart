@@ -9,10 +9,12 @@ class FlashcardConversationStatusStruct extends BaseStruct {
   FlashcardConversationStatusStruct({
     int? id,
     String? textVerso,
+    String? textRecto,
     int? timesValidatedByClickCount,
     bool? isFullyValidated,
   })  : _id = id,
         _textVerso = textVerso,
+        _textRecto = textRecto,
         _timesValidatedByClickCount = timesValidatedByClickCount,
         _isFullyValidated = isFullyValidated;
 
@@ -27,14 +29,21 @@ class FlashcardConversationStatusStruct extends BaseStruct {
 
   // "textVerso" field.
   String? _textVerso;
-  String get textVerso => _textVerso ?? '';
+  String get textVerso => _textVerso ?? 'none';
   set textVerso(String? val) => _textVerso = val;
 
   bool hasTextVerso() => _textVerso != null;
 
+  // "textRecto" field.
+  String? _textRecto;
+  String get textRecto => _textRecto ?? 'none';
+  set textRecto(String? val) => _textRecto = val;
+
+  bool hasTextRecto() => _textRecto != null;
+
   // "timesValidatedByClickCount" field.
   int? _timesValidatedByClickCount;
-  int get timesValidatedByClickCount => _timesValidatedByClickCount ?? 0;
+  int get timesValidatedByClickCount => _timesValidatedByClickCount ?? 5;
   set timesValidatedByClickCount(int? val) => _timesValidatedByClickCount = val;
 
   void incrementTimesValidatedByClickCount(int amount) =>
@@ -53,6 +62,7 @@ class FlashcardConversationStatusStruct extends BaseStruct {
       FlashcardConversationStatusStruct(
         id: castToType<int>(data['id']),
         textVerso: data['textVerso'] as String?,
+        textRecto: data['textRecto'] as String?,
         timesValidatedByClickCount:
             castToType<int>(data['timesValidatedByClickCount']),
         isFullyValidated: data['isFullyValidated'] as bool?,
@@ -66,6 +76,7 @@ class FlashcardConversationStatusStruct extends BaseStruct {
   Map<String, dynamic> toMap() => {
         'id': _id,
         'textVerso': _textVerso,
+        'textRecto': _textRecto,
         'timesValidatedByClickCount': _timesValidatedByClickCount,
         'isFullyValidated': _isFullyValidated,
       }.withoutNulls;
@@ -78,6 +89,10 @@ class FlashcardConversationStatusStruct extends BaseStruct {
         ),
         'textVerso': serializeParam(
           _textVerso,
+          ParamType.String,
+        ),
+        'textRecto': serializeParam(
+          _textRecto,
           ParamType.String,
         ),
         'timesValidatedByClickCount': serializeParam(
@@ -103,6 +118,11 @@ class FlashcardConversationStatusStruct extends BaseStruct {
           ParamType.String,
           false,
         ),
+        textRecto: deserializeParam(
+          data['textRecto'],
+          ParamType.String,
+          false,
+        ),
         timesValidatedByClickCount: deserializeParam(
           data['timesValidatedByClickCount'],
           ParamType.int,
@@ -123,24 +143,27 @@ class FlashcardConversationStatusStruct extends BaseStruct {
     return other is FlashcardConversationStatusStruct &&
         id == other.id &&
         textVerso == other.textVerso &&
+        textRecto == other.textRecto &&
         timesValidatedByClickCount == other.timesValidatedByClickCount &&
         isFullyValidated == other.isFullyValidated;
   }
 
   @override
-  int get hashCode => const ListEquality()
-      .hash([id, textVerso, timesValidatedByClickCount, isFullyValidated]);
+  int get hashCode => const ListEquality().hash(
+      [id, textVerso, textRecto, timesValidatedByClickCount, isFullyValidated]);
 }
 
 FlashcardConversationStatusStruct createFlashcardConversationStatusStruct({
   int? id,
   String? textVerso,
+  String? textRecto,
   int? timesValidatedByClickCount,
   bool? isFullyValidated,
 }) =>
     FlashcardConversationStatusStruct(
       id: id,
       textVerso: textVerso,
+      textRecto: textRecto,
       timesValidatedByClickCount: timesValidatedByClickCount,
       isFullyValidated: isFullyValidated,
     );

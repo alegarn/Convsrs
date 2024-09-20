@@ -42,9 +42,7 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -110,6 +108,7 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                               builder: (context) {
                                 final extractDataTable =
                                     _model.extractDataState.toList();
+
                                 return FlutterFlowDataTable<
                                     DataExtractREADAllNoDataRow>(
                                   controller:
@@ -207,7 +206,7 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                                           selected,
                                           onSelectChanged) =>
                                       DataRow(
-                                    color: MaterialStateProperty.all(
+                                    color: WidgetStateProperty.all(
                                       extractDataTableIndex % 2 == 0
                                           ? FlutterFlowTheme.of(context)
                                               .secondaryBackground
@@ -281,9 +280,9 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                                                 ?.first.tableData,
                                             'extractDataDefault',
                                           );
-                                          setState(() {});
+                                          safeSetState(() {});
 
-                                          setState(() {});
+                                          safeSetState(() {});
                                         },
                                         text: 'Extract',
                                         options: FFButtonOptions(
@@ -715,9 +714,9 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                                 _model.extractDataState = _model.dataExtract!
                                     .toList()
                                     .cast<DataExtractREADAllNoDataRow>();
-                                setState(() {});
+                                safeSetState(() {});
 
-                                setState(() {});
+                                safeSetState(() {});
                               },
                               text: 'Create one extract',
                               options: FFButtonOptions(

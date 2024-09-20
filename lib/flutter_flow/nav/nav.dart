@@ -113,6 +113,10 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'deckId',
               ParamType.int,
             ),
+            deckName: params.getParam(
+              'deckName',
+              ParamType.String,
+            ),
           ),
         ),
         FFRoute(

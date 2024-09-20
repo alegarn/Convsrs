@@ -94,9 +94,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -236,6 +234,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                         }
                         final cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList =
                             snapshot.data!;
+
                         return ReorderableListView.builder(
                           padding: EdgeInsets.zero,
                           scrollDirection: Axis.vertical,
@@ -257,7 +256,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                 onLongPress: () async {
                                   // Show/Hide button
                                   _model.isDeleting = !_model.isDeleting;
-                                  setState(() {});
+                                  safeSetState(() {});
                                 },
                                 child: Container(
                                   width: MediaQuery.sizeOf(context).width * 1.0,
@@ -278,6 +277,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                               child: AutoSizeText(
                                             cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
                                                 .concept,
+                                            minFontSize: 14.0,
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
@@ -285,7 +285,6 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                                   fontSize: 18.0,
                                                   letterSpacing: 0.0,
                                                 ),
-                                            minFontSize: 14.0,
                                           )),
                                         ),
                                         SizedBox(
@@ -302,6 +301,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                               child: AutoSizeText(
                                             cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
                                                 .answer,
+                                            minFontSize: 14.0,
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
@@ -309,7 +309,6 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                                   fontSize: 18.0,
                                                   letterSpacing: 0.0,
                                                 ),
-                                            minFontSize: 14.0,
                                           )),
                                         ),
                                         if (_model.isDeleting)
@@ -339,7 +338,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                               );
                                               // Display the updated content
 
-                                              setState(() {});
+                                              safeSetState(() {});
                                             },
                                           ),
                                       ]
@@ -382,7 +381,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                   ),
                   onPressed: () async {
                     _model.isCreatingRow = !_model.isCreatingRow;
-                    setState(() {});
+                    safeSetState(() {});
                   },
                 ),
               ),
@@ -432,7 +431,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                 onChanged: (_) => EasyDebounce.debounce(
                                   '_model.cheatsheetRowConceptFieldTextController',
                                   const Duration(milliseconds: 1000),
-                                  () => setState(() {}),
+                                  () => safeSetState(() {}),
                                 ),
                                 autofocus: true,
                                 textInputAction: TextInputAction.done,
@@ -508,7 +507,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                 onChanged: (_) => EasyDebounce.debounce(
                                   '_model.cheatsheetRowDescriptionFieldTextController',
                                   const Duration(milliseconds: 500),
-                                  () => setState(() {}),
+                                  () => safeSetState(() {}),
                                 ),
                                 autofocus: true,
                                 textInputAction: TextInputAction.done,
@@ -617,7 +616,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                   }
                                   // End creating UI
                                   _model.isCreatingRow = !_model.isCreatingRow;
-                                  setState(() {});
+                                  safeSetState(() {});
                                   if (animationsMap[
                                           'buttonOnActionTriggerAnimation1'] !=
                                       null) {
@@ -662,7 +661,7 @@ class _CheatsheetScreenWidgetState extends State<CheatsheetScreenWidget>
                                 onPressed: () async {
                                   // Close Modal
                                   _model.isCreatingRow = !_model.isCreatingRow;
-                                  setState(() {});
+                                  safeSetState(() {});
                                   if (animationsMap[
                                           'buttonOnActionTriggerAnimation2'] !=
                                       null) {

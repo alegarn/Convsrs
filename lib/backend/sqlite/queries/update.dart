@@ -765,3 +765,16 @@ DELETE FROM dataExtract;
 }
 
 /// END DATAEXTRACT DELETE ALL
+
+/// BEGIN DECKSFLASHCARDS DELETE ROW BY FLASHCARDID
+Future performDecksFlashcardsDELETERowByFlashcardId(
+  Database database, {
+  int? flashcardId,
+}) {
+  final query = '''
+DELETE FROM "decksFlashcards" WHERE "flashcardId" = $flashcardId;
+''';
+  return database.rawQuery(query);
+}
+
+/// END DECKSFLASHCARDS DELETE ROW BY FLASHCARDID

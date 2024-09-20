@@ -15,7 +15,6 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - SQLite (Deck Read 1 from id)] action in FlashcardsScreen widget.
   List<DeckRead1FromIdRow>? deckInfos;
   // Models for ListCrudRow dynamic component.
@@ -44,7 +43,6 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     listCrudRowModels.dispose();
     nameFieldFocusNode?.dispose();
     nameFieldTextController?.dispose();

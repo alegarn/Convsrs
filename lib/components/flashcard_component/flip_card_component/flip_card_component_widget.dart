@@ -78,7 +78,7 @@ class _FlipCardComponentWidgetState extends State<FlipCardComponentWidget>
       children: [
         wrapWithModel(
           model: _model.cardCreationFacesModel,
-          updateCallback: () => setState(() {}),
+          updateCallback: () => safeSetState(() {}),
           child: const CardCreationFaceWidget(),
         ).animateOnActionTrigger(
           animationsMap['cardCreationFaceOnActionTriggerAnimation']!,
@@ -104,7 +104,7 @@ class _FlipCardComponentWidgetState extends State<FlipCardComponentWidget>
                 audioVersoUrl: 'none',
                 imageRectoUrl: 'none',
                 imageVersoUrl: 'none',
-                currentRetrievalStep: 1,
+                currentRetrievalStep: 0,
                 currentSpeakingStep: 0,
                 toRecall: 1,
                 currentRecallDate: 'none',
@@ -132,7 +132,7 @@ class _FlipCardComponentWidgetState extends State<FlipCardComponentWidget>
                 ),
               );
               // Delete fields
-              setState(() {
+              safeSetState(() {
                 _model.cardCreationFacesModel.nameTextFieldTextController
                     ?.clear();
                 _model.cardCreationFacesModel.textRectoFieldTextController
@@ -154,7 +154,7 @@ class _FlipCardComponentWidgetState extends State<FlipCardComponentWidget>
                     .forward(from: 0.0);
               }
 
-              setState(() {});
+              safeSetState(() {});
             },
             text: '',
             icon: const Icon(

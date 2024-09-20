@@ -40,8 +40,8 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
     super.initState();
     _model = createModel(context, () => DecksScreenModel());
 
-    _model.textController ??= TextEditingController();
-    _model.textFieldFocusNode ??= FocusNode();
+    _model.deckNameFieldTextController ??= TextEditingController();
+    _model.deckNameFieldFocusNode ??= FocusNode();
 
     animationsMap.addAll({
       'buttonOnActionTriggerAnimation': AnimationInfo(
@@ -78,9 +78,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -157,7 +155,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                       flex: 1,
                       child: Container(
                         width: MediaQuery.sizeOf(context).width * 1.0,
-                        height: MediaQuery.sizeOf(context).height * 1.0,
+                        height: MediaQuery.sizeOf(context).height * 0.87,
                         decoration: const BoxDecoration(),
                         child: FutureBuilder<List<DecksReadListIdNameRow>>(
                           future: SQLiteManager.instance.decksReadListIdName(
@@ -180,6 +178,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                             }
                             final decksListViewDecksReadListIdNameRowList =
                                 snapshot.data!;
+
                             return ListView.builder(
                               padding: EdgeInsets.zero,
                               scrollDirection: Axis.vertical,
@@ -239,6 +238,11 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                                   .id,
                                               ParamType.int,
                                             ),
+                                            'deckName': serializeParam(
+                                              decksListViewDecksReadListIdNameRow
+                                                  .name,
+                                              ParamType.String,
+                                            ),
                                           }.withoutNulls,
                                         );
 
@@ -248,7 +252,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                     onLongPress: () async {
                                       // Toggle delete button
                                       _model.isDeleting = !_model.isDeleting;
-                                      setState(() {});
+                                      safeSetState(() {});
                                     },
                                     child: Container(
                                       width: MediaQuery.sizeOf(context).width *
@@ -361,6 +365,8 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                                       deckId:
                                                           decksListViewDecksReadListIdNameRow
                                                               .id,
+                                                      numberOfCard: FFAppState()
+                                                          .cardPerRetrieval,
                                                     );
                                                     if ((_model.deckRetrieval !=
                                                                 null &&
@@ -402,7 +408,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                                       }
                                                     }
 
-                                                    setState(() {});
+                                                    safeSetState(() {});
                                                   },
                                                   text: 'Retrival',
                                                   options: FFButtonOptions(
@@ -470,7 +476,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                                       );
                                                       // Update component
 
-                                                      setState(() {});
+                                                      safeSetState(() {});
                                                     },
                                                   ),
                                                 ),
@@ -506,7 +512,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                   onPressed: () async {
                     // Show Modal
                     _model.isCreatingDeck = !_model.isCreatingDeck;
-                    setState(() {});
+                    safeSetState(() {});
                   },
                 ),
               ),
@@ -542,12 +548,12 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                           child: SizedBox(
                             width: MediaQuery.sizeOf(context).width * 1.0,
                             child: TextFormField(
-                              controller: _model.textController,
-                              focusNode: _model.textFieldFocusNode,
+                              controller: _model.deckNameFieldTextController,
+                              focusNode: _model.deckNameFieldFocusNode,
                               onChanged: (_) => EasyDebounce.debounce(
-                                '_model.textController',
+                                '_model.deckNameFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: true,
                               textInputAction: TextInputAction.done,
@@ -604,7 +610,8 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                     fontSize: 24.0,
                                     letterSpacing: 0.0,
                                   ),
-                              validator: _model.textControllerValidator
+                              validator: _model
+                                  .deckNameFieldTextControllerValidator
                                   .asValidator(context),
                             ),
                           ),
@@ -614,13 +621,17 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                             // Create Deck
                             await SQLiteManager.instance.deckCREATE(
                               userId: FFAppState().userUuid,
-                              name: _model.textController.text,
+                              name: _model.deckNameFieldTextController.text,
                               totalCards: 0,
                               deckSuccessRate: 0.0,
                             );
                             // Hide modal
                             _model.isCreatingDeck = !_model.isCreatingDeck;
-                            setState(() {});
+                            safeSetState(() {});
+                            // Reset field
+                            safeSetState(() {
+                              _model.deckNameFieldTextController?.clear();
+                            });
                           },
                           text: 'Validate',
                           options: FFButtonOptions(

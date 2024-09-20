@@ -17,9 +17,12 @@ class FlashcardsScreenWidget extends StatefulWidget {
   const FlashcardsScreenWidget({
     super.key,
     int? deckId,
-  }) : deckId = deckId ?? 1;
+    String? deckName,
+  })  : deckId = deckId ?? 1,
+        deckName = deckName ?? 'deckName';
 
   final int deckId;
+  final String deckName;
 
   @override
   State<FlashcardsScreenWidget> createState() => _FlashcardsScreenWidgetState();
@@ -89,9 +92,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -158,7 +159,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                 16.0, 0.0, 0.0, 12.0),
                             child: Text(
                               'Deck: ${valueOrDefault<String>(
-                                _model.deckInfos?.first.name,
+                                widget.deckName,
                                 'deckName',
                               )}',
                               style: FlutterFlowTheme.of(context)
@@ -174,13 +175,11 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                         ],
                       ),
                     ),
-                    Container(
-                      width: MediaQuery.sizeOf(context).width * 1.0,
-                      height: MediaQuery.sizeOf(context).height * 1.0,
-                      decoration: const BoxDecoration(),
-                      child: Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0.0, 1.0, 0.0, 0.0),
+                    Flexible(
+                      child: Container(
+                        width: MediaQuery.sizeOf(context).width * 1.0,
+                        height: MediaQuery.sizeOf(context).height * 0.87,
+                        decoration: const BoxDecoration(),
                         child: FutureBuilder<
                             List<FlashcardsReadAllFromDeckNameAndIdRow>>(
                           future: SQLiteManager.instance
@@ -208,6 +207,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                             }
                             final listViewFlashcardsReadAllFromDeckNameAndIdRowList =
                                 snapshot.data!;
+
                             return ListView.builder(
                               padding: EdgeInsets.zero,
                               scrollDirection: Axis.vertical,
@@ -223,7 +223,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                     listViewIndex.toString(),
                                     listViewIndex,
                                   ),
-                                  updateCallback: () => setState(() {}),
+                                  updateCallback: () => safeSetState(() {}),
                                   updateOnChange: true,
                                   child: ListCrudRowWidget(
                                     key: Key(
@@ -269,9 +269,16 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                           0,
                                         ),
                                       );
+                                      // Delete row decksFlashcards
+                                      await SQLiteManager.instance
+                                          .decksFlashcardsDELETERowByFlashcardId(
+                                        flashcardId:
+                                            listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                                .id,
+                                      );
                                       // Update component
 
-                                      setState(() {});
+                                      safeSetState(() {});
                                     },
                                   ),
                                 );
@@ -299,7 +306,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                   ),
                   onPressed: () async {
                     _model.isCreatingFlashcard = !_model.isCreatingFlashcard;
-                    setState(() {});
+                    safeSetState(() {});
                   },
                 ),
               ),
@@ -340,9 +347,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.nameFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
-                              autofocus: true,
+                              autofocus: false,
                               textInputAction: TextInputAction.done,
                               obscureText: false,
                               decoration: InputDecoration(
@@ -351,6 +358,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                     .labelMedium
                                     .override(
                                       fontFamily: 'Readex Pro',
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      fontSize: 18.0,
                                       letterSpacing: 0.0,
                                     ),
                                 hintText: 'Typeflashcard\'s  name here...',
@@ -412,17 +422,20 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.textRectoFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: false,
                               textInputAction: TextInputAction.done,
                               obscureText: false,
                               decoration: InputDecoration(
-                                labelText: 'Text recto:',
+                                labelText: 'Text recto: (known)',
                                 labelStyle: FlutterFlowTheme.of(context)
                                     .labelMedium
                                     .override(
                                       fontFamily: 'Readex Pro',
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      fontSize: 18.0,
                                       letterSpacing: 0.0,
                                     ),
                                 hintText:
@@ -487,17 +500,20 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.textVersoFieldTextController',
                                 const Duration(milliseconds: 2000),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               autofocus: false,
                               textInputAction: TextInputAction.done,
                               obscureText: false,
                               decoration: InputDecoration(
-                                labelText: 'Text verso:',
+                                labelText: 'Text verso: (to learn)',
                                 labelStyle: FlutterFlowTheme.of(context)
                                     .labelMedium
                                     .override(
                                       fontFamily: 'Readex Pro',
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      fontSize: 18.0,
                                       letterSpacing: 0.0,
                                     ),
                                 hintText: 'Type flascard\'s text verso here...',
@@ -541,6 +557,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   .bodyMedium
                                   .override(
                                     fontFamily: 'Readex Pro',
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryText,
                                     fontSize: 24.0,
                                     letterSpacing: 0.0,
                                   ),
@@ -568,7 +586,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               audioVersoUrl: 'none',
                               imageRectoUrl: 'none',
                               imageVersoUrl: 'none',
-                              currentRetrievalStep: 1,
+                              currentRetrievalStep: 0,
                               currentSpeakingStep: 0,
                               toRecall: 0,
                               currentRecallDate: 'none',
@@ -606,9 +624,15 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                             // isCreatingFlashacard toggle
                             _model.isCreatingFlashcard =
                                 !_model.isCreatingFlashcard;
-                            setState(() {});
+                            safeSetState(() {});
+                            // Reset fields
+                            safeSetState(() {
+                              _model.nameFieldTextController?.clear();
+                              _model.textRectoFieldTextController?.clear();
+                              _model.textVersoFieldTextController?.clear();
+                            });
 
-                            setState(() {});
+                            safeSetState(() {});
                           },
                           text: 'Validate',
                           options: FFButtonOptions(

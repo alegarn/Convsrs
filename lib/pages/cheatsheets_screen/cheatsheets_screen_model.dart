@@ -12,7 +12,6 @@ class CheatsheetsScreenModel extends FlutterFlowModel<CheatsheetsScreenWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Models for ListCrudRow dynamic component.
   late FlutterFlowDynamicModels<ListCrudRowModel> listCrudRowModels;
   // State field(s) for CheatsheetNameField widget.
@@ -28,7 +27,6 @@ class CheatsheetsScreenModel extends FlutterFlowModel<CheatsheetsScreenWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     listCrudRowModels.dispose();
     cheatsheetNameFieldFocusNode?.dispose();
     cheatsheetNameFieldTextController?.dispose();

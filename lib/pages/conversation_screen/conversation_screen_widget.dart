@@ -6,13 +6,14 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'conversation_screen_model.dart';
@@ -145,7 +146,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
       this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -160,9 +161,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -190,193 +189,312 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                       PageController(initialPage: 0),
                               scrollDirection: Axis.horizontal,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      3.0, 5.0, 3.0, 0.0),
-                                  child: Builder(
-                                    builder: (context) {
-                                      final wordList = _model
-                                          .flashcardsConversationStatus
-                                          .toList();
-                                      return Wrap(
-                                        spacing: 3.0,
-                                        runSpacing: 3.0,
-                                        alignment: WrapAlignment.start,
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.start,
-                                        direction: Axis.horizontal,
-                                        runAlignment: WrapAlignment.start,
-                                        verticalDirection:
-                                            VerticalDirection.down,
-                                        clipBehavior: Clip.none,
-                                        children: List.generate(wordList.length,
-                                            (wordListIndex) {
-                                          final wordListItem =
-                                              wordList[wordListIndex];
-                                          return InkWell(
-                                            splashColor: Colors.transparent,
-                                            focusColor: Colors.transparent,
-                                            hoverColor: Colors.transparent,
-                                            highlightColor: Colors.transparent,
-                                            onTap: () async {
-                                              // FlashcardStatus Update
-                                              _model
-                                                  .updateFlashcardsConversationStatusAtIndex(
-                                                wordListIndex,
-                                                (e) => e
-                                                  ..incrementTimesValidatedByClickCount(
-                                                      1),
-                                              );
-                                              setState(() {});
-                                              if (_model
-                                                      .flashcardsConversationStatus[
-                                                          wordListIndex]
-                                                      .timesValidatedByClickCount ==
-                                                  _model.timeToValidateWord) {
-                                                // wordIsValidated
-                                                _model
-                                                    .updateFlashcardsConversationStatusAtIndex(
-                                                  wordListIndex,
-                                                  (e) => e
-                                                    ..isFullyValidated = true,
-                                                );
-                                                // State WordValidatedCount
-                                                _model.validatedCardNumber =
-                                                    _model.validatedCardNumber! +
-                                                        1;
-                                                setState(() {});
-                                              } else {
-                                                return;
-                                              }
-                                            },
-                                            child: Container(
-                                              constraints: BoxConstraints(
-                                                maxWidth:
-                                                    MediaQuery.sizeOf(context)
+                                Stack(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          3.0, 5.0, 3.0, 0.0),
+                                      child: Builder(
+                                        builder: (context) {
+                                          final wordList = _model
+                                              .flashcardsConversationStatus
+                                              .toList();
+
+                                          return Wrap(
+                                            spacing: 3.0,
+                                            runSpacing: 3.0,
+                                            alignment: WrapAlignment.start,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.start,
+                                            direction: Axis.horizontal,
+                                            runAlignment: WrapAlignment.start,
+                                            verticalDirection:
+                                                VerticalDirection.down,
+                                            clipBehavior: Clip.none,
+                                            children:
+                                                List.generate(wordList.length,
+                                                    (wordListIndex) {
+                                              final wordListItem =
+                                                  wordList[wordListIndex];
+                                              return InkWell(
+                                                splashColor: Colors.transparent,
+                                                focusColor: Colors.transparent,
+                                                hoverColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () async {
+                                                  // FlashcardStatus Update
+                                                  _model
+                                                      .updateFlashcardsConversationStatusAtIndex(
+                                                    wordListIndex,
+                                                    (e) => e
+                                                      ..incrementTimesValidatedByClickCount(
+                                                          1),
+                                                  );
+                                                  safeSetState(() {});
+                                                  if (_model
+                                                          .flashcardsConversationStatus[
+                                                              wordListIndex]
+                                                          .timesValidatedByClickCount ==
+                                                      _model
+                                                          .timeToValidateWord) {
+                                                    // wordIsValidated
+                                                    _model
+                                                        .updateFlashcardsConversationStatusAtIndex(
+                                                      wordListIndex,
+                                                      (e) => e
+                                                        ..isFullyValidated =
+                                                            true,
+                                                    );
+                                                    // State WordValidatedCount
+                                                    _model.validatedCardNumber =
+                                                        _model.validatedCardNumber! +
+                                                            1;
+                                                    safeSetState(() {});
+                                                  } else {
+                                                    return;
+                                                  }
+                                                },
+                                                child: Container(
+                                                  constraints: BoxConstraints(
+                                                    maxWidth: MediaQuery.sizeOf(
+                                                                context)
                                                             .width *
                                                         1.0,
-                                                maxHeight:
-                                                    MediaQuery.sizeOf(context)
-                                                            .height *
-                                                        0.1,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: valueOrDefault<Color>(
-                                                  wordListItem.isFullyValidated
-                                                      ? FlutterFlowTheme.of(
-                                                              context)
-                                                          .warning
-                                                      : FlutterFlowTheme.of(
+                                                    maxHeight:
+                                                        MediaQuery.sizeOf(
+                                                                    context)
+                                                                .height *
+                                                            0.1,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        valueOrDefault<Color>(
+                                                      wordListItem
+                                                              .isFullyValidated
+                                                          ? FlutterFlowTheme.of(
+                                                                  context)
+                                                              .warning
+                                                          : FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primary,
+                                                      FlutterFlowTheme.of(
                                                               context)
                                                           .primary,
+                                                    ),
+                                                    boxShadow: const [
+                                                      BoxShadow(
+                                                        blurRadius: 4.0,
+                                                        color:
+                                                            Color(0x33000000),
+                                                        offset: Offset(
+                                                          0.0,
+                                                          2.0,
+                                                        ),
+                                                      )
+                                                    ],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    border: Border.all(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .accent1,
+                                                    ),
+                                                  ),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsetsDirectional
+                                                            .fromSTEB(3.0, 0.0,
+                                                                3.0, 0.0),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Flexible(
+                                                          child: AutoSizeText(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              _model.showVerso
+                                                                  ? valueOrDefault<
+                                                                      String>(
+                                                                      wordListItem
+                                                                          .textVerso,
+                                                                      'none',
+                                                                    )
+                                                                  : valueOrDefault<
+                                                                      String>(
+                                                                      wordListItem
+                                                                          .textRecto,
+                                                                      'none',
+                                                                    ),
+                                                              'Verso',
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Readex Pro',
+                                                                  color: wordListItem.isFullyValidated
+                                                                      ? FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryText
+                                                                      : FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryBackground,
+                                                                  fontSize:
+                                                                      48.0,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              wordListItem
+                                                                  .timesValidatedByClickCount
+                                                                  .toString(),
+                                                              '0',
+                                                            ).maybeHandleOverflow(
+                                                                maxChars: 2),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Readex Pro',
+                                                                  color: wordListItem.isFullyValidated
+                                                                      ? FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryText
+                                                                      : FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .warning,
+                                                                  fontSize:
+                                                                      24.0,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontStyle:
+                                                                      FontStyle
+                                                                          .italic,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ).animateOnActionTrigger(
+                                                animationsMap[
+                                                    'containerOnActionTriggerAnimation']!,
+                                              );
+                                            }),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    Stack(
+                                      children: [
+                                        Align(
+                                          alignment:
+                                              const AlignmentDirectional(0.95, 0.95),
+                                          child: FlutterFlowIconButton(
+                                            borderColor: Colors.transparent,
+                                            borderRadius: 20.0,
+                                            borderWidth: 1.0,
+                                            buttonSize: 40.0,
+                                            fillColor: valueOrDefault<Color>(
+                                              _model.showOptionButtons
+                                                  ? FlutterFlowTheme.of(context)
+                                                      .tertiary
+                                                  : FlutterFlowTheme.of(context)
+                                                      .secondary,
+                                              FlutterFlowTheme.of(context)
+                                                  .secondary,
+                                            ),
+                                            icon: const Icon(
+                                              Icons.dialpad,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () async {
+                                              // Card face swap
+                                              _model.showOptionButtons =
+                                                  !_model.showOptionButtons;
+                                              safeSetState(() {});
+                                            },
+                                          ),
+                                        ),
+                                        if (_model.showOptionButtons)
+                                          Align(
+                                            alignment:
+                                                const AlignmentDirectional(0.7, 0.95),
+                                            child: FlutterFlowIconButton(
+                                              borderColor: Colors.transparent,
+                                              borderRadius: 20.0,
+                                              borderWidth: 1.0,
+                                              buttonSize: 40.0,
+                                              fillColor:
                                                   FlutterFlowTheme.of(context)
                                                       .primary,
-                                                ),
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                    blurRadius: 4.0,
-                                                    color: Color(0x33000000),
-                                                    offset: Offset(
-                                                      0.0,
-                                                      2.0,
-                                                    ),
-                                                  )
-                                                ],
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                border: Border.all(
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .accent1,
-                                                ),
+                                              icon: const Icon(
+                                                Icons.swap_horiz_outlined,
+                                                color: Colors.white,
                                               ),
-                                              child: Padding(
-                                                padding: const EdgeInsetsDirectional
-                                                    .fromSTEB(
-                                                        3.0, 0.0, 3.0, 0.0),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Flexible(
-                                                      child: Text(
-                                                        valueOrDefault<String>(
-                                                          wordListItem
-                                                              .textVerso,
-                                                          'none',
-                                                        ),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: FlutterFlowTheme
-                                                                .of(context)
-                                                            .bodyMedium
-                                                            .override(
-                                                              fontFamily:
-                                                                  'Readex Pro',
-                                                              color: wordListItem.isFullyValidated
-                                                                  ? FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryText
-                                                                  : FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryBackground,
-                                                              fontSize: 48.0,
-                                                              letterSpacing:
-                                                                  0.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        valueOrDefault<String>(
-                                                          wordListItem
-                                                              .timesValidatedByClickCount
-                                                              .toString(),
-                                                          '0',
-                                                        ).maybeHandleOverflow(
-                                                            maxChars: 2),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: FlutterFlowTheme
-                                                                .of(context)
-                                                            .bodyMedium
-                                                            .override(
-                                                              fontFamily:
-                                                                  'Readex Pro',
-                                                              color: wordListItem.isFullyValidated
-                                                                  ? FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryText
-                                                                  : FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .warning,
-                                                              fontSize: 24.0,
-                                                              letterSpacing:
-                                                                  0.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontStyle:
-                                                                  FontStyle
-                                                                      .italic,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+                                              onPressed: () async {
+                                                // Card face swap
+                                                _model.showVerso =
+                                                    !_model.showVerso;
+                                                safeSetState(() {});
+                                              },
                                             ),
-                                          ).animateOnActionTrigger(
-                                            animationsMap[
-                                                'containerOnActionTriggerAnimation']!,
-                                          );
-                                        }),
-                                      );
-                                    },
-                                  ),
+                                          ),
+                                        if (_model.showOptionButtons)
+                                          Align(
+                                            alignment: const AlignmentDirectional(
+                                                0.45, 0.95),
+                                            child: FlutterFlowIconButton(
+                                              borderColor: Colors.transparent,
+                                              borderRadius: 20.0,
+                                              borderWidth: 1.0,
+                                              buttonSize: 40.0,
+                                              fillColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primary,
+                                              icon: const Icon(
+                                                Icons.content_copy_outlined,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () async {
+                                                // Card face swap
+                                                await Clipboard.setData(
+                                                    ClipboardData(
+                                                        text: valueOrDefault<
+                                                            String>(
+                                                  functions.extractFlashcards(_model
+                                                      .flashcardsConversationStatus
+                                                      .toList()),
+                                                  'textRecto : textVerso',
+                                                )));
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                                 FutureBuilder<
                                     List<CheatsheetRowsREADConceptAnswerRow>>(
@@ -403,6 +521,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                     }
                                     final listViewCheatsheetRowsREADConceptAnswerRowList =
                                         snapshot.data!;
+
                                     return ListView.builder(
                                       padding: EdgeInsets.zero,
                                       scrollDirection: Axis.vertical,
@@ -499,7 +618,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                 ),
                                 wrapWithModel(
                                   model: _model.flipCardComponentModel,
-                                  updateCallback: () => setState(() {}),
+                                  updateCallback: () => safeSetState(() {}),
                                   child: FlipCardComponentWidget(
                                     deckId: widget.deckId,
                                   ),
@@ -525,7 +644,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                     duration: const Duration(milliseconds: 500),
                                     curve: Curves.ease,
                                   );
-                                  setState(() {});
+                                  safeSetState(() {});
                                 },
                                 effect:
                                     smooth_page_indicator.ExpandingDotsEffect(
@@ -955,7 +1074,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                 },
                               );
 
-                              setState(() {});
+                              safeSetState(() {});
                             },
                           ),
                         ],
@@ -978,7 +1097,16 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      FFButtonWidget(
+                      FlutterFlowIconButton(
+                        borderColor: Colors.transparent,
+                        borderRadius: 20.0,
+                        borderWidth: 1.0,
+                        buttonSize: 40.0,
+                        fillColor: FlutterFlowTheme.of(context).primary,
+                        icon: const Icon(
+                          Icons.record_voice_over,
+                          color: Colors.white,
+                        ),
                         onPressed: () async {
                           if (_model.isSpeaking) {
                             // Stop
@@ -992,28 +1120,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
 
                           // isSpeaking value toggled
                           _model.isSpeaking = !_model.isSpeaking;
-                          setState(() {});
+                          safeSetState(() {});
                         },
-                        text: 'Talk',
-                        options: FFButtonOptions(
-                          height: MediaQuery.sizeOf(context).height * 0.8,
-                          padding: const EdgeInsets.all(0.0),
-                          iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 0.0, 0.0),
-                          color: FlutterFlowTheme.of(context).primary,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleSmall.override(
-                                    fontFamily: 'Readex Pro',
-                                    color: Colors.white,
-                                    letterSpacing: 0.0,
-                                  ),
-                          elevation: 1.0,
-                          borderSide: const BorderSide(
-                            color: Colors.transparent,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(0.0),
-                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(3.0),
@@ -1030,7 +1138,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                           onChanged: (value, displayTime, shouldUpdate) {
                             _model.timerMilliseconds = value;
                             _model.timerValue = displayTime;
-                            if (shouldUpdate) setState(() {});
+                            if (shouldUpdate) safeSetState(() {});
                           },
                           textAlign: TextAlign.justify,
                           style: FlutterFlowTheme.of(context)
@@ -1064,7 +1172,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                           onChanged: (value, displayTime, shouldUpdate) {
                             _model.totalTimerMilliseconds = value;
                             _model.totalTimerValue = displayTime;
-                            if (shouldUpdate) setState(() {});
+                            if (shouldUpdate) safeSetState(() {});
                           },
                           textAlign: TextAlign.justify,
                           style: FlutterFlowTheme.of(context)

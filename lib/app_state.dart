@@ -31,6 +31,10 @@ class FFAppState extends ChangeNotifier {
           await secureStorage.getInt('ff_timeCountToValidateConversation') ??
               _timeCountToValidateConversation;
     });
+    await _safeInitAsync(() async {
+      _cardPerRetrieval = await secureStorage.getInt('ff_cardPerRetrieval') ??
+          _cardPerRetrieval;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -71,6 +75,17 @@ class FFAppState extends ChangeNotifier {
 
   void deleteTimeCountToValidateConversation() {
     secureStorage.delete(key: 'ff_timeCountToValidateConversation');
+  }
+
+  int _cardPerRetrieval = 10;
+  int get cardPerRetrieval => _cardPerRetrieval;
+  set cardPerRetrieval(int value) {
+    _cardPerRetrieval = value;
+    secureStorage.setInt('ff_cardPerRetrieval', value);
+  }
+
+  void deleteCardPerRetrieval() {
+    secureStorage.delete(key: 'ff_cardPerRetrieval');
   }
 }
 

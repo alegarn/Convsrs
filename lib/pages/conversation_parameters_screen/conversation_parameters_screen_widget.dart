@@ -38,7 +38,7 @@ class _ConversationParametersScreenWidgetState
       // Add query table to state
       _model.srsParameterState =
           _model.srsParameters!.toList().cast<SRSParametersREADAllRow>();
-      setState(() {});
+      safeSetState(() {});
     });
 
     _model.stepNumberTextFieldTextController ??= TextEditingController(
@@ -48,12 +48,19 @@ class _ConversationParametersScreenWidgetState
     ));
     _model.stepNumberTextFieldFocusNode ??= FocusNode();
 
-    _model.textController2 ??= TextEditingController(
+    _model.stepToValidateConvTextFieldTextController ??= TextEditingController(
         text: valueOrDefault<String>(
       FFAppState().timeCountToValidateConversation.toString(),
       '7',
     ));
-    _model.textFieldFocusNode ??= FocusNode();
+    _model.stepToValidateConvTextFieldFocusNode ??= FocusNode();
+
+    _model.cardInRetrievalTextFieldTextController ??= TextEditingController(
+        text: valueOrDefault<String>(
+      FFAppState().cardPerRetrieval.toString(),
+      '10',
+    ));
+    _model.cardInRetrievalTextFieldFocusNode ??= FocusNode();
   }
 
   @override
@@ -125,6 +132,30 @@ class _ConversationParametersScreenWidgetState
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0.0, 16.0, 0.0, 16.0),
+                            child: Text(
+                              'Srs Parameters table',
+                              style: FlutterFlowTheme.of(context)
+                                  .labelMedium
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryText,
+                                    fontSize: 24.0,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     Padding(
                       padding:
                           const EdgeInsetsDirectional.fromSTEB(3.0, 16.0, 3.0, 0.0),
@@ -140,7 +171,7 @@ class _ConversationParametersScreenWidgetState
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.stepNumberTextFieldTextController',
                                 const Duration(milliseconds: 500),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               obscureText: false,
                               decoration: InputDecoration(
@@ -205,7 +236,7 @@ class _ConversationParametersScreenWidgetState
                                     .stepNumberTextFieldTextController.text),
                                 5,
                               );
-                              setState(() {});
+                              safeSetState(() {});
                             },
                             text: 'Update',
                             options: FFButtonOptions(
@@ -241,12 +272,14 @@ class _ConversationParametersScreenWidgetState
                         children: [
                           Expanded(
                             child: TextFormField(
-                              controller: _model.textController2,
-                              focusNode: _model.textFieldFocusNode,
+                              controller: _model
+                                  .stepToValidateConvTextFieldTextController,
+                              focusNode:
+                                  _model.stepToValidateConvTextFieldFocusNode,
                               onChanged: (_) => EasyDebounce.debounce(
-                                '_model.textController2',
+                                '_model.stepToValidateConvTextFieldTextController',
                                 const Duration(milliseconds: 500),
-                                () => setState(() {}),
+                                () => safeSetState(() {}),
                               ),
                               obscureText: false,
                               decoration: InputDecoration(
@@ -300,15 +333,18 @@ class _ConversationParametersScreenWidgetState
                                     letterSpacing: 0.0,
                                   ),
                               keyboardType: TextInputType.number,
-                              validator: _model.textController2Validator
+                              validator: _model
+                                  .stepToValidateConvTextFieldTextControllerValidator
                                   .asValidator(context),
                             ),
                           ),
                           FFButtonWidget(
                             onPressed: () async {
                               FFAppState().timeCountToValidateConversation =
-                                  int.parse(_model.textController2.text);
-                              setState(() {});
+                                  int.parse(_model
+                                      .stepToValidateConvTextFieldTextController
+                                      .text);
+                              safeSetState(() {});
                             },
                             text: 'Update',
                             options: FFButtonOptions(
@@ -336,29 +372,111 @@ class _ConversationParametersScreenWidgetState
                         ].divide(const SizedBox(width: 3.0)),
                       ),
                     ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 16.0, 0.0, 16.0),
-                            child: Text(
-                              'Srs Parameters table',
+                    Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(3.0, 16.0, 3.0, 3.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller:
+                                  _model.cardInRetrievalTextFieldTextController,
+                              focusNode:
+                                  _model.cardInRetrievalTextFieldFocusNode,
+                              onChanged: (_) => EasyDebounce.debounce(
+                                '_model.cardInRetrievalTextFieldTextController',
+                                const Duration(milliseconds: 500),
+                                () => safeSetState(() {}),
+                              ),
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                labelText:
+                                    'Number of card in retrieval session',
+                                labelStyle: FlutterFlowTheme.of(context)
+                                    .labelMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      letterSpacing: 0.0,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                        FlutterFlowTheme.of(context).alternate,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).primary,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                filled: true,
+                                fillColor: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                              ),
                               style: FlutterFlowTheme.of(context)
-                                  .labelMedium
+                                  .bodyMedium
                                   .override(
                                     fontFamily: 'Readex Pro',
                                     color: FlutterFlowTheme.of(context)
                                         .primaryText,
-                                    fontSize: 24.0,
                                     letterSpacing: 0.0,
-                                    fontWeight: FontWeight.normal,
                                   ),
+                              keyboardType: TextInputType.number,
+                              validator: _model
+                                  .cardInRetrievalTextFieldTextControllerValidator
+                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                      ],
+                          FFButtonWidget(
+                            onPressed: () async {
+                              FFAppState().cardPerRetrieval = int.parse(_model
+                                  .cardInRetrievalTextFieldTextController.text);
+                              safeSetState(() {});
+                            },
+                            text: 'Update',
+                            options: FFButtonOptions(
+                              height: 40.0,
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  24.0, 0.0, 24.0, 0.0),
+                              iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 0.0, 0.0, 0.0),
+                              color: FlutterFlowTheme.of(context).primary,
+                              textStyle: FlutterFlowTheme.of(context)
+                                  .titleSmall
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    color: Colors.white,
+                                    letterSpacing: 0.0,
+                                  ),
+                              elevation: 3.0,
+                              borderSide: const BorderSide(
+                                color: Colors.transparent,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                        ].divide(const SizedBox(width: 3.0)),
+                      ),
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -380,6 +498,7 @@ class _ConversationParametersScreenWidgetState
                               builder: (context) {
                                 final srsPattetersList =
                                     _model.srsParameterState.toList();
+
                                 return FlutterFlowDataTable<
                                     SRSParametersREADAllRow>(
                                   controller:
@@ -477,7 +596,7 @@ class _ConversationParametersScreenWidgetState
                                           selected,
                                           onSelectChanged) =>
                                       DataRow(
-                                    color: MaterialStateProperty.all(
+                                    color: WidgetStateProperty.all(
                                       srsPattetersListIndex % 2 == 0
                                           ? FlutterFlowTheme.of(context)
                                               .secondaryBackground
@@ -555,6 +674,8 @@ class _ConversationParametersScreenWidgetState
                                   selectable: false,
                                   hidePaginator: false,
                                   showFirstLastButtons: false,
+                                  width: MediaQuery.sizeOf(context).width * 1.0,
+                                  height: 250.0,
                                   headingRowHeight: 56.0,
                                   dataRowHeight: 48.0,
                                   columnSpacing: 20.0,
@@ -575,10 +696,6 @@ class _ConversationParametersScreenWidgetState
                           ),
                         ],
                       ),
-                    ),
-                    const Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [],
                     ),
                   ],
                 ),

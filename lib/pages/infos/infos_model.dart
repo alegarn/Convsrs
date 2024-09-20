@@ -90,7 +90,6 @@ class InfosModel extends FlutterFlowModel<InfosWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Stores action output result for [Backend Call - SQLite (Flashcard Read all)] action in Infos widget.
   List<FlashcardReadAllRow>? flashcardsTable;
   // Stores action output result for [Backend Call - SQLite (Flashcards read all from deck name and id)] action in Infos widget.
@@ -126,6 +125,10 @@ class InfosModel extends FlutterFlowModel<InfosWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
+    flashCardDataTableController1.dispose();
+    flashCardDataTableController2.dispose();
+    flashCardDataTableController3.dispose();
+    flashCardDataTableController4.dispose();
+    flashCardDataTableController5.dispose();
   }
 }

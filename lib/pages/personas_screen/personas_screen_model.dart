@@ -12,7 +12,6 @@ class PersonasScreenModel extends FlutterFlowModel<PersonasScreenWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // Models for ListCrudRow dynamic component.
   late FlutterFlowDynamicModels<ListCrudRowModel> listCrudRowModels;
   // State field(s) for PersonaNameField widget.
@@ -38,7 +37,6 @@ class PersonasScreenModel extends FlutterFlowModel<PersonasScreenWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     listCrudRowModels.dispose();
     personaNameFieldFocusNode?.dispose();
     personaNameFieldTextController?.dispose();

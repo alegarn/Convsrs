@@ -116,7 +116,7 @@ class _NavigateListItemWidgetState extends State<NavigateListItemWidget> {
                 ),
                 wrapWithModel(
                   model: _model.listButtonModel,
-                  updateCallback: () => setState(() {}),
+                  updateCallback: () => safeSetState(() {}),
                   child: const ListButtonWidget(),
                 ),
               ],

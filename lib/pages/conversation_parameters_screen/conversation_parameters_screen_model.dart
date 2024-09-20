@@ -32,10 +32,16 @@ class ConversationParametersScreenModel
   TextEditingController? stepNumberTextFieldTextController;
   String? Function(BuildContext, String?)?
       stepNumberTextFieldTextControllerValidator;
-  // State field(s) for TextField widget.
-  FocusNode? textFieldFocusNode;
-  TextEditingController? textController2;
-  String? Function(BuildContext, String?)? textController2Validator;
+  // State field(s) for StepToValidateConvTextField widget.
+  FocusNode? stepToValidateConvTextFieldFocusNode;
+  TextEditingController? stepToValidateConvTextFieldTextController;
+  String? Function(BuildContext, String?)?
+      stepToValidateConvTextFieldTextControllerValidator;
+  // State field(s) for CardInRetrievalTextField widget.
+  FocusNode? cardInRetrievalTextFieldFocusNode;
+  TextEditingController? cardInRetrievalTextFieldTextController;
+  String? Function(BuildContext, String?)?
+      cardInRetrievalTextFieldTextControllerValidator;
   // State field(s) for PaginatedDataTable widget.
   final paginatedDataTableController =
       FlutterFlowDataTableController<SRSParametersREADAllRow>();
@@ -48,7 +54,12 @@ class ConversationParametersScreenModel
     stepNumberTextFieldFocusNode?.dispose();
     stepNumberTextFieldTextController?.dispose();
 
-    textFieldFocusNode?.dispose();
-    textController2?.dispose();
+    stepToValidateConvTextFieldFocusNode?.dispose();
+    stepToValidateConvTextFieldTextController?.dispose();
+
+    cardInRetrievalTextFieldFocusNode?.dispose();
+    cardInRetrievalTextFieldTextController?.dispose();
+
+    paginatedDataTableController.dispose();
   }
 }

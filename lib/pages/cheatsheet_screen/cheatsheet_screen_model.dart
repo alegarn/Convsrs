@@ -11,7 +11,6 @@ class CheatsheetScreenModel extends FlutterFlowModel<CheatsheetScreenWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  final unfocusNode = FocusNode();
   // State field(s) for CheatsheetRowConceptField widget.
   FocusNode? cheatsheetRowConceptFieldFocusNode;
   TextEditingController? cheatsheetRowConceptFieldTextController;
@@ -28,7 +27,6 @@ class CheatsheetScreenModel extends FlutterFlowModel<CheatsheetScreenWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     cheatsheetRowConceptFieldFocusNode?.dispose();
     cheatsheetRowConceptFieldTextController?.dispose();
 

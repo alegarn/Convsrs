@@ -469,9 +469,7 @@ class _StatsScreenWidgetState extends State<StatsScreenWidget>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -924,7 +922,7 @@ class _StatsScreenWidgetState extends State<StatsScreenWidget>
                                           FlutterFlowTheme.of(context).primary,
                                       barWidth: 1.0,
                                       isCurved: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)
@@ -944,7 +942,7 @@ class _StatsScreenWidgetState extends State<StatsScreenWidget>
                                       color: const Color(0xFF6F28CB),
                                       barWidth: 2.0,
                                       isCurved: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)
@@ -1056,7 +1054,7 @@ class _StatsScreenWidgetState extends State<StatsScreenWidget>
                                           FlutterFlowTheme.of(context).primary,
                                       barWidth: 1.0,
                                       isCurved: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)
@@ -1076,7 +1074,7 @@ class _StatsScreenWidgetState extends State<StatsScreenWidget>
                                       color: const Color(0xFF6F28CB),
                                       barWidth: 2.0,
                                       isCurved: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)

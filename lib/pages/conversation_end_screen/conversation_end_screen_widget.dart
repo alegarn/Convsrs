@@ -132,9 +132,7 @@ class _ConversationEndScreenWidgetState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -850,7 +848,7 @@ class _ConversationEndScreenWidgetState
                                       barWidth: 2.0,
                                       isCurved: true,
                                       preventCurveOverShooting: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)
@@ -873,7 +871,7 @@ class _ConversationEndScreenWidgetState
                                       barWidth: 2.0,
                                       isCurved: true,
                                       preventCurveOverShooting: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)

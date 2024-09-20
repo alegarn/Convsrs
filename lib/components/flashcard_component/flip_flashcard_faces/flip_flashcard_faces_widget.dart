@@ -49,7 +49,7 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
         widget.flashcardRectoInfos?.textVerso,
         'new text verso',
       );
-      setState(() {});
+      safeSetState(() {});
     });
 
     _model.cardTextFieldTextController ??=
@@ -94,7 +94,7 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
                               _model.cardTextFieldTextController.text,
                               'Write here...',
                             );
-                            setState(() {});
+                            safeSetState(() {});
                           },
                         ),
                         autofocus: true,
@@ -203,7 +203,8 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
                               if (selectedMedia != null &&
                                   selectedMedia.every((m) => validateFileFormat(
                                       m.storagePath, context))) {
-                                setState(() => _model.isDataUploading = true);
+                                safeSetState(
+                                    () => _model.isDataUploading = true);
                                 var selectedUploadedFiles = <FFUploadedFile>[];
 
                                 try {
@@ -221,12 +222,12 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
                                 }
                                 if (selectedUploadedFiles.length ==
                                     selectedMedia.length) {
-                                  setState(() {
+                                  safeSetState(() {
                                     _model.uploadedLocalFile =
                                         selectedUploadedFiles.first;
                                   });
                                 } else {
-                                  setState(() {});
+                                  safeSetState(() {});
                                   return;
                                 }
                               }
@@ -264,7 +265,7 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
                         flex: 1,
                         child: wrapWithModel(
                           model: _model.insertAudioFlashcardModel1,
-                          updateCallback: () => setState(() {}),
+                          updateCallback: () => safeSetState(() {}),
                           updateOnChange: true,
                           child: const InsertAudioFlashcardWidget(),
                         ),
@@ -315,7 +316,7 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
                           () async {
                             _model.textVerso =
                                 _model.textVersoFieldTextController.text;
-                            setState(() {});
+                            safeSetState(() {});
                           },
                         ),
                         autofocus: true,
@@ -445,7 +446,7 @@ class _FlipFlashcardFacesWidgetState extends State<FlipFlashcardFacesWidget> {
                         flex: 1,
                         child: wrapWithModel(
                           model: _model.insertAudioFlashcardModel2,
-                          updateCallback: () => setState(() {}),
+                          updateCallback: () => safeSetState(() {}),
                           child: const InsertAudioFlashcardWidget(),
                         ),
                       ),

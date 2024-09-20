@@ -92,7 +92,7 @@ class _RetrievalEndScreenWidgetState extends State<RetrievalEndScreenWidget>
         _model.countTotalFlashcardsInDeck?.first.countTotalFlashcardsInDeck,
         0,
       );
-      setState(() {});
+      safeSetState(() {});
     });
 
     animationsMap.addAll({
@@ -167,9 +167,7 @@ class _RetrievalEndScreenWidgetState extends State<RetrievalEndScreenWidget>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -887,7 +885,7 @@ class _RetrievalEndScreenWidgetState extends State<RetrievalEndScreenWidget>
                                       barWidth: 2.0,
                                       isCurved: true,
                                       preventCurveOverShooting: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)
@@ -910,7 +908,7 @@ class _RetrievalEndScreenWidgetState extends State<RetrievalEndScreenWidget>
                                       barWidth: 2.0,
                                       isCurved: true,
                                       preventCurveOverShooting: true,
-                                      dotData: FlDotData(show: false),
+                                      dotData: const FlDotData(show: false),
                                       belowBarData: BarAreaData(
                                         show: true,
                                         color: FlutterFlowTheme.of(context)
