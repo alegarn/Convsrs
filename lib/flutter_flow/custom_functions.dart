@@ -110,9 +110,13 @@ List<FlashcardsRetrievalStatusStruct> updateFlashcardsStatusList(
 }
 
 bool isCurrentcardToReviewAgainThisSession(
-  FlashcardStruct currentCard,
+  FlashcardStruct? currentCard,
   List<FlashcardsRetrievalStatusStruct> cardsStatus,
 ) {
+  if (currentCard == null) {
+    return false;
+  }
+
   FlashcardsRetrievalStatusStruct cardStatus = cardsStatus.firstWhere(
     (status) => status.id == currentCard.id,
     orElse: () => FlashcardsRetrievalStatusStruct(),
