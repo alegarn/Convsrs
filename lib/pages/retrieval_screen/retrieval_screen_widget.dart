@@ -274,8 +274,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
           ),
           actions: [
             Padding(
-              padding:
-                  const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
               child: FlutterFlowIconButton(
                 borderColor: Colors.transparent,
                 borderRadius: 30.0,
@@ -326,8 +325,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Align(
-                                  alignment:
-                                      const AlignmentDirectional(-1.0, 0.0),
+                                  alignment: const AlignmentDirectional(-1.0, 0.0),
                                   child: Text(
                                     'Cards Reviewed',
                                     style: FlutterFlowTheme.of(context)
@@ -340,12 +338,10 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                   ),
                                 ),
                                 Align(
-                                  alignment:
-                                      const AlignmentDirectional(-1.0, 0.0),
+                                  alignment: const AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            16.0, 0.0, 0.0, 0.0),
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        16.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       valueOrDefault<String>(
                                         _model.cardReviewedList.length
@@ -363,12 +359,10 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                   ),
                                 ),
                                 Align(
-                                  alignment:
-                                      const AlignmentDirectional(-1.0, 0.0),
+                                  alignment: const AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            3.0, 0.0, 0.0, 0.0),
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        3.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       '/',
                                       style: FlutterFlowTheme.of(context)
@@ -382,12 +376,10 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                   ),
                                 ),
                                 Align(
-                                  alignment:
-                                      const AlignmentDirectional(-1.0, 0.0),
+                                  alignment: const AlignmentDirectional(-1.0, 0.0),
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            3.0, 0.0, 0.0, 0.0),
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        3.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       valueOrDefault<String>(
                                         _model.totalCardsCount.toString(),
@@ -501,8 +493,8 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                             BorderRadius.circular(25.0),
                                       ),
                                       child: Align(
-                                        alignment: const AlignmentDirectional(
-                                            0.0, 0.0),
+                                        alignment:
+                                            const AlignmentDirectional(0.0, 0.0),
                                         child: Text(
                                           valueOrDefault<String>(
                                             _model.currentCard?.textRecto,
@@ -540,8 +532,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                       borderRadius: BorderRadius.circular(25.0),
                                     ),
                                     child: Align(
-                                      alignment:
-                                          const AlignmentDirectional(0.0, 0.0),
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
                                       child: Text(
                                         valueOrDefault<String>(
                                           _model.currentCard?.textVerso,
@@ -625,7 +616,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                               }
                               if (functions
                                   .isCurrentcardToReviewAgainThisSession(
-                                      _model.currentCard!,
+                                      _model.currentCard,
                                       _model.cardsStatus.toList())) {
                                 // Remove currentCard from cardToReviewListState
                                 _model
@@ -780,7 +771,7 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                               }
                               if (functions
                                   .isCurrentcardToReviewAgainThisSession(
-                                      _model.currentCard!,
+                                      _model.currentCard,
                                       _model.cardsStatus.toList())) {
                                 // Remove currentCard from cardToReviewListState
                                 _model
@@ -792,7 +783,6 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                                 // set currentCard update fields
                                 _model.updateCurrentCardStruct(
                                   (e) => e
-                                    ..incrementTotalReviewCount(1)
                                     ..incrementSuccessCount(1)
                                     ..toRecall = 1
                                     ..mentalImageBool = valueOrDefault<int>(
@@ -875,12 +865,11 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
                         ),
                       ),
                     ),
-                    if (_model.currentCard != null &&
-                        valueOrDefault<bool>(
-                          functions.isCurrentcardToReviewAgainThisSession(
-                              _model.currentCard!, _model.cardsStatus.toList()),
-                          false,
-                        ))
+                    if (valueOrDefault<bool>(
+                      functions.isCurrentcardToReviewAgainThisSession(
+                          _model.currentCard, _model.cardsStatus.toList()),
+                      false,
+                    ))
                       Padding(
                         padding: const EdgeInsetsDirectional.fromSTEB(
                             10.0, 32.0, 10.0, 28.0),

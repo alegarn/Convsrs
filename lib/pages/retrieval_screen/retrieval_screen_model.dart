@@ -238,6 +238,58 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
       // Remove ReviewedList item
       removeAtIndexFromCardReviewedList(0);
     }
+    while (cardToReviewListState.isNotEmpty) {
+      // get first item to currentCard
+      currentCard = cardToReviewListState.first;
+      // Update non reviewed Flashcard with currentCard
+      await SQLiteManager.instance.flashcardUpdate(
+        currentRetrievalStep: valueOrDefault<int>(
+          currentCard?.currentRetrievalStep,
+          0,
+        ),
+        currentSpeakingStep: 0,
+        successCount: valueOrDefault<int>(
+          currentCard?.successCount,
+          0,
+        ),
+        toRecall: 1,
+        totalReviewCount: valueOrDefault<int>(
+          valueOrDefault<int>(
+                currentCard?.totalReviewCount,
+                0,
+              ) +
+              1,
+          0,
+        ),
+        currentSpeakingDate: functions.dateNow(),
+        nextSpeakingDate: valueOrDefault<String>(
+          functions.dateNow(),
+          'none',
+        ),
+        flashcardId: currentCard?.id,
+        name: currentCard?.name,
+        textRecto: currentCard?.textRecto,
+        textVerso: currentCard?.textVerso,
+        audioRectoUrl: 'none',
+        audioVersoUrl: 'none',
+        imageRectoUrl: 'none',
+        imageVersoUrl: 'none',
+        currentRecallDate: valueOrDefault<String>(
+          currentCard?.currentRecallDate,
+          'none',
+        ),
+        nextRecallDate: valueOrDefault<String>(
+          currentCard?.nextRecallDate,
+          'none',
+        ),
+        mentalImageBool: valueOrDefault<int>(
+          currentCard?.mentalImageBool,
+          0,
+        ),
+      );
+      // Remove ReviewedList item
+      removeAtIndexFromCardToReviewListState(0);
+    }
     // Change screen
     if (Navigator.of(context).canPop()) {
       context.pop();
