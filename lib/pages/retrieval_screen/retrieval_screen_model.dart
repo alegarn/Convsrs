@@ -121,6 +121,10 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         speakingStepsIntervals;
     List<SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow>?
         retrievalIntervalDurationSec;
+    List<SRSParametersGetConversationStepsIntervalsSecFromStepNumberRow>?
+        speakingStepsIntervals2;
+    List<SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow>?
+        retrievalIntervalDurationSec2;
 
     // Dialog box, please wait
     unawaited(
@@ -241,24 +245,45 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
     while (cardToReviewListState.isNotEmpty) {
       // get first item to currentCard
       currentCard = cardToReviewListState.first;
-      // Update non reviewed Flashcard with currentCard
-      await SQLiteManager.instance.flashcardUpdate(
-        currentRetrievalStep: valueOrDefault<int>(
-          currentCard?.currentRetrievalStep,
-          0,
-        ),
-        currentSpeakingStep: 0,
-        successCount: valueOrDefault<int>(
-          currentCard?.successCount,
-          0,
-        ),
-        toRecall: 1,
-        totalReviewCount: valueOrDefault<int>(
+      // Get conversationStepsIntervalsSec string from current Flashcard's stepNumber
+      speakingStepsIntervals2 = await SQLiteManager.instance
+          .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
+        stepNumber: valueOrDefault<int>(
           valueOrDefault<int>(
-                currentCard?.totalReviewCount,
+                currentCard?.currentRetrievalStep,
                 0,
               ) +
               1,
+          1,
+        ),
+      );
+      // Get retrievalIntervalDurationSec
+      retrievalIntervalDurationSec2 = await SQLiteManager.instance
+          .sRSParametersGetRetrievalIntervalDurationSecFromStepNumber(
+        stepNumber: valueOrDefault<int>(
+          valueOrDefault<int>(
+                currentCard?.currentRetrievalStep,
+                0,
+              ) +
+              1,
+          1,
+        ),
+      );
+      // Update non reviewed Flashcard with currentCard
+      await SQLiteManager.instance.flashcardUpdate(
+        currentRetrievalStep: valueOrDefault<int>(
+          valueOrDefault<int>(
+                currentCard?.currentRetrievalStep,
+                0,
+              ) +
+              1,
+          1,
+        ),
+        currentSpeakingStep: 0,
+        successCount: currentCard?.successCount,
+        toRecall: 1,
+        totalReviewCount: valueOrDefault<int>(
+          currentCard?.totalReviewCount,
           0,
         ),
         currentSpeakingDate: functions.dateNow(),
@@ -275,11 +300,17 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         imageRectoUrl: 'none',
         imageVersoUrl: 'none',
         currentRecallDate: valueOrDefault<String>(
-          currentCard?.currentRecallDate,
+          functions.calculateNextRecallDate(valueOrDefault<int>(
+            retrievalIntervalDurationSec2.first.retrievalIntervalDurationSec,
+            0,
+          )),
           'none',
         ),
         nextRecallDate: valueOrDefault<String>(
-          currentCard?.nextRecallDate,
+          functions.calculateNextRecallDate(valueOrDefault<int>(
+            retrievalIntervalDurationSec2.first.retrievalIntervalDurationSec,
+            0,
+          )),
           'none',
         ),
         mentalImageBool: valueOrDefault<int>(
@@ -288,7 +319,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         ),
       );
       // Remove ReviewedList item
-      removeAtIndexFromCardToReviewListState(0);
+      removeAtIndexFromCardReviewedList(0);
     }
     // Change screen
     if (Navigator.of(context).canPop()) {
