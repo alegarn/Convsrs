@@ -119,6 +119,19 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
           ),
         ],
       ),
+      'listViewOnActionTriggerAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: true,
+        effectsBuilder: () => [
+          FlipEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 300.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+        ],
+      ),
       'containerOnPageLoadAnimation': AnimationInfo(
         trigger: AnimationTrigger.onPageLoad,
         effectsBuilder: () => [
@@ -191,257 +204,483 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                               children: [
                                 Stack(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          3.0, 5.0, 3.0, 0.0),
-                                      child: Builder(
-                                        builder: (context) {
-                                          final wordList = _model
-                                              .flashcardsConversationStatus
-                                              .toList();
+                                    SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    3.0, 5.0, 3.0, 0.0),
+                                            child: Builder(
+                                              builder: (context) {
+                                                final wordList = _model
+                                                    .flashcardsConversationStatus
+                                                    .toList();
 
-                                          return Wrap(
-                                            spacing: 3.0,
-                                            runSpacing: 3.0,
-                                            alignment: WrapAlignment.start,
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.start,
-                                            direction: Axis.horizontal,
-                                            runAlignment: WrapAlignment.start,
-                                            verticalDirection:
-                                                VerticalDirection.down,
-                                            clipBehavior: Clip.none,
-                                            children:
-                                                List.generate(wordList.length,
-                                                    (wordListIndex) {
-                                              final wordListItem =
-                                                  wordList[wordListIndex];
-                                              return InkWell(
-                                                splashColor: Colors.transparent,
-                                                focusColor: Colors.transparent,
-                                                hoverColor: Colors.transparent,
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onTap: () async {
-                                                  // FlashcardStatus Update
-                                                  _model
-                                                      .updateFlashcardsConversationStatusAtIndex(
-                                                    wordListIndex,
-                                                    (e) => e
-                                                      ..incrementTimesValidatedByClickCount(
-                                                          1),
-                                                  );
-                                                  safeSetState(() {});
-                                                  if (_model
-                                                          .flashcardsConversationStatus[
-                                                              wordListIndex]
-                                                          .timesValidatedByClickCount ==
-                                                      _model
-                                                          .timeToValidateWord) {
-                                                    // wordIsValidated
-                                                    _model
-                                                        .updateFlashcardsConversationStatusAtIndex(
-                                                      wordListIndex,
-                                                      (e) => e
-                                                        ..isFullyValidated =
-                                                            true,
-                                                    );
-                                                    // State WordValidatedCount
-                                                    _model.validatedCardNumber =
-                                                        _model.validatedCardNumber! +
-                                                            1;
-                                                    safeSetState(() {});
-                                                  } else {
-                                                    return;
-                                                  }
-                                                },
-                                                child: Container(
-                                                  constraints: BoxConstraints(
-                                                    maxWidth: MediaQuery.sizeOf(
-                                                                context)
-                                                            .width *
-                                                        1.0,
-                                                    maxHeight:
-                                                        MediaQuery.sizeOf(
+                                                return Wrap(
+                                                  spacing: 3.0,
+                                                  runSpacing: 2.0,
+                                                  alignment:
+                                                      WrapAlignment.start,
+                                                  crossAxisAlignment:
+                                                      WrapCrossAlignment.start,
+                                                  direction: Axis.horizontal,
+                                                  runAlignment:
+                                                      WrapAlignment.start,
+                                                  verticalDirection:
+                                                      VerticalDirection.down,
+                                                  clipBehavior: Clip.none,
+                                                  children: List.generate(
+                                                      wordList.length,
+                                                      (wordListIndex) {
+                                                    final wordListItem =
+                                                        wordList[wordListIndex];
+                                                    return InkWell(
+                                                      splashColor:
+                                                          Colors.transparent,
+                                                      focusColor:
+                                                          Colors.transparent,
+                                                      hoverColor:
+                                                          Colors.transparent,
+                                                      highlightColor:
+                                                          Colors.transparent,
+                                                      onTap: () async {
+                                                        // FlashcardStatus Update
+                                                        _model
+                                                            .updateFlashcardsConversationStatusAtIndex(
+                                                          wordListIndex,
+                                                          (e) => e
+                                                            ..incrementTimesValidatedByClickCount(
+                                                                1),
+                                                        );
+                                                        safeSetState(() {});
+                                                        if (_model
+                                                                .flashcardsConversationStatus[
+                                                                    wordListIndex]
+                                                                .timesValidatedByClickCount ==
+                                                            _model
+                                                                .timeToValidateWord) {
+                                                          // wordIsValidated
+                                                          _model
+                                                              .updateFlashcardsConversationStatusAtIndex(
+                                                            wordListIndex,
+                                                            (e) => e
+                                                              ..isFullyValidated =
+                                                                  true,
+                                                          );
+                                                          // State WordValidatedCount
+                                                          _model.validatedCardNumber =
+                                                              _model.validatedCardNumber! +
+                                                                  1;
+                                                          safeSetState(() {});
+                                                        } else {
+                                                          return;
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          maxWidth:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .width *
+                                                                  1.0,
+                                                          maxHeight:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .height *
+                                                                  0.1,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: valueOrDefault<
+                                                              Color>(
+                                                            wordListItem
+                                                                    .isFullyValidated
+                                                                ? FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .warning
+                                                                : FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .primary,
+                                                            FlutterFlowTheme.of(
                                                                     context)
-                                                                .height *
-                                                            0.1,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        valueOrDefault<Color>(
-                                                      wordListItem
-                                                              .isFullyValidated
-                                                          ? FlutterFlowTheme.of(
-                                                                  context)
-                                                              .warning
-                                                          : FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
+                                                                .primary,
+                                                          ),
+                                                          boxShadow: const [
+                                                            BoxShadow(
+                                                              blurRadius: 4.0,
+                                                              color: Color(
+                                                                  0x33000000),
+                                                              offset: Offset(
+                                                                0.0,
+                                                                2.0,
+                                                              ),
+                                                            )
+                                                          ],
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                          border: Border.all(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .accent1,
+                                                          ),
+                                                        ),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                                      3.0,
+                                                                      0.0,
+                                                                      3.0,
+                                                                      0.0),
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              Flexible(
+                                                                child:
+                                                                    AutoSizeText(
+                                                                  valueOrDefault<
+                                                                      String>(
+                                                                    _model
+                                                                            .showVerso
+                                                                        ? valueOrDefault<
+                                                                            String>(
+                                                                            wordListItem.textVerso,
+                                                                            'none',
+                                                                          )
+                                                                        : valueOrDefault<
+                                                                            String>(
+                                                                            wordListItem.textRecto,
+                                                                            'none',
+                                                                          ),
+                                                                    'Verso',
+                                                                  ),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyMedium
+                                                                      .override(
+                                                                        fontFamily:
+                                                                            'Readex Pro',
+                                                                        color: wordListItem.isFullyValidated
+                                                                            ? FlutterFlowTheme.of(context).primaryText
+                                                                            : FlutterFlowTheme.of(context).primaryBackground,
+                                                                        fontSize:
+                                                                            48.0,
+                                                                        letterSpacing:
+                                                                            0.0,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                              Flexible(
+                                                                child: Text(
+                                                                  valueOrDefault<
+                                                                      String>(
+                                                                    wordListItem
+                                                                        .timesValidatedByClickCount
+                                                                        .toString(),
+                                                                    '0',
+                                                                  ).maybeHandleOverflow(
+                                                                      maxChars:
+                                                                          2),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyMedium
+                                                                      .override(
+                                                                        fontFamily:
+                                                                            'Readex Pro',
+                                                                        color: wordListItem.isFullyValidated
+                                                                            ? FlutterFlowTheme.of(context).primaryText
+                                                                            : FlutterFlowTheme.of(context).warning,
+                                                                        fontSize:
+                                                                            24.0,
+                                                                        letterSpacing:
+                                                                            0.0,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontStyle:
+                                                                            FontStyle.italic,
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ).animateOnActionTrigger(
+                                                      animationsMap[
+                                                          'containerOnActionTriggerAnimation']!,
+                                                    );
+                                                  }),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment:
+                                          const AlignmentDirectional(0.0, -1.0),
+                                      child: SizedBox(
+                                        height: double.infinity,
+                                        child: Stack(
+                                          children: [
+                                            Align(
+                                              alignment: const AlignmentDirectional(
+                                                  0.95, 0.97),
+                                              child: FlutterFlowIconButton(
+                                                borderColor: Colors.transparent,
+                                                borderRadius: 20.0,
+                                                borderWidth: 1.0,
+                                                buttonSize: 40.0,
+                                                fillColor:
+                                                    valueOrDefault<Color>(
+                                                  _model.showOptionButtons
+                                                      ? FlutterFlowTheme.of(
+                                                              context)
+                                                          .tertiary
+                                                      : FlutterFlowTheme.of(
+                                                              context)
+                                                          .secondary,
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondary,
+                                                ),
+                                                icon: const Icon(
+                                                  Icons.dialpad,
+                                                  color: Colors.white,
+                                                ),
+                                                onPressed: () async {
+                                                  // Card face swap
+                                                  _model.showOptionButtons =
+                                                      !_model.showOptionButtons;
+                                                  safeSetState(() {});
+                                                },
+                                              ),
+                                            ),
+                                            if (_model.showOptionButtons)
+                                              Align(
+                                                alignment: const AlignmentDirectional(
+                                                    0.7, 0.95),
+                                                child: FlutterFlowIconButton(
+                                                  borderColor:
+                                                      Colors.transparent,
+                                                  borderRadius: 20.0,
+                                                  borderWidth: 1.0,
+                                                  buttonSize: 40.0,
+                                                  fillColor:
                                                       FlutterFlowTheme.of(
                                                               context)
                                                           .primary,
-                                                    ),
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                        blurRadius: 4.0,
-                                                        color:
-                                                            Color(0x33000000),
-                                                        offset: Offset(
-                                                          0.0,
-                                                          2.0,
-                                                        ),
-                                                      )
-                                                    ],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10.0),
-                                                    border: Border.all(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .accent1,
-                                                    ),
+                                                  icon: const Icon(
+                                                    Icons.swap_horiz_outlined,
+                                                    color: Colors.white,
                                                   ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .fromSTEB(3.0, 0.0,
-                                                                3.0, 0.0),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Flexible(
-                                                          child: AutoSizeText(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              _model.showVerso
-                                                                  ? valueOrDefault<
-                                                                      String>(
-                                                                      wordListItem
-                                                                          .textVerso,
-                                                                      'none',
-                                                                    )
-                                                                  : valueOrDefault<
-                                                                      String>(
-                                                                      wordListItem
-                                                                          .textRecto,
-                                                                      'none',
-                                                                    ),
-                                                              'Verso',
-                                                            ),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  color: wordListItem.isFullyValidated
-                                                                      ? FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .primaryText
-                                                                      : FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .primaryBackground,
-                                                                  fontSize:
-                                                                      48.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                        Flexible(
-                                                          child: Text(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              wordListItem
-                                                                  .timesValidatedByClickCount
-                                                                  .toString(),
-                                                              '0',
-                                                            ).maybeHandleOverflow(
-                                                                maxChars: 2),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  color: wordListItem.isFullyValidated
-                                                                      ? FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .primaryText
-                                                                      : FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .warning,
-                                                                  fontSize:
-                                                                      24.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontStyle:
-                                                                      FontStyle
-                                                                          .italic,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
+                                                  onPressed: () async {
+                                                    // Card face swap
+                                                    _model.showVerso =
+                                                        !_model.showVerso;
+                                                    safeSetState(() {});
+                                                  },
                                                 ),
-                                              ).animateOnActionTrigger(
-                                                animationsMap[
-                                                    'containerOnActionTriggerAnimation']!,
-                                              );
-                                            }),
-                                          );
-                                        },
+                                              ),
+                                            if (_model.showOptionButtons)
+                                              Align(
+                                                alignment: const AlignmentDirectional(
+                                                    0.45, 0.95),
+                                                child: FlutterFlowIconButton(
+                                                  borderColor:
+                                                      Colors.transparent,
+                                                  borderRadius: 20.0,
+                                                  borderWidth: 1.0,
+                                                  buttonSize: 40.0,
+                                                  fillColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                  icon: const Icon(
+                                                    Icons.content_copy_outlined,
+                                                    color: Colors.white,
+                                                  ),
+                                                  onPressed: () async {
+                                                    // Card face swap
+                                                    await Clipboard.setData(
+                                                        ClipboardData(
+                                                            text:
+                                                                valueOrDefault<
+                                                                    String>(
+                                                      functions.extractFlashcards(
+                                                          _model
+                                                              .flashcardsConversationStatus
+                                                              .toList()),
+                                                      'textRecto : textVerso',
+                                                    )));
+                                                  },
+                                                ),
+                                              ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    Stack(
-                                      children: [
-                                        Align(
-                                          alignment:
-                                              const AlignmentDirectional(0.95, 0.95),
-                                          child: FlutterFlowIconButton(
-                                            borderColor: Colors.transparent,
-                                            borderRadius: 20.0,
-                                            borderWidth: 1.0,
-                                            buttonSize: 40.0,
-                                            fillColor: valueOrDefault<Color>(
-                                              _model.showOptionButtons
-                                                  ? FlutterFlowTheme.of(context)
-                                                      .tertiary
-                                                  : FlutterFlowTheme.of(context)
-                                                      .secondary,
-                                              FlutterFlowTheme.of(context)
-                                                  .secondary,
+                                  ],
+                                ),
+                                Stack(
+                                  children: [
+                                    FutureBuilder<
+                                        List<
+                                            CheatsheetRowsREADConceptAnswerRow>>(
+                                      future: SQLiteManager.instance
+                                          .cheatsheetRowsREADConceptAnswer(
+                                        cheatsheetId: widget.cheatsheetId,
+                                      ),
+                                      builder: (context, snapshot) {
+                                        // Customize what your widget looks like when it's loading.
+                                        if (!snapshot.hasData) {
+                                          return Center(
+                                            child: SizedBox(
+                                              width: 50.0,
+                                              height: 50.0,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(
+                                                  FlutterFlowTheme.of(context)
+                                                      .primary,
+                                                ),
+                                              ),
                                             ),
-                                            icon: const Icon(
-                                              Icons.dialpad,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: () async {
-                                              // Card face swap
-                                              _model.showOptionButtons =
-                                                  !_model.showOptionButtons;
-                                              safeSetState(() {});
-                                            },
-                                          ),
-                                        ),
-                                        if (_model.showOptionButtons)
+                                          );
+                                        }
+                                        final cheatSheetListViewCheatsheetRowsREADConceptAnswerRowList =
+                                            snapshot.data!;
+
+                                        return ListView.builder(
+                                          padding: EdgeInsets.zero,
+                                          scrollDirection: Axis.vertical,
+                                          itemCount:
+                                              cheatSheetListViewCheatsheetRowsREADConceptAnswerRowList
+                                                  .length,
+                                          itemBuilder: (context,
+                                              cheatSheetListViewIndex) {
+                                            final cheatSheetListViewCheatsheetRowsREADConceptAnswerRow =
+                                                cheatSheetListViewCheatsheetRowsREADConceptAnswerRowList[
+                                                    cheatSheetListViewIndex];
+                                            return Container(
+                                              height: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.08,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .accent1,
+                                                  width: 1.0,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Align(
+                                                      alignment:
+                                                          const AlignmentDirectional(
+                                                              0.0, 0.0),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsetsDirectional
+                                                                .fromSTEB(
+                                                                    3.0,
+                                                                    0.0,
+                                                                    3.0,
+                                                                    0.0),
+                                                        child: SelectionArea(
+                                                            child: Text(
+                                                          cheatSheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                              .concept,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .bodyMedium
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Readex Pro',
+                                                                fontSize: 18.0,
+                                                                letterSpacing:
+                                                                    0.0,
+                                                              ),
+                                                        )),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Align(
+                                                      alignment:
+                                                          const AlignmentDirectional(
+                                                              0.0, 0.0),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsetsDirectional
+                                                                .fromSTEB(
+                                                                    3.0,
+                                                                    0.0,
+                                                                    3.0,
+                                                                    0.0),
+                                                        child: SelectionArea(
+                                                            child: Text(
+                                                          cheatSheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                              .answer,
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .bodyMedium
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Readex Pro',
+                                                                fontSize: 18.0,
+                                                                letterSpacing:
+                                                                    0.0,
+                                                              ),
+                                                        )),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ).animateOnActionTrigger(
+                                          animationsMap[
+                                              'listViewOnActionTriggerAnimation']!,
+                                        );
+                                      },
+                                    ),
+                                    Align(
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
+                                      child: Stack(
+                                        children: [
                                           Align(
                                             alignment:
-                                                const AlignmentDirectional(0.7, 0.95),
+                                                const AlignmentDirectional(0.9, 0.95),
                                             child: FlutterFlowIconButton(
                                               borderColor: Colors.transparent,
                                               borderRadius: 20.0,
@@ -456,165 +695,21 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                               ),
                                               onPressed: () async {
                                                 // Card face swap
-                                                _model.showVerso =
-                                                    !_model.showVerso;
-                                                safeSetState(() {});
+                                                if (animationsMap[
+                                                        'listViewOnActionTriggerAnimation'] !=
+                                                    null) {
+                                                  animationsMap[
+                                                          'listViewOnActionTriggerAnimation']!
+                                                      .controller
+                                                      .forward(from: 0.0);
+                                                }
                                               },
                                             ),
                                           ),
-                                        if (_model.showOptionButtons)
-                                          Align(
-                                            alignment: const AlignmentDirectional(
-                                                0.45, 0.95),
-                                            child: FlutterFlowIconButton(
-                                              borderColor: Colors.transparent,
-                                              borderRadius: 20.0,
-                                              borderWidth: 1.0,
-                                              buttonSize: 40.0,
-                                              fillColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              icon: const Icon(
-                                                Icons.content_copy_outlined,
-                                                color: Colors.white,
-                                              ),
-                                              onPressed: () async {
-                                                // Card face swap
-                                                await Clipboard.setData(
-                                                    ClipboardData(
-                                                        text: valueOrDefault<
-                                                            String>(
-                                                  functions.extractFlashcards(_model
-                                                      .flashcardsConversationStatus
-                                                      .toList()),
-                                                  'textRecto : textVerso',
-                                                )));
-                                              },
-                                            ),
-                                          ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ],
-                                ),
-                                FutureBuilder<
-                                    List<CheatsheetRowsREADConceptAnswerRow>>(
-                                  future: SQLiteManager.instance
-                                      .cheatsheetRowsREADConceptAnswer(
-                                    cheatsheetId: widget.cheatsheetId,
-                                  ),
-                                  builder: (context, snapshot) {
-                                    // Customize what your widget looks like when it's loading.
-                                    if (!snapshot.hasData) {
-                                      return Center(
-                                        child: SizedBox(
-                                          width: 50.0,
-                                          height: 50.0,
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              FlutterFlowTheme.of(context)
-                                                  .primary,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    final listViewCheatsheetRowsREADConceptAnswerRowList =
-                                        snapshot.data!;
-
-                                    return ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      scrollDirection: Axis.vertical,
-                                      itemCount:
-                                          listViewCheatsheetRowsREADConceptAnswerRowList
-                                              .length,
-                                      itemBuilder: (context, listViewIndex) {
-                                        final listViewCheatsheetRowsREADConceptAnswerRow =
-                                            listViewCheatsheetRowsREADConceptAnswerRowList[
-                                                listViewIndex];
-                                        return Container(
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.08,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .accent1,
-                                              width: 1.0,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Expanded(
-                                                flex: 1,
-                                                child: Align(
-                                                  alignment:
-                                                      const AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .fromSTEB(3.0, 0.0,
-                                                                3.0, 0.0),
-                                                    child: SelectionArea(
-                                                        child: Text(
-                                                      listViewCheatsheetRowsREADConceptAnswerRow
-                                                          .concept,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily:
-                                                                'Readex Pro',
-                                                            fontSize: 18.0,
-                                                            letterSpacing: 0.0,
-                                                          ),
-                                                    )),
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                flex: 1,
-                                                child: Align(
-                                                  alignment:
-                                                      const AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .fromSTEB(3.0, 0.0,
-                                                                3.0, 0.0),
-                                                    child: SelectionArea(
-                                                        child: Text(
-                                                      listViewCheatsheetRowsREADConceptAnswerRow
-                                                          .answer,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily:
-                                                                'Readex Pro',
-                                                            fontSize: 18.0,
-                                                            letterSpacing: 0.0,
-                                                          ),
-                                                    )),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
                                 ),
                                 wrapWithModel(
                                   model: _model.flipCardComponentModel,
@@ -1085,7 +1180,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                 ],
               ),
               Align(
-                alignment: const AlignmentDirectional(0.95, 0.75),
+                alignment: const AlignmentDirectional(1.0, 0.79),
                 child: Container(
                   width: MediaQuery.sizeOf(context).width * 0.75,
                   height: MediaQuery.sizeOf(context).height * 0.05,
