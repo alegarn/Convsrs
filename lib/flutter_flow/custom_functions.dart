@@ -655,3 +655,50 @@ String? extractFlashcards(
   }
   return flashcardData.isNotEmpty ? flashcardData.trim() : null;
 }
+
+List<TagStruct> formatNewTags(List<TagsGETAllRow>? allTagsList) {
+  // Check if the input list is null or empty
+  if (allTagsList == null || allTagsList.isEmpty) {
+    // Return a list with a default TagStruct
+    return [TagStruct(id: 0, name: "no_tag")];
+  }
+
+  // Map the allTagsList to a new List<TagStruct>
+  return allTagsList.map((tag) {
+    // Convert the id from String? to int?
+    int? tagId = tag.id != null ? int.tryParse(tag.id!) : null;
+
+    return TagStruct(id: tagId ?? 0, name: tag.name ?? "no_tag");
+  }).toList();
+}
+
+String? extractTagsIds(List<TagStruct>? selectedTags) {
+  // Check if the selectedTags list is null or empty
+  if (selectedTags == null || selectedTags.isEmpty) {
+    return '["1"]'; // or return an empty string if preferred
+  }
+
+  // Extract the IDs and join them into a comma-separated string
+  return selectedTags
+      .map((tag) => tag.id?.toString()) // Use null-aware access
+      .where((id) => id != null) // Filter out null IDs
+      .join(','); // Join non-null IDs
+}
+
+List<TagStruct> filterSelectedTagsInAllTags(
+  List<TagStruct>? selectedTags,
+  List<TagStruct> allTags,
+) {
+  // If selectedTags is null or empty, return allTags filtered by the default tag
+  if (selectedTags == null || selectedTags.isEmpty) {
+    // Create a set with the default tag ID
+    final defaultTagId = 1; // Assuming we want to filter out tags with id 1
+    return allTags.where((tag) => tag.id != defaultTagId).toList();
+  }
+
+  // Create a set of selected tag IDs for efficient lookup
+  final selectedTagIds = selectedTags.map((tag) => tag.id).toSet();
+
+  // Filter out tags from allTags that are in selectedTagIds
+  return allTags.where((tag) => !selectedTagIds.contains(tag.id)).toList();
+}

@@ -170,6 +170,7 @@ class FlashcardRead1WithIdRow extends SqliteRow {
   String get name => data['name'] as String;
   String? get currentSpeakingDate => data['currentSpeakingDate'] as String?;
   String? get nextSpeakingDate => data['nextSpeakingDate'] as String?;
+  String? get tagIds => data['tagIds'] as String?;
 }
 
 /// END FLASHCARD READ 1 WITH ID
@@ -1171,3 +1172,22 @@ class FlashcardsREADLastIdRow extends SqliteRow {
 }
 
 /// END FLASHCARDS READ LAST ID
+
+/// BEGIN TAGS GET ALL
+Future<List<TagsGETAllRow>> performTagsGETAll(
+  Database database,
+) {
+  const query = '''
+SELECT id, name FROM tags;
+''';
+  return _readQuery(database, query, (d) => TagsGETAllRow(d));
+}
+
+class TagsGETAllRow extends SqliteRow {
+  TagsGETAllRow(super.data);
+
+  String? get id => data['id'] as String?;
+  String? get name => data['name'] as String?;
+}
+
+/// END TAGS GET ALL

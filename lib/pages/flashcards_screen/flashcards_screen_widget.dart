@@ -1,10 +1,13 @@
+import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
+import '/components/ui/tag_list/tag_list_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -305,7 +308,17 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                     size: 48.0,
                   ),
                   onPressed: () async {
+                    // Get all tags
+                    _model.allTags = await SQLiteManager.instance.tagsGETAll();
+                    // Add to state
+                    _model.allTagsState = functions
+                        .formatNewTags(_model.allTags?.toList())
+                        .toList()
+                        .cast<TagStruct>();
+                    // Show modal
                     _model.isCreatingFlashcard = !_model.isCreatingFlashcard;
+                    safeSetState(() {});
+
                     safeSetState(() {});
                   },
                 ),
@@ -319,349 +332,402 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Create your Flashcard',
-                            textAlign: TextAlign.center,
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  fontSize: 30.0,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            child: TextFormField(
-                              controller: _model.nameFieldTextController,
-                              focusNode: _model.nameFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.nameFieldTextController',
-                                const Duration(milliseconds: 2000),
-                                () => safeSetState(() {}),
-                              ),
-                              autofocus: false,
-                              textInputAction: TextInputAction.done,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                labelText: 'Flashcard name:',
-                                labelStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Create your Flashcard',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
                                     .override(
                                       fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      fontSize: 18.0,
+                                      fontSize: 30.0,
                                       letterSpacing: 0.0,
                                     ),
-                                hintText: 'Typeflashcard\'s  name here...',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      letterSpacing: 0.0,
-                                    ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                              validator: _model.nameFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            child: TextFormField(
-                              controller: _model.textRectoFieldTextController,
-                              focusNode: _model.textRectoFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.textRectoFieldTextController',
-                                const Duration(milliseconds: 2000),
-                                () => safeSetState(() {}),
-                              ),
-                              autofocus: false,
-                              textInputAction: TextInputAction.done,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                labelText: 'Text recto: (known)',
-                                labelStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      fontSize: 18.0,
-                                      letterSpacing: 0.0,
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 1.0,
+                                child: TextFormField(
+                                  controller: _model.nameFieldTextController,
+                                  focusNode: _model.nameFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.nameFieldTextController',
+                                    const Duration(milliseconds: 2000),
+                                    () => safeSetState(() {}),
+                                  ),
+                                  autofocus: false,
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Flashcard name:',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText: 'Typeflashcard\'s  name here...',
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                hintText:
-                                    'Type flashcard\'s text recto here...',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      letterSpacing: 0.0,
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 2.0,
+                                    errorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedErrorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        fontSize: 24.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  minLines: 1,
+                                  validator: _model
+                                      .nameFieldTextControllerValidator
+                                      .asValidator(context),
                                 ),
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                              maxLines: 3,
-                              validator: _model
-                                  .textRectoFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            child: TextFormField(
-                              controller: _model.textVersoFieldTextController,
-                              focusNode: _model.textVersoFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.textVersoFieldTextController',
-                                const Duration(milliseconds: 2000),
-                                () => safeSetState(() {}),
-                              ),
-                              autofocus: false,
-                              textInputAction: TextInputAction.done,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                labelText: 'Text verso: (to learn)',
-                                labelStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      fontSize: 18.0,
-                                      letterSpacing: 0.0,
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 1.0,
+                                child: TextFormField(
+                                  controller:
+                                      _model.textRectoFieldTextController,
+                                  focusNode: _model.textRectoFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.textRectoFieldTextController',
+                                    const Duration(milliseconds: 2000),
+                                    () => safeSetState(() {}),
+                                  ),
+                                  autofocus: false,
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Text recto: (known)',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText:
+                                        'Type flashcard\'s text recto here...',
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                hintText: 'Type flascard\'s text verso here...',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      letterSpacing: 0.0,
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 2.0,
+                                    errorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedErrorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        fontSize: 24.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  maxLines: 3,
+                                  minLines: 1,
+                                  validator: _model
+                                      .textRectoFieldTextControllerValidator
+                                      .asValidator(context),
                                 ),
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                              maxLines: 3,
-                              validator: _model
-                                  .textVersoFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                        FFButtonWidget(
-                          onPressed: () async {
-                            // Create Flashcard
-                            await SQLiteManager.instance.flashcardCreate(
-                              userId: valueOrDefault<String>(
-                                FFAppState().userUuid,
-                                'CreateFlashcardUserUUID',
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 1.0,
+                                child: TextFormField(
+                                  controller:
+                                      _model.textVersoFieldTextController,
+                                  focusNode: _model.textVersoFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.textVersoFieldTextController',
+                                    const Duration(milliseconds: 2000),
+                                    () => safeSetState(() {}),
+                                  ),
+                                  autofocus: false,
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Text verso: (to learn)',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText:
+                                        'Type flascard\'s text verso here...',
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    errorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedErrorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                        fontSize: 24.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  maxLines: 3,
+                                  minLines: 1,
+                                  validator: _model
+                                      .textVersoFieldTextControllerValidator
+                                      .asValidator(context),
+                                ),
                               ),
-                              textRecto:
-                                  _model.textRectoFieldTextController.text,
-                              textVerso:
-                                  _model.textVersoFieldTextController.text,
-                              name: _model.nameFieldTextController.text,
-                              audioRectoUrl: 'none',
-                              audioVersoUrl: 'none',
-                              imageRectoUrl: 'none',
-                              imageVersoUrl: 'none',
-                              currentRetrievalStep: 0,
-                              currentSpeakingStep: 0,
-                              toRecall: 0,
-                              currentRecallDate: 'none',
-                              nextRecallDate: 'none',
-                              successCount: 0,
-                              totalReviewCount: 0,
-                              mentalImageBool: 0,
-                              currentSpeakingDate: 'none',
-                              nextSpeakingDate: 'none',
-                            );
-                            // Return last Flashcard Id
-                            _model.lastFlashcardId = await SQLiteManager
-                                .instance
-                                .flashcardsSELECTLastId();
-                            // Link FlashcardsDeck
-                            await SQLiteManager.instance
-                                .decksFlashcardsCREATERow(
-                              deckId: widget.deckId,
-                              flashcardId: _model.lastFlashcardId!.first.id!,
-                            );
-                            // totalCards Deck Update
-                            await SQLiteManager.instance
-                                .decksIncrementTotalCards(
-                              deckId: widget.deckId,
-                            );
-                            // Button shines
-                            if (animationsMap[
-                                    'buttonOnActionTriggerAnimation'] !=
-                                null) {
-                              await animationsMap[
-                                      'buttonOnActionTriggerAnimation']!
-                                  .controller
-                                  .forward(from: 0.0);
-                            }
-                            // isCreatingFlashacard toggle
-                            _model.isCreatingFlashcard =
-                                !_model.isCreatingFlashcard;
-                            safeSetState(() {});
-                            // Reset fields
-                            safeSetState(() {
-                              _model.nameFieldTextController?.clear();
-                              _model.textRectoFieldTextController?.clear();
-                              _model.textVersoFieldTextController?.clear();
-                            });
-
-                            safeSetState(() {});
-                          },
-                          text: 'Validate',
-                          options: FFButtonOptions(
-                            width: MediaQuery.sizeOf(context).width * 0.5,
-                            height: MediaQuery.sizeOf(context).height * 0.1,
+                            ),
+                          ),
+                          Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                24.0, 0.0, 24.0, 0.0),
-                            iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            color: FlutterFlowTheme.of(context).success,
-                            textStyle: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  color: Colors.white,
-                                  fontSize: 48.0,
-                                  letterSpacing: 0.0,
-                                ),
-                            elevation: 3.0,
-                            borderSide: const BorderSide(
-                              color: Colors.transparent,
-                              width: 1.0,
+                                0.0, 5.0, 0.0, 10.0),
+                            child: wrapWithModel(
+                              model: _model.tagListModel,
+                              updateCallback: () => safeSetState(() {}),
+                              child: TagListWidget(
+                                tagsParameter: _model.allTagsState,
+                              ),
                             ),
-                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                        ).animateOnActionTrigger(
-                          animationsMap['buttonOnActionTriggerAnimation']!,
-                        ),
-                      ],
+                          Flexible(
+                            flex: 1,
+                            child: FFButtonWidget(
+                              onPressed: () async {
+                                // Create Flashcard
+                                await SQLiteManager.instance.flashcardCreate(
+                                  userId: valueOrDefault<String>(
+                                    FFAppState().userUuid,
+                                    'CreateFlashcardUserUUID',
+                                  ),
+                                  textRecto:
+                                      _model.textRectoFieldTextController.text,
+                                  textVerso:
+                                      _model.textVersoFieldTextController.text,
+                                  name: _model.nameFieldTextController.text,
+                                  audioRectoUrl: 'none',
+                                  audioVersoUrl: 'none',
+                                  imageRectoUrl: 'none',
+                                  imageVersoUrl: 'none',
+                                  currentRetrievalStep: 0,
+                                  currentSpeakingStep: 0,
+                                  toRecall: 0,
+                                  currentRecallDate: 'none',
+                                  nextRecallDate: 'none',
+                                  successCount: 0,
+                                  totalReviewCount: 0,
+                                  mentalImageBool: 0,
+                                  currentSpeakingDate: 'none',
+                                  nextSpeakingDate: 'none',
+                                  tagIds: valueOrDefault<String>(
+                                    functions.extractTagsIds(_model
+                                        .tagListModel.selectedTagList
+                                        .toList()),
+                                    '\'[\"no_tag\"]\'',
+                                  ),
+                                );
+                                // Return last Flashcard Id
+                                _model.lastFlashcardId = await SQLiteManager
+                                    .instance
+                                    .flashcardsSELECTLastId();
+                                // Link FlashcardsDeck
+                                await SQLiteManager.instance
+                                    .decksFlashcardsCREATERow(
+                                  deckId: widget.deckId,
+                                  flashcardId:
+                                      _model.lastFlashcardId!.first.id!,
+                                );
+                                // totalCards Deck Update
+                                await SQLiteManager.instance
+                                    .decksIncrementTotalCards(
+                                  deckId: widget.deckId,
+                                );
+                                // Button shines
+                                if (animationsMap[
+                                        'buttonOnActionTriggerAnimation'] !=
+                                    null) {
+                                  await animationsMap[
+                                          'buttonOnActionTriggerAnimation']!
+                                      .controller
+                                      .forward(from: 0.0);
+                                }
+                                // isCreatingFlashacard toggle
+                                _model.isCreatingFlashcard =
+                                    !_model.isCreatingFlashcard;
+                                safeSetState(() {});
+                                // Reset fields
+                                safeSetState(() {
+                                  _model.nameFieldTextController?.clear();
+                                  _model.textRectoFieldTextController?.clear();
+                                  _model.textVersoFieldTextController?.clear();
+                                  _model.tagListModel.newTagFieldTextController
+                                      ?.clear();
+                                });
+
+                                safeSetState(() {});
+                              },
+                              text: 'Validate',
+                              options: FFButtonOptions(
+                                width: MediaQuery.sizeOf(context).width * 0.5,
+                                height: MediaQuery.sizeOf(context).height * 0.1,
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    24.0, 0.0, 24.0, 0.0),
+                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 0.0, 0.0, 0.0),
+                                color: FlutterFlowTheme.of(context).success,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      color: Colors.white,
+                                      fontSize: 48.0,
+                                      letterSpacing: 0.0,
+                                    ),
+                                elevation: 3.0,
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ).animateOnActionTrigger(
+                              animationsMap['buttonOnActionTriggerAnimation']!,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

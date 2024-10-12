@@ -66,7 +66,7 @@ class FFAppState extends ChangeNotifier {
     secureStorage.delete(key: 'ff_timeCountToValidateRetrieval');
   }
 
-  int _timeCountToValidateConversation = 7;
+  int _timeCountToValidateConversation = 5;
   int get timeCountToValidateConversation => _timeCountToValidateConversation;
   set timeCountToValidateConversation(int value) {
     _timeCountToValidateConversation = value;

@@ -6,6 +6,7 @@ export 'conversation_struct.dart';
 export 'deck_struct.dart';
 export 'flashcard_struct.dart';
 export 'flashcard_conversation_status_struct.dart';
+export 'tag_struct.dart';
 export 'user_struct.dart';
 export 'conversation_persona_struct.dart';
 export 'conversations_flashcard_struct.dart';

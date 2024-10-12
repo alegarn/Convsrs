@@ -119,6 +119,7 @@ class _FlipCardComponentWidgetState extends State<FlipCardComponentWidget>
                 ),
                 currentSpeakingDate: 'none',
                 nextSpeakingDate: 'none',
+                tagIds: '[1]',
               );
               // Last flashcard Id
               _model.flashcardID =
