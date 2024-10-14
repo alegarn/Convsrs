@@ -15,18 +15,18 @@ import 'package:sqflite/sqflite.dart';
 
 // Define your migration scripts here
 final List<Migration> _migrations = [
-  // Migration for version 2: Creating a new table
-  Migration(2, (Database db) async {
+  // Migration for version 1: Creating a new table
+  Migration(1, (Database db) async {
     // Perform migration for version 1
     // create my new table
     await db.execute(
-        "CREATE TABLE 'tags' ('id'	INTEGER NOT NULL DEFAULT 0 UNIQUE,'name'	TEXT NOT NULL DEFAULT 'no_tag',	'categories'	TEXT NOT NULL DEFAULT '[]', PRIMARY KEY('id' AUTOINCREMENT));");
+        "CREATE TABLE 'tags' ('id' INTEGER NOT NULL DEFAULT 0 UNIQUE,'name'	TEXT NOT NULL DEFAULT 'no_tag',	'categories'	TEXT NOT NULL DEFAULT '[]', PRIMARY KEY('id' AUTOINCREMENT));");
     await db.execute(
         "INSERT INTO tags (name, categories) VALUES ('no_tag', '[\"flashcard\"]');");
     await db.execute(
-        "ALTER TABLE flashcards ADD COLUMN tagIds TEXT NOT NULL DEFAULT '[]';");
+        "ALTER TABLE flashcards ADD COLUMN tagIds TEXT NOT NULL DEFAULT '[1]';");
     await db.execute(
-        "UPDATE flashcards SET tagIds = '[1]' WHERE tags IS NULL OR tags = '';");
+        "UPDATE flashcards SET tagIds = '[1]' WHERE tagIds IS NULL OR tagIds = '';");
   })
   // Migration for version 3: Adding a new column to an existing table
   //Migration(3, (Database db) async {
@@ -38,7 +38,7 @@ final List<Migration> _migrations = [
 ];
 
 // Update this constant as your schema evolves
-const expectedVersion = 2;
+const expectedVersion = 1;
 
 Future<void> migrateSQLiteDatabase() async {
   // Obtain the database instance
