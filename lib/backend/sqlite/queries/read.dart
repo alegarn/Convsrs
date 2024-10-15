@@ -500,7 +500,8 @@ LIMIT 1;
 
 class SRSParametersGetConversationStepsIntervalsSecFromStepNumberRow
     extends SqliteRow {
-  SRSParametersGetConversationStepsIntervalsSecFromStepNumberRow(super.data);
+  SRSParametersGetConversationStepsIntervalsSecFromStepNumberRow(
+      super.data);
 
   String get conversationStepsIntervalsSec =>
       data['conversationStepsIntervalsSec'] as String;
@@ -526,7 +527,8 @@ LIMIT 1;
 
 class SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow
     extends SqliteRow {
-  SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow(super.data);
+  SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow(
+      super.data);
 
   int? get retrievalIntervalDurationSec =>
       data['retrievalIntervalDurationSec'] as int?;
@@ -597,7 +599,8 @@ AND flashcards.nextRecallDate = 'none';
 }
 
 class DeckFlashcardsCountTotalWordsToBeLearnedFromDeckIdRow extends SqliteRow {
-  DeckFlashcardsCountTotalWordsToBeLearnedFromDeckIdRow(super.data);
+  DeckFlashcardsCountTotalWordsToBeLearnedFromDeckIdRow(
+      super.data);
 
   int? get deckWordsToBeLearned => data['deckWordsToBeLearned'] as int?;
 }

@@ -24,6 +24,17 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   void updateAllTagsStateAtIndex(int index, Function(TagStruct) updateFn) =>
       allTagsState[index] = updateFn(allTagsState[index]);
 
+  List<TagStruct> selectedTagState = [];
+  void addToSelectedTagState(TagStruct item) => selectedTagState.add(item);
+  void removeFromSelectedTagState(TagStruct item) =>
+      selectedTagState.remove(item);
+  void removeAtIndexFromSelectedTagState(int index) =>
+      selectedTagState.removeAt(index);
+  void insertAtIndexInSelectedTagState(int index, TagStruct item) =>
+      selectedTagState.insert(index, item);
+  void updateSelectedTagStateAtIndex(int index, Function(TagStruct) updateFn) =>
+      selectedTagState[index] = updateFn(selectedTagState[index]);
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (Deck Read 1 from id)] action in FlashcardsScreen widget.

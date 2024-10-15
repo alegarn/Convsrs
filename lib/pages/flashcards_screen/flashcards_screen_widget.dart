@@ -329,12 +329,15 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                   child: Container(
                     width: MediaQuery.sizeOf(context).width * 1.0,
                     height: MediaQuery.sizeOf(context).height * 1.0,
+                    constraints: const BoxConstraints(
+                      maxHeight: 950.0,
+                    ),
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
                     ),
                     child: SingleChildScrollView(
                       child: Column(
-                        mainAxisSize: MainAxisSize.max,
+                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Flexible(
@@ -611,14 +614,18 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 5.0, 0.0, 10.0),
-                            child: wrapWithModel(
-                              model: _model.tagListModel,
-                              updateCallback: () => safeSetState(() {}),
-                              child: TagListWidget(
-                                tagsParameter: _model.allTagsState,
+                          Flexible(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 5.0, 0.0, 10.0),
+                              child: wrapWithModel(
+                                model: _model.tagListModel,
+                                updateCallback: () => safeSetState(() {}),
+                                child: TagListWidget(
+                                  tagsParameter: _model.allTagsState,
+                                  selectedTags: _model.selectedTagState,
+                                ),
                               ),
                             ),
                           ),
