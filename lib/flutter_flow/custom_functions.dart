@@ -666,7 +666,7 @@ List<TagStruct> formatNewTags(List<TagsGETAllRow>? allTagsList) {
   // Map the allTagsList to a new List<TagStruct>
   return allTagsList.map((tag) {
     // Convert the id from String? to int?
-    int? tagId = tag.id != null ? int.tryParse(tag.id!) : null;
+    int? tagId = tag.id != null ? tag.id : null;
 
     return TagStruct(id: tagId ?? 0, name: tag.name ?? "no_tag");
   }).toList();
