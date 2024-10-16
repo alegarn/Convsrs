@@ -21,8 +21,12 @@ Future<List<TagStruct>> getSelectedTagsFromTagIds(String? tagIds) async {
     ]; // Return default tag if no IDs provided
   }
 
+  debugPrint("tagIds = ${tagIds}");
+
   // Remove brackets and split the string into a list of IDs
   List<String> idList = tagIds.replaceAll(RegExp(r'[\[\]\s]'), '').split(',');
+
+  debugPrint("idList = ${idList}");
 
   // Prepare a SQL query to fetch tags with the given IDs
   if (idList.isEmpty) {
@@ -34,10 +38,14 @@ Future<List<TagStruct>> getSelectedTagsFromTagIds(String? tagIds) async {
   // Create a comma-separated string of IDs for the SQL query
   String idString = idList.join(',');
 
+  debugPrint("idString = ${idString}");
+
   // Execute the SQL query
   Database db = SQLiteManager.instance.database;
   final List<Map<String, dynamic>> results =
       await db.rawQuery("SELECT id, name FROM tags WHERE id IN ($idString);");
+
+  debugPrint("results = ${results}");
 
   // Map the results to a List<TagStruct>
   if (results.isNotEmpty) {

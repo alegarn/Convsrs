@@ -660,12 +660,12 @@ List<TagStruct> formatNewTags(List<TagsGETAllRow>? allTagsList) {
   // Check if the input list is null or empty
   if (allTagsList == null || allTagsList.isEmpty) {
     // Return a list with a default TagStruct
-    return [TagStruct(id: 0, name: "no_tag")];
+    return [TagStruct(id: 1, name: "no_tag")];
   }
 
   // Map the allTagsList to a new List<TagStruct>
   return allTagsList.map((tag) {
-    return TagStruct(id: tag?.id ?? 0, name: tag?.name ?? "no_tag");
+    return TagStruct(id: tag?.id ?? 1, name: tag?.name ?? "no_tag");
   }).toList();
 }
 
@@ -676,16 +676,17 @@ String? extractTagsIds(List<TagStruct>? selectedTags) {
   }
 
   // Extract the IDs and join them into a comma-separated string
-  return selectedTags
-      .map((tag) => tag.id?.toString()) // Use null-aware access
-      .where((id) => id != null) // Filter out null IDs
-      .join(','); // Join non-null IDs
+  return '[${selectedTags.map((tag) => tag?.id.toString()).where((id) => id != null).join(",")}]'; // Join non-null IDs
 }
 
 List<TagStruct> filterSelectedTagsInAllTags(
   List<TagStruct>? selectedTags,
   List<TagStruct> allTags,
 ) {
+  debugPrint("filterSelectedTagsInAllTags");
+  debugPrint("selectedTags = ${selectedTags?.map((tag) => tag.toString())}");
+  debugPrint("allTags = ${allTags.map((tag) => tag.toString())}");
+
   // If selectedTags is null or empty, return allTags filtered by the default tag
   if (selectedTags == null || selectedTags.isEmpty) {
     // Create a set with the default tag ID
@@ -696,6 +697,30 @@ List<TagStruct> filterSelectedTagsInAllTags(
   // Create a set of selected tag IDs for efficient lookup
   final selectedTagIds = selectedTags.map((tag) => tag.id).toSet();
 
+  debugPrint("selectedTagIds = ${selectedTagIds.toList().toString()}");
+  debugPrint(
+      "filtered allTags =  ${allTags.where((tag) => !selectedTagIds.contains(tag.id)).toList()}");
+
   // Filter out tags from allTags that are in selectedTagIds
   return allTags.where((tag) => !selectedTagIds.contains(tag.id)).toList();
+}
+
+String? formatSelectedTagsToIds(List<TagStruct>? selectedTags) {
+  if (selectedTags == null || selectedTags.isEmpty) {
+    // Return a list with a default TagStruct
+    return "[]";
+  }
+
+  // Create a list to hold the IDs
+  final List<int> selectedTagsList = [];
+
+  // Map through the selected tags and add their IDs to the list
+  selectedTags.forEach((tag) {
+    if (tag != null) {
+      selectedTagsList.add(tag.id);
+    }
+  });
+
+  // Convert the list of IDs to a string
+  return selectedTagsList.toString();
 }

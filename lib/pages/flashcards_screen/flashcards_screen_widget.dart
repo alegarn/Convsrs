@@ -1,4 +1,3 @@
-import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
 import '/components/ui/tag_list/tag_list_widget.dart';
@@ -208,37 +207,38 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                 ),
                               );
                             }
-                            final listViewFlashcardsReadAllFromDeckNameAndIdRowList =
+                            final flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList =
                                 snapshot.data!;
 
                             return ListView.builder(
                               padding: EdgeInsets.zero,
                               scrollDirection: Axis.vertical,
                               itemCount:
-                                  listViewFlashcardsReadAllFromDeckNameAndIdRowList
+                                  flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList
                                       .length,
-                              itemBuilder: (context, listViewIndex) {
-                                final listViewFlashcardsReadAllFromDeckNameAndIdRow =
-                                    listViewFlashcardsReadAllFromDeckNameAndIdRowList[
-                                        listViewIndex];
+                              itemBuilder: (context, flashcardListViewIndex) {
+                                final flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow =
+                                    flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList[
+                                        flashcardListViewIndex];
                                 return wrapWithModel(
-                                  model: _model.listCrudRowModels.getModel(
-                                    listViewIndex.toString(),
-                                    listViewIndex,
+                                  model: _model.flashcardListCrudRowModels
+                                      .getModel(
+                                    flashcardListViewIndex.toString(),
+                                    flashcardListViewIndex,
                                   ),
                                   updateCallback: () => safeSetState(() {}),
                                   updateOnChange: true,
                                   child: ListCrudRowWidget(
                                     key: Key(
-                                      'Keybpt_${listViewIndex.toString()}',
+                                      'Keybpt_${flashcardListViewIndex.toString()}',
                                     ),
                                     rowName: valueOrDefault<String>(
-                                      listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                      flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                           .name,
                                       'deck',
                                     ),
                                     elementdId:
-                                        listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                        flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                             .id,
                                     navigateAction: () async {
                                       // Navigate to FlashcardUpdate
@@ -247,7 +247,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                         'FlashcardUpdateScreen',
                                         queryParameters: {
                                           'flashcardId': serializeParam(
-                                            listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                            flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                                 .id,
                                             ParamType.int,
                                           ),
@@ -267,7 +267,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       await SQLiteManager.instance
                                           .flashcardDeleteWithId(
                                         flashcardId: valueOrDefault<int>(
-                                          listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                          flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                               .id,
                                           0,
                                         ),
@@ -276,7 +276,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       await SQLiteManager.instance
                                           .decksFlashcardsDELETERowByFlashcardId(
                                         flashcardId:
-                                            listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                            flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                                 .id,
                                       );
                                       // Update component
@@ -310,11 +310,6 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                   onPressed: () async {
                     // Get all tags
                     _model.allTags = await SQLiteManager.instance.tagsGETAll();
-                    // Add to state
-                    _model.allTagsState = functions
-                        .formatNewTags(_model.allTags?.toList())
-                        .toList()
-                        .cast<TagStruct>();
                     // Show modal
                     _model.isCreatingFlashcard = !_model.isCreatingFlashcard;
                     safeSetState(() {});
@@ -622,9 +617,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               child: wrapWithModel(
                                 model: _model.tagListModel,
                                 updateCallback: () => safeSetState(() {}),
-                                child: TagListWidget(
-                                  tagsParameter: _model.allTagsState,
-                                  selectedTags: _model.selectedTagState,
+                                child: const TagListWidget(
+                                  tagIds: '[1]',
                                 ),
                               ),
                             ),
@@ -660,9 +654,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   nextSpeakingDate: 'none',
                                   tagIds: valueOrDefault<String>(
                                     functions.extractTagsIds(_model
-                                        .tagListModel.selectedTagList
+                                        .tagListModel.selectedTagListState
                                         .toList()),
-                                    '\'[\"no_tag\"]\'',
+                                    '\'[1]\'',
                                   ),
                                 );
                                 // Return last Flashcard Id
@@ -690,10 +684,6 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       .controller
                                       .forward(from: 0.0);
                                 }
-                                // isCreatingFlashacard toggle
-                                _model.isCreatingFlashcard =
-                                    !_model.isCreatingFlashcard;
-                                safeSetState(() {});
                                 // Reset fields
                                 safeSetState(() {
                                   _model.nameFieldTextController?.clear();
@@ -702,6 +692,10 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   _model.tagListModel.newTagFieldTextController
                                       ?.clear();
                                 });
+                                // isCreatingFlashacard toggle
+                                _model.isCreatingFlashcard =
+                                    !_model.isCreatingFlashcard;
+                                safeSetState(() {});
 
                                 safeSetState(() {});
                               },

@@ -793,6 +793,7 @@ class FlashcardReadAllRow extends SqliteRow {
   String? get currentSpeakingDate => data['currentSpeakingDate'] as String?;
   String? get nextSpeakingDate => data['nextSpeakingDate'] as String?;
   int? get id => data['id'] as int?;
+  String? get tagIds => data['tagIds'] as String?;
 }
 
 /// END FLASHCARD READ ALL

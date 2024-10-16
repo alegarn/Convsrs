@@ -238,6 +238,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
           currentCard?.mentalImageBool,
           0,
         ),
+        tagIds: null,
       );
       // Remove ReviewedList item
       removeAtIndexFromCardReviewedList(0);
@@ -317,6 +318,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
           currentCard?.mentalImageBool,
           0,
         ),
+        tagIds: null,
       );
       // Remove ReviewedList item
       removeAtIndexFromCardReviewedList(0);

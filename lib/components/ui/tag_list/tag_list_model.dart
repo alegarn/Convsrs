@@ -7,39 +7,38 @@ import 'package:flutter/material.dart';
 class TagListModel extends FlutterFlowModel<TagListWidget> {
   ///  Local state fields for this component.
 
-  List<TagStruct> tagList = [];
-  void addToTagList(TagStruct item) => tagList.add(item);
-  void removeFromTagList(TagStruct item) => tagList.remove(item);
-  void removeAtIndexFromTagList(int index) => tagList.removeAt(index);
-  void insertAtIndexInTagList(int index, TagStruct item) =>
-      tagList.insert(index, item);
-  void updateTagListAtIndex(int index, Function(TagStruct) updateFn) =>
-      tagList[index] = updateFn(tagList[index]);
-
-  List<TagStruct> selectedTagList = [];
-  void addToSelectedTagList(TagStruct item) => selectedTagList.add(item);
-  void removeFromSelectedTagList(TagStruct item) =>
-      selectedTagList.remove(item);
-  void removeAtIndexFromSelectedTagList(int index) =>
-      selectedTagList.removeAt(index);
-  void insertAtIndexInSelectedTagList(int index, TagStruct item) =>
-      selectedTagList.insert(index, item);
-  void updateSelectedTagListAtIndex(int index, Function(TagStruct) updateFn) =>
-      selectedTagList[index] = updateFn(selectedTagList[index]);
+  List<TagStruct> selectedTagListState = [];
+  void addToSelectedTagListState(TagStruct item) =>
+      selectedTagListState.add(item);
+  void removeFromSelectedTagListState(TagStruct item) =>
+      selectedTagListState.remove(item);
+  void removeAtIndexFromSelectedTagListState(int index) =>
+      selectedTagListState.removeAt(index);
+  void insertAtIndexInSelectedTagListState(int index, TagStruct item) =>
+      selectedTagListState.insert(index, item);
+  void updateSelectedTagListStateAtIndex(
+          int index, Function(TagStruct) updateFn) =>
+      selectedTagListState[index] = updateFn(selectedTagListState[index]);
 
   String newTag = 'no_tag';
 
-  List<TagStruct> allTagsState = [];
-  void addToAllTagsState(TagStruct item) => allTagsState.add(item);
-  void removeFromAllTagsState(TagStruct item) => allTagsState.remove(item);
-  void removeAtIndexFromAllTagsState(int index) => allTagsState.removeAt(index);
-  void insertAtIndexInAllTagsState(int index, TagStruct item) =>
-      allTagsState.insert(index, item);
-  void updateAllTagsStateAtIndex(int index, Function(TagStruct) updateFn) =>
-      allTagsState[index] = updateFn(allTagsState[index]);
+  List<TagStruct> allTagsListState = [];
+  void addToAllTagsListState(TagStruct item) => allTagsListState.add(item);
+  void removeFromAllTagsListState(TagStruct item) =>
+      allTagsListState.remove(item);
+  void removeAtIndexFromAllTagsListState(int index) =>
+      allTagsListState.removeAt(index);
+  void insertAtIndexInAllTagsListState(int index, TagStruct item) =>
+      allTagsListState.insert(index, item);
+  void updateAllTagsListStateAtIndex(int index, Function(TagStruct) updateFn) =>
+      allTagsListState[index] = updateFn(allTagsListState[index]);
 
   ///  State fields for stateful widgets in this component.
 
+  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in tagList widget.
+  List<TagsGETAllRow>? allTags;
+  // Stores action output result for [Custom Action - getSelectedTagsFromTagIds] action in tagList widget.
+  List<TagStruct>? selectedTag;
   // State field(s) for NewTagField widget.
   FocusNode? newTagFieldFocusNode;
   TextEditingController? newTagFieldTextController;
