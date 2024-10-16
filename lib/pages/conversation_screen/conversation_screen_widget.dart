@@ -1074,6 +1074,10 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                             .nextSpeakingDate,
                                         'conversationUpdateDefault',
                                       ),
+                                      tagIds: valueOrDefault<String>(
+                                        _model.flashcardToUpdate?.first.tagIds,
+                                        '\"[1]\"',
+                                      ),
                                     );
                                   }
                                 }

@@ -1,4 +1,3 @@
-import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
 import '/components/ui/tag_list/tag_list_widget.dart';
@@ -7,7 +6,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
@@ -160,20 +158,11 @@ class _FlashcardUpdateScreenWidgetState
           _model.listSQLite1flashcard?.first.currentRecallDate,
           'none',
         );
-        // All tags
-        _model.allTags = await SQLiteManager.instance.tagsGETAll();
-        // Update tags (custom in selected)
-        _model.allTagsState = functions
-            .formatNewTags(_model.allTags?.toList())
-            .toList()
-            .cast<TagStruct>();
-        // Get selected Tags
-        _model.selectedTagsList = await actions.getSelectedTagsFromTagIds(
-          valueOrDefault<String>(
-            _model.listSQLite1flashcard?.first.tagIds,
-            '[1]',
-          ),
+        _model.tagIdsState = valueOrDefault<String>(
+          _model.listSQLite1flashcard?.first.tagIds,
+          '\"[0]\"',
         );
+        safeSetState(() {});
       }
 
       await Future.wait([
@@ -203,12 +192,6 @@ class _FlashcardUpdateScreenWidgetState
                 TextSelection.collapsed(
                     offset: _model.textVersoFieldTextController!.text.length);
           });
-        }),
-        Future(() async {
-          // Add selected tags
-          _model.selectedTagsState =
-              _model.tagListModel.selectedTagList.toList().cast<TagStruct>();
-          safeSetState(() {});
         }),
       ]);
     });
@@ -1129,8 +1112,10 @@ class _FlashcardUpdateScreenWidgetState
                     model: _model.tagListModel,
                     updateCallback: () => safeSetState(() {}),
                     child: TagListWidget(
-                      tagsParameter: _model.allTagsState,
-                      selectedTags: _model.selectedTagsState,
+                      tagIds: valueOrDefault<String>(
+                        _model.tagIdsState,
+                        'defaultPatameterState',
+                      ),
                     ),
                   ),
                 ),
@@ -1329,19 +1314,16 @@ class _FlashcardUpdateScreenWidgetState
                                                 ?.nextSpeakingDate,
                                             'none',
                                           ),
+                                          tagIds: valueOrDefault<String>(
+                                            functions.formatSelectedTagsToIds(
+                                                _model.tagListModel
+                                                    .selectedTagListState
+                                                    .toList()),
+                                            '\"[1]\"',
+                                          ),
                                         );
-                                        // Come back FlashcardsScreen
-
-                                        context.pushNamed(
-                                          'FlashcardsScreen',
-                                          queryParameters: {
-                                            'deckId': serializeParam(
-                                              widget.deckId,
-                                              ParamType.int,
-                                            ),
-                                          }.withoutNulls,
-                                        );
-
+                                        // Navigate back
+                                        context.safePop();
                                         if (shouldSetState) {
                                           safeSetState(() {});
                                         }

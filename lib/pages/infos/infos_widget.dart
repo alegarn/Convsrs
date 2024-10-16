@@ -500,6 +500,34 @@ class _InfosWidgetState extends State<InfosWidget> {
                                         ),
                                       ),
                                     ),
+                                    DataColumn2(
+                                      label: DefaultTextStyle.merge(
+                                        softWrap: true,
+                                        child: Text(
+                                          'MentalImageBool',
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleSmall
+                                              .override(
+                                                fontFamily: 'Readex Pro',
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                    DataColumn2(
+                                      label: DefaultTextStyle.merge(
+                                        softWrap: true,
+                                        child: Text(
+                                          'tagIds',
+                                          style: FlutterFlowTheme.of(context)
+                                              .titleSmall
+                                              .override(
+                                                fontFamily: 'Readex Pro',
+                                                letterSpacing: 0.0,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                   dataRowBuilder: (flashcardsDataItem,
                                           flashcardsDataIndex,
@@ -646,6 +674,31 @@ class _InfosWidgetState extends State<InfosWidget> {
                                               letterSpacing: 0.0,
                                             ),
                                       ),
+                                      Text(
+                                        valueOrDefault<String>(
+                                          flashcardsDataItem.mentalImageBool
+                                              .toString(),
+                                          '0',
+                                        ),
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ),
+                                      Text(
+                                        valueOrDefault<String>(
+                                          flashcardsDataItem.tagIds,
+                                          '[1]',
+                                        ),
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ),
                                     ].map((c) => DataCell(c)).toList(),
                                   ),
                                   emptyBuilder: () => const ListButtonWidget(),
@@ -653,7 +706,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                   selectable: false,
                                   hidePaginator: false,
                                   showFirstLastButtons: false,
-                                  width: 850.0,
+                                  width: 950.0,
                                   height: 500.0,
                                   minWidth: 100.0,
                                   headingRowHeight: 56.0,

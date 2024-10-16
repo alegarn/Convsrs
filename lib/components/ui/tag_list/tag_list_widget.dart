@@ -3,6 +3,7 @@ import '/backend/sqlite/sqlite_manager.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,10 @@ export 'tag_list_model.dart';
 class TagListWidget extends StatefulWidget {
   const TagListWidget({
     super.key,
-    required this.tagsParameter,
-    this.selectedTags,
-  });
+    String? tagIds,
+  }) : tagIds = tagIds ?? '\"[1]\"';
 
-  final List<TagStruct>? tagsParameter;
-  final List<TagStruct>? selectedTags;
+  final String tagIds;
 
   @override
   State<TagListWidget> createState() => _TagListWidgetState();
@@ -44,28 +43,27 @@ class _TagListWidgetState extends State<TagListWidget>
 
     // On component load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      // Get tags
-      _model.allTagsState = widget.tagsParameter!.toList().cast<TagStruct>();
-      if (widget.selectedTags != null && (widget.selectedTags)!.isNotEmpty) {
-        // Update selectedTags
-        _model.selectedTagList =
-            widget.selectedTags!.toList().cast<TagStruct>();
-        // Filter allTags
-        _model.allTagsState = functions
-            .filterSelectedTagsInAllTags(
-                widget.selectedTags?.toList(), widget.tagsParameter!.toList())
-            .toList()
-            .cast<TagStruct>();
-        safeSetState(() {});
-      } else {
-        // Same filter
-        _model.selectedTagList = functions
-            .filterSelectedTagsInAllTags(
-                widget.selectedTags?.toList(), widget.tagsParameter!.toList())
-            .toList()
-            .cast<TagStruct>();
-        safeSetState(() {});
-      }
+      // Get all tags
+      _model.allTags = await SQLiteManager.instance.tagsGETAll();
+      // Get selected tags from Ids
+      _model.selectedTag = await actions.getSelectedTagsFromTagIds(
+        widget.tagIds,
+      );
+      // Update all states
+      _model.allTagsListState = functions
+          .formatNewTags(_model.allTags?.toList())
+          .toList()
+          .cast<TagStruct>();
+      _model.selectedTagListState =
+          _model.selectedTag!.toList().cast<TagStruct>();
+      safeSetState(() {});
+      // Filter allTags
+      _model.allTagsListState = functions
+          .filterSelectedTagsInAllTags(
+              _model.selectedTag?.toList(), _model.allTagsListState.toList())
+          .toList()
+          .cast<TagStruct>();
+      safeSetState(() {});
     });
 
     _model.newTagFieldTextController ??= TextEditingController();
@@ -145,7 +143,7 @@ class _TagListWidgetState extends State<TagListWidget>
                           _model.allTagsNew =
                               await SQLiteManager.instance.tagsGETAll();
                           // Format the tags
-                          _model.allTagsState = functions
+                          _model.allTagsListState = functions
                               .formatNewTags(_model.allTagsNew?.toList())
                               .toList()
                               .cast<TagStruct>();
@@ -257,29 +255,34 @@ class _TagListWidgetState extends State<TagListWidget>
                           ),
                           child: Builder(
                             builder: (context) {
-                              final selectedTags =
-                                  _model.selectedTagList.toList();
+                              final selectedTagsItemsRow =
+                                  _model.selectedTagListState.toList();
 
                               return SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
-                                  children: List.generate(selectedTags.length,
-                                      (selectedTagsIndex) {
-                                    final selectedTagsItem =
-                                        selectedTags[selectedTagsIndex];
+                                  children:
+                                      List.generate(selectedTagsItemsRow.length,
+                                          (selectedTagsItemsRowIndex) {
+                                    final selectedTagsItemsRowItem =
+                                        selectedTagsItemsRow[
+                                            selectedTagsItemsRowIndex];
                                     return InkWell(
                                       splashColor: Colors.transparent,
                                       focusColor: Colors.transparent,
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        // Add to allTags
-                                        _model.addToAllTagsState(
-                                            selectedTagsItem);
+                                        if (!_model.allTagsListState.contains(
+                                            selectedTagsItemsRowItem)) {
+                                          // Add to allTags
+                                          _model.addToAllTagsListState(
+                                              selectedTagsItemsRowItem);
+                                        }
                                         // Remove from selectedTags
-                                        _model.removeFromSelectedTagList(
-                                            selectedTagsItem);
+                                        _model.removeFromSelectedTagListState(
+                                            selectedTagsItemsRowItem);
                                         safeSetState(() {});
                                       },
                                       child: Container(
@@ -303,7 +306,7 @@ class _TagListWidgetState extends State<TagListWidget>
                                                     8.0, 0.0, 8.0, 0.0),
                                             child: Text(
                                               valueOrDefault<String>(
-                                                selectedTagsItem.name,
+                                                selectedTagsItemsRowItem.name,
                                                 'no_tag',
                                               ),
                                               style:
@@ -368,8 +371,8 @@ class _TagListWidgetState extends State<TagListWidget>
                             padding: const EdgeInsets.all(3.0),
                             child: Builder(
                               builder: (context) {
-                                final tagsItemList =
-                                    _model.allTagsState.toList();
+                                final allTagsItemList =
+                                    _model.allTagsListState.toList();
 
                                 return Wrap(
                                   spacing: 0.0,
@@ -380,10 +383,11 @@ class _TagListWidgetState extends State<TagListWidget>
                                   runAlignment: WrapAlignment.start,
                                   verticalDirection: VerticalDirection.down,
                                   clipBehavior: Clip.none,
-                                  children: List.generate(tagsItemList.length,
-                                      (tagsItemListIndex) {
-                                    final tagsItemListItem =
-                                        tagsItemList[tagsItemListIndex];
+                                  children:
+                                      List.generate(allTagsItemList.length,
+                                          (allTagsItemListIndex) {
+                                    final allTagsItemListItem =
+                                        allTagsItemList[allTagsItemListIndex];
                                     return Padding(
                                       padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 3.0),
@@ -393,12 +397,15 @@ class _TagListWidgetState extends State<TagListWidget>
                                         hoverColor: Colors.transparent,
                                         highlightColor: Colors.transparent,
                                         onTap: () async {
-                                          // Put in selectedTags
-                                          _model.addToSelectedTagList(
-                                              tagsItemListItem);
+                                          if (!_model.selectedTagListState
+                                              .contains(allTagsItemListItem)) {
+                                            // Put in selectedTags
+                                            _model.addToSelectedTagListState(
+                                                allTagsItemListItem);
+                                          }
                                           // Remove from allTags
-                                          _model.removeFromAllTagsState(
-                                              tagsItemListItem);
+                                          _model.removeFromAllTagsListState(
+                                              allTagsItemListItem);
                                           safeSetState(() {});
                                         },
                                         child: Container(
@@ -422,7 +429,7 @@ class _TagListWidgetState extends State<TagListWidget>
                                                   .fromSTEB(8.0, 0.0, 8.0, 0.0),
                                               child: Text(
                                                 valueOrDefault<String>(
-                                                  tagsItemListItem.name,
+                                                  allTagsItemListItem.name,
                                                   'no_tag',
                                                 ),
                                                 style:

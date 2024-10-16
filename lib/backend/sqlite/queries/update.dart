@@ -313,7 +313,7 @@ VALUES (
    $successCount, 
    $totalReviewCount, 
    $mentalImageBool,
-  COALESCE( '$tagIds' , '["no_tag"]')
+  COALESCE( '$tagIds' , '[1]')
 );
 ''';
   return database.rawQuery(query);
@@ -342,6 +342,7 @@ Future performFlashcardUpdate(
   int? mentalImageBool,
   String? currentSpeakingDate,
   String? nextSpeakingDate,
+  String? tagIds,
 }) {
   final query = '''
 UPDATE flashcards 
@@ -362,7 +363,8 @@ SET
  totalReviewCount = COALESCE($totalReviewCount, totalReviewCount), 
  mentalImageBool = COALESCE($mentalImageBool, mentalImageBool),
  currentSpeakingDate = COALESCE('$currentSpeakingDate', currentSpeakingDate), 
- nextSpeakingDate = COALESCE('$nextSpeakingDate', nextSpeakingDate)
+ nextSpeakingDate = COALESCE('$nextSpeakingDate', nextSpeakingDate),
+ tagIds = COALESCE('$tagIds',tagIds)
  WHERE id = $flashcardId;
 ''';
   return database.rawQuery(query);

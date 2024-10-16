@@ -602,6 +602,7 @@ class SQLiteManager {
     int? mentalImageBool,
     String? currentSpeakingDate,
     String? nextSpeakingDate,
+    String? tagIds,
   }) =>
       performFlashcardUpdate(
         _database,
@@ -623,6 +624,7 @@ class SQLiteManager {
         mentalImageBool: mentalImageBool,
         currentSpeakingDate: currentSpeakingDate,
         nextSpeakingDate: nextSpeakingDate,
+        tagIds: tagIds,
       );
 
   Future flashcardDeleteWithId({
