@@ -1,7 +1,10 @@
+import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
 import '/components/ui/tag_list/tag_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'flashcard_update_screen_widget.dart' show FlashcardUpdateScreenWidget;
 import 'package:flutter/material.dart';
 
@@ -39,6 +42,26 @@ class FlashcardUpdateScreenModel
 
   String? tagIdsState = 'tagIdsState';
 
+  List<TagStruct> selectedTags = [];
+  void addToSelectedTags(TagStruct item) => selectedTags.add(item);
+  void removeFromSelectedTags(TagStruct item) => selectedTags.remove(item);
+  void removeAtIndexFromSelectedTags(int index) => selectedTags.removeAt(index);
+  void insertAtIndexInSelectedTags(int index, TagStruct item) =>
+      selectedTags.insert(index, item);
+  void updateSelectedTagsAtIndex(int index, Function(TagStruct) updateFn) =>
+      selectedTags[index] = updateFn(selectedTags[index]);
+
+  List<TagStruct> allTags = [];
+  void addToAllTags(TagStruct item) => allTags.add(item);
+  void removeFromAllTags(TagStruct item) => allTags.remove(item);
+  void removeAtIndexFromAllTags(int index) => allTags.removeAt(index);
+  void insertAtIndexInAllTags(int index, TagStruct item) =>
+      allTags.insert(index, item);
+  void updateAllTagsAtIndex(int index, Function(TagStruct) updateFn) =>
+      allTags[index] = updateFn(allTags[index]);
+
+  String? newTag = 'newTag';
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in FlashcardUpdateScreen widget.
@@ -65,6 +88,8 @@ class FlashcardUpdateScreenModel
   late InsertAudioFlashcardModel insertAudioFlashcardModel2;
   // Model for tagList component.
   late TagListModel tagListModel;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in tagList widget.
+  List<TagsGETAllRow>? allTagsNew;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in finishCard widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
 
@@ -91,5 +116,44 @@ class FlashcardUpdateScreenModel
 
     insertAudioFlashcardModel2.dispose();
     tagListModel.dispose();
+  }
+
+  /// Action blocks.
+  Future manageGetTags(
+    BuildContext context, {
+    String? tagIds,
+  }) async {
+    List<TagsGETAllRow>? allTagsParameter;
+    List<TagStruct>? selectedTagsParameter;
+
+    // Get all tags
+    allTagsParameter = await SQLiteManager.instance.tagsGETAll();
+    // Get selected tags from Ids
+    selectedTagsParameter = await actions.getSelectedTagsFromTagIds(
+      valueOrDefault<String>(
+        tagIds,
+        '[1]',
+      ),
+    );
+    // Update selectedTags states
+    selectedTags = selectedTagsParameter.toList().cast<TagStruct>();
+    // Filter allTags
+    allTags = functions
+        .filterSelectedTagsInAllTags(selectedTags.toList(),
+            functions.formatNewTags(allTagsParameter.toList()).toList())
+        .toList()
+        .cast<TagStruct>();
+  }
+
+  Future transfertItemToAllTags(
+    BuildContext context, {
+    TagStruct? tagItem,
+  }) async {
+    if (!allTags.contains(tagItem)) {
+      // Add to allTags
+      addToAllTags(tagItem!);
+    }
+    // Remove from selectedTags
+    removeFromSelectedTags(tagItem!);
   }
 }

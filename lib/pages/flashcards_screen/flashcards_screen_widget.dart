@@ -1,3 +1,4 @@
+import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
 import '/components/ui/tag_list/tag_list_widget.dart';
@@ -45,9 +46,30 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Get deck from Id
       _model.deckInfos = await SQLiteManager.instance.deckRead1FromId(
         id: widget.deckId,
       );
+      // Get all Tags
+      _model.allTagsForState = await SQLiteManager.instance.tagsGETAll();
+      // allTags update
+      _model.allTagsPageState = functions
+          .filterSelectedTagsInAllTags(_model.selectedTagsPageState.toList(),
+              functions.formatNewTags(_model.allTags?.toList()).toList())
+          .toList()
+          .cast<TagStruct>();
+      // Add no_tag to selectedTags
+      _model.selectedTagsPageState = _model.allTagsPageState
+          .where((e) =>
+              valueOrDefault<int>(
+                e.id,
+                1,
+              ) ==
+              1)
+          .toList()
+          .toList()
+          .cast<TagStruct>();
+      safeSetState(() {});
     });
 
     _model.nameFieldTextController ??= TextEditingController();
@@ -617,8 +639,64 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               child: wrapWithModel(
                                 model: _model.tagListModel,
                                 updateCallback: () => safeSetState(() {}),
-                                child: const TagListWidget(
+                                child: TagListWidget(
                                   tagIds: '[1]',
+                                  selectedTags: _model.selectedTagsPageState,
+                                  allTags: _model.allTagsPageState,
+                                  moveTagFromSelectedTags:
+                                      (selectedTagItem) async {
+                                    if (!_model.allTagsPageState
+                                        .contains(selectedTagItem)) {
+                                      // Add to allTags
+                                      _model.addToAllTagsPageState(
+                                          selectedTagItem);
+                                    }
+                                    // Remove from selectedTags
+                                    _model.removeFromSelectedTagsPageState(
+                                        selectedTagItem);
+                                    safeSetState(() {});
+                                  },
+                                  moveTagFromAllTags: (allTagItem) async {
+                                    if (!_model.selectedTagsPageState
+                                        .contains(allTagItem)) {
+                                      // Put in selectedTags
+                                      _model.addToSelectedTagsPageState(
+                                          allTagItem);
+                                    }
+                                    // Remove from allTags
+                                    _model
+                                        .removeFromAllTagsPageState(allTagItem);
+                                    safeSetState(() {});
+                                  },
+                                  newTagCallback: (tagName) async {
+                                    // Create new tag (need to verify existance)
+                                    await SQLiteManager.instance.tagsINSERTNew(
+                                      name: valueOrDefault<String>(
+                                        tagName,
+                                        'tagName',
+                                      ),
+                                      categoriesList: '[\"flashcard\"]',
+                                    );
+                                    // Get new tag for the list
+                                    _model.allTagsNew = await SQLiteManager
+                                        .instance
+                                        .tagsGETAll();
+                                    // Format the tags
+                                    _model.allTagsPageState = functions
+                                        .formatNewTags(
+                                            _model.allTagsNew?.toList())
+                                        .toList()
+                                        .cast<TagStruct>();
+                                    safeSetState(() {});
+                                    // Reset field
+                                    safeSetState(() {
+                                      _model.tagListModel
+                                          .newTagFieldTextController
+                                          ?.clear();
+                                    });
+
+                                    safeSetState(() {});
+                                  },
                                 ),
                               ),
                             ),
@@ -653,10 +731,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   currentSpeakingDate: 'none',
                                   nextSpeakingDate: 'none',
                                   tagIds: valueOrDefault<String>(
-                                    functions.extractTagsIds(_model
-                                        .tagListModel.selectedTagListState
-                                        .toList()),
-                                    '\'[1]\'',
+                                    functions.formatSelectedTagsToIds(
+                                        _model.selectedTagsPageState.toList()),
+                                    '\"[1]\"',
                                   ),
                                 );
                                 // Return last Flashcard Id
@@ -684,6 +761,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       .controller
                                       .forward(from: 0.0);
                                 }
+                                // Reset tags states
+                                _model.selectedTagsPageState = [];
+                                _model.allTagsPageState = [];
                                 // Reset fields
                                 safeSetState(() {
                                   _model.nameFieldTextController?.clear();

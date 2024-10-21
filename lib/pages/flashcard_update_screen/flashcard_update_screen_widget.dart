@@ -1,3 +1,4 @@
+import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
 import '/components/ui/tag_list/tag_list_widget.dart';
@@ -160,7 +161,15 @@ class _FlashcardUpdateScreenWidgetState
         );
         _model.tagIdsState = valueOrDefault<String>(
           _model.listSQLite1flashcard?.first.tagIds,
-          '\"[0]\"',
+          'ListFlashcard',
+        );
+        safeSetState(() {});
+        await _model.manageGetTags(
+          context,
+          tagIds: valueOrDefault<String>(
+            _model.listSQLite1flashcard?.first.tagIds,
+            '[1]',
+          ),
         );
         safeSetState(() {});
       }
@@ -1114,8 +1123,56 @@ class _FlashcardUpdateScreenWidgetState
                     child: TagListWidget(
                       tagIds: valueOrDefault<String>(
                         _model.tagIdsState,
-                        'defaultPatameterState',
+                        'defaultParameterState',
                       ),
+                      allTags: _model.allTags,
+                      selectedTags: _model.selectedTags,
+                      moveTagFromSelectedTags: (selectedTagItem) async {
+                        if (!_model.allTags.contains(selectedTagItem)) {
+                          // Add to allTags
+                          _model.addToAllTags(selectedTagItem);
+                        }
+                        // Remove from selectedTags
+                        _model.removeFromSelectedTags(selectedTagItem);
+                        safeSetState(() {});
+                      },
+                      moveTagFromAllTags: (allTagItem) async {
+                        if (!_model.selectedTags.contains(allTagItem)) {
+                          // Put in selectedTags
+                          _model.addToSelectedTags(allTagItem);
+                        }
+                        // Remove from allTags
+                        _model.removeFromAllTags(allTagItem);
+                        safeSetState(() {});
+                      },
+                      newTagCallback: (tagName) async {
+                        // Create new tag (need to verify existance)
+                        await SQLiteManager.instance.tagsINSERTNew(
+                          name: tagName,
+                          categoriesList: '[\"flashcard\"]',
+                        );
+                        // Update New Tag state
+                        _model.newTag = valueOrDefault<String>(
+                          tagName,
+                          'tagName',
+                        );
+                        // Get new tag for the list
+                        _model.allTagsNew =
+                            await SQLiteManager.instance.tagsGETAll();
+                        // Format the tags
+                        _model.allTags = functions
+                            .formatNewTags(_model.allTagsNew?.toList())
+                            .toList()
+                            .cast<TagStruct>();
+                        safeSetState(() {});
+                        // Reset field
+                        safeSetState(() {
+                          _model.tagListModel.newTagFieldTextController
+                              ?.clear();
+                        });
+
+                        safeSetState(() {});
+                      },
                     ),
                   ),
                 ),
@@ -1316,9 +1373,7 @@ class _FlashcardUpdateScreenWidgetState
                                           ),
                                           tagIds: valueOrDefault<String>(
                                             functions.formatSelectedTagsToIds(
-                                                _model.tagListModel
-                                                    .selectedTagListState
-                                                    .toList()),
+                                                _model.selectedTags.toList()),
                                             '\"[1]\"',
                                           ),
                                         );
