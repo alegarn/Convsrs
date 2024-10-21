@@ -724,3 +724,8 @@ String? formatSelectedTagsToIds(List<TagStruct>? selectedTags) {
   // Convert the list of IDs to a string
   return selectedTagsList.toString();
 }
+
+bool? detectTagIds(String tagIds) {
+  RegExp regex = RegExp(r'^\[\d+(,\d+)*\]$');
+  return regex.hasMatch(tagIds);
+}
