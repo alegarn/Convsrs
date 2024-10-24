@@ -1,7 +1,6 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
-import '/components/ui/tag_list/tag_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
@@ -86,9 +85,11 @@ class FlashcardUpdateScreenModel
       textVersoFieldTextControllerValidator;
   // Model for InsertAudioFlashcard component.
   late InsertAudioFlashcardModel insertAudioFlashcardModel2;
-  // Model for tagList component.
-  late TagListModel tagListModel;
-  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in tagList widget.
+  // State field(s) for NewTagField widget.
+  FocusNode? newTagFieldFocusNode;
+  TextEditingController? newTagFieldTextController;
+  String? Function(BuildContext, String?)? newTagFieldTextControllerValidator;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in NewTagField widget.
   List<TagsGETAllRow>? allTagsNew;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in finishCard widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
@@ -99,7 +100,6 @@ class FlashcardUpdateScreenModel
         createModel(context, () => InsertAudioFlashcardModel());
     insertAudioFlashcardModel2 =
         createModel(context, () => InsertAudioFlashcardModel());
-    tagListModel = createModel(context, () => TagListModel());
   }
 
   @override
@@ -115,7 +115,8 @@ class FlashcardUpdateScreenModel
     textVersoFieldTextController?.dispose();
 
     insertAudioFlashcardModel2.dispose();
-    tagListModel.dispose();
+    newTagFieldFocusNode?.dispose();
+    newTagFieldTextController?.dispose();
   }
 
   /// Action blocks.

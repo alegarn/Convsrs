@@ -1,8 +1,8 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
-import '/components/ui/tag_list/tag_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'flashcards_screen_widget.dart' show FlashcardsScreenWidget;
 import 'package:flutter/material.dart';
 
@@ -43,12 +43,8 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
 
   // Stores action output result for [Backend Call - SQLite (Deck Read 1 from id)] action in FlashcardsScreen widget.
   List<DeckRead1FromIdRow>? deckInfos;
-  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in FlashcardsScreen widget.
-  List<TagsGETAllRow>? allTagsForState;
   // Models for FlashcardListCrudRow.
   late FlutterFlowDynamicModels<ListCrudRowModel> flashcardListCrudRowModels;
-  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in AddFlashcardButton widget.
-  List<TagsGETAllRow>? allTags;
   // State field(s) for NameField widget.
   FocusNode? nameFieldFocusNode;
   TextEditingController? nameFieldTextController;
@@ -63,9 +59,11 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   TextEditingController? textVersoFieldTextController;
   String? Function(BuildContext, String?)?
       textVersoFieldTextControllerValidator;
-  // Model for tagList component.
-  late TagListModel tagListModel;
-  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in tagList widget.
+  // State field(s) for NewTagField widget.
+  FocusNode? newTagFieldFocusNode;
+  TextEditingController? newTagFieldTextController;
+  String? Function(BuildContext, String?)? newTagFieldTextControllerValidator;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in NewTagField widget.
   List<TagsGETAllRow>? allTagsNew;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in CreateFlashcardButton widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
@@ -74,7 +72,6 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   void initState(BuildContext context) {
     flashcardListCrudRowModels =
         FlutterFlowDynamicModels(() => ListCrudRowModel());
-    tagListModel = createModel(context, () => TagListModel());
   }
 
   @override
@@ -89,9 +86,31 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
     textVersoFieldFocusNode?.dispose();
     textVersoFieldTextController?.dispose();
 
-    tagListModel.dispose();
+    newTagFieldFocusNode?.dispose();
+    newTagFieldTextController?.dispose();
   }
 
   /// Action blocks.
   Future flashcardCreation(BuildContext context) async {}
+
+  Future getTagsInState(BuildContext context) async {
+    List<TagsGETAllRow>? allTagsForState;
+
+    // Get all Tags
+    allTagsForState = await SQLiteManager.instance.tagsGETAll();
+    // Get allTags in state
+    allTagsPageState = functions
+        .formatNewTags(allTagsForState.toList())
+        .toList()
+        .cast<TagStruct>();
+    // Add no_tag to selectedTags (test notà
+    selectedTagsPageState =
+        functions.newSelectedTag().toList().cast<TagStruct>();
+    // allTags update
+    allTagsPageState = functions
+        .filterSelectedTagsInAllTags(selectedTagsPageState.toList(),
+            functions.formatNewTags(allTagsForState.toList()).toList())
+        .toList()
+        .cast<TagStruct>();
+  }
 }

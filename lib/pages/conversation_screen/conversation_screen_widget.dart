@@ -391,8 +391,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                         .toString(),
                                                                     '0',
                                                                   ).maybeHandleOverflow(
-                                                                      maxChars:
-                                                                          2),
+                                                                    maxChars: 2,
+                                                                  ),
                                                                   textAlign:
                                                                       TextAlign
                                                                           .center,
