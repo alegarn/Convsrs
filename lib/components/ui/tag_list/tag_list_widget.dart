@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'tag_list_model.dart';
 export 'tag_list_model.dart';
@@ -17,16 +18,16 @@ class TagListWidget extends StatefulWidget {
     required this.moveTagFromSelectedTags,
     required this.moveTagFromAllTags,
     required this.newTagCallback,
-    this.selectedTags,
-    required this.allTags,
+    this.selectedTagsTagComponent,
+    required this.allTagsTagComponent,
   }) : tagIds = tagIds ?? '\"[1]\"';
 
   final String tagIds;
   final Future Function(TagStruct selectedTagItem)? moveTagFromSelectedTags;
   final Future Function(TagStruct allTagItem)? moveTagFromAllTags;
   final Future Function(String tagName)? newTagCallback;
-  final List<TagStruct>? selectedTags;
-  final List<TagStruct>? allTags;
+  final List<TagStruct>? selectedTagsTagComponent;
+  final List<TagStruct>? allTagsTagComponent;
 
   @override
   State<TagListWidget> createState() => _TagListWidgetState();
@@ -48,6 +49,15 @@ class _TagListWidgetState extends State<TagListWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => TagListModel());
+
+    // On component load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.selectedTagsComponentState =
+          widget.selectedTagsTagComponent!.toList().cast<TagStruct>();
+      _model.allTagsComponentState =
+          widget.allTagsTagComponent!.toList().cast<TagStruct>();
+      safeSetState(() {});
+    });
 
     _model.newTagFieldTextController ??= TextEditingController();
     _model.newTagFieldFocusNode ??= FocusNode();
@@ -251,7 +261,7 @@ class _TagListWidgetState extends State<TagListWidget>
                             child: Builder(
                               builder: (context) {
                                 final selectedTagsItemsRow =
-                                    widget.selectedTags?.toList() ?? [];
+                                    _model.selectedTagsComponentState.toList();
 
                                 return SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
@@ -366,7 +376,7 @@ class _TagListWidgetState extends State<TagListWidget>
                               child: Builder(
                                 builder: (context) {
                                   final allTagsItemList =
-                                      widget.allTags!.toList();
+                                      _model.allTagsComponentState.toList();
 
                                   return Wrap(
                                     spacing: 0.0,
