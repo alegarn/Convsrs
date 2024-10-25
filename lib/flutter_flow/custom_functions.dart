@@ -680,22 +680,23 @@ String? extractTagsIds(List<TagStruct>? selectedTags) {
 }
 
 List<TagStruct> filterSelectedTagsInAllTags(
-  List<TagStruct>? selectedTags,
+  List<TagStruct>? selectedTagListArg,
   List<TagStruct> allTags,
 ) {
   debugPrint("filterSelectedTagsInAllTags");
-  debugPrint("selectedTags = ${selectedTags?.map((tag) => tag.toString())}");
+  debugPrint(
+      "selectedTagListArg = ${selectedTagListArg?.map((tag) => tag.toString())}");
   debugPrint("allTags = ${allTags.map((tag) => tag.toString())}");
 
-  // If selectedTags is null or empty, return allTags filtered by the default tag
-  if (selectedTags == null || selectedTags.isEmpty) {
+  // If selectedTagListArg is null or empty, return allTags filtered by the default tag
+  if (selectedTagListArg == null || selectedTagListArg.isEmpty) {
     // Create a set with the default tag ID
     final defaultTagId = 1; // Assuming we want to filter out tags with id 1
     return allTags.where((tag) => tag.id != defaultTagId).toList();
   }
 
   // Create a set of selected tag IDs for efficient lookup
-  final selectedTagIds = selectedTags.map((tag) => tag.id).toSet();
+  final selectedTagIds = selectedTagListArg.map((tag) => tag.id).toSet();
 
   debugPrint("selectedTagIds = ${selectedTagIds.toList().toString()}");
   debugPrint(
@@ -705,8 +706,8 @@ List<TagStruct> filterSelectedTagsInAllTags(
   return allTags.where((tag) => !selectedTagIds.contains(tag.id)).toList();
 }
 
-String? formatSelectedTagsToIds(List<TagStruct>? selectedTags) {
-  if (selectedTags == null || selectedTags.isEmpty) {
+String? formatSelectedTagsToIds(List<TagStruct>? selectedTagsArgument) {
+  if (selectedTagsArgument == null || selectedTagsArgument.isEmpty) {
     // Return a list with a default TagStruct
     return "[]";
   }
@@ -715,7 +716,7 @@ String? formatSelectedTagsToIds(List<TagStruct>? selectedTags) {
   final List<int> selectedTagsList = [];
 
   // Map through the selected tags and add their IDs to the list
-  selectedTags.forEach((tag) {
+  selectedTagsArgument.forEach((tag) {
     if (tag != null) {
       selectedTagsList.add(tag.id);
     }
@@ -723,4 +724,13 @@ String? formatSelectedTagsToIds(List<TagStruct>? selectedTags) {
 
   // Convert the list of IDs to a string
   return selectedTagsList.toString();
+}
+
+bool? detectTagIds(String tagIds) {
+  RegExp regex = RegExp(r'^\[(\d+)(,\d+)*\]$');
+  return regex.hasMatch(tagIds);
+}
+
+List<TagStruct> newSelectedTag() {
+  return [TagStruct(id: 1, name: "no_tag")];
 }

@@ -1,12 +1,14 @@
+import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
+import '/components/ui/list_button/list_button_widget.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
-import '/components/ui/tag_list/tag_list_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -45,6 +47,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Get deck from Id
       _model.deckInfos = await SQLiteManager.instance.deckRead1FromId(
         id: widget.deckId,
       );
@@ -58,6 +61,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
 
     _model.textVersoFieldTextController ??= TextEditingController();
     _model.textVersoFieldFocusNode ??= FocusNode();
+
+    _model.newTagFieldTextController ??= TextEditingController();
+    _model.newTagFieldFocusNode ??= FocusNode();
 
     animationsMap.addAll({
       'buttonOnActionTriggerAnimation': AnimationInfo(
@@ -308,12 +314,10 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                     size: 48.0,
                   ),
                   onPressed: () async {
-                    // Get all tags
-                    _model.allTags = await SQLiteManager.instance.tagsGETAll();
+                    await _model.getTagsInState(context);
+                    safeSetState(() {});
                     // Show modal
                     _model.isCreatingFlashcard = !_model.isCreatingFlashcard;
-                    safeSetState(() {});
-
                     safeSetState(() {});
                   },
                 ),
@@ -609,17 +613,535 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               ),
                             ),
                           ),
-                          Flexible(
-                            flex: 4,
-                            child: Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 5.0, 0.0, 10.0),
-                              child: wrapWithModel(
-                                model: _model.tagListModel,
-                                updateCallback: () => safeSetState(() {}),
-                                child: const TagListWidget(
-                                  tagIds: '[1]',
-                                ),
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                0.0, 3.0, 0.0, 3.0),
+                            child: Container(
+                              width: MediaQuery.sizeOf(context).width * 1.0,
+                              constraints: const BoxConstraints(
+                                minHeight: 200.0,
+                                maxHeight: 350.0,
+                              ),
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Flexible(
+                                    flex: 2,
+                                    child: Align(
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            5.0, 0.0, 5.0, 0.0),
+                                        child: Container(
+                                          width:
+                                              MediaQuery.sizeOf(context).width *
+                                                  1.0,
+                                          height: double.infinity,
+                                          constraints: BoxConstraints(
+                                            minHeight: 50.0,
+                                            maxHeight:
+                                                MediaQuery.sizeOf(context)
+                                                        .height *
+                                                    0.3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                          ),
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
+                                          child: SizedBox(
+                                            width: MediaQuery.sizeOf(context)
+                                                    .width *
+                                                1.0,
+                                            child: TextFormField(
+                                              controller: _model
+                                                  .newTagFieldTextController,
+                                              focusNode:
+                                                  _model.newTagFieldFocusNode,
+                                              onFieldSubmitted: (_) async {
+                                                // Create new tag (need to verify existance)
+                                                await SQLiteManager.instance
+                                                    .tagsINSERTNew(
+                                                  name: valueOrDefault<String>(
+                                                    _model
+                                                        .newTagFieldTextController
+                                                        .text,
+                                                    'newTagDefault',
+                                                  ),
+                                                  categoriesList:
+                                                      '[\"flashcard\"]',
+                                                );
+                                                // Get new tag for the list
+                                                _model.allTagsNew =
+                                                    await SQLiteManager.instance
+                                                        .tagsGETAll();
+                                                // Format all the new tags + reset new tag field
+                                                _model.allTagsPageState =
+                                                    functions
+                                                        .formatNewTags(_model
+                                                            .allTagsNew
+                                                            ?.toList())
+                                                        .toList()
+                                                        .cast<TagStruct>();
+                                                safeSetState(() {});
+                                                // Reset newTag field
+                                                safeSetState(() {
+                                                  _model
+                                                      .newTagFieldTextController
+                                                      ?.clear();
+                                                });
+
+                                                safeSetState(() {});
+                                              },
+                                              autofocus: false,
+                                              obscureText: false,
+                                              decoration: InputDecoration(
+                                                isDense: true,
+                                                labelText: 'New tag',
+                                                labelStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .override(
+                                                          fontFamily:
+                                                              'Readex Pro',
+                                                          fontSize: 14.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                                alignLabelWithHint: false,
+                                                hintText: 'Enter your new Tag',
+                                                hintStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .override(
+                                                          fontFamily:
+                                                              'Readex Pro',
+                                                          fontSize: 18.0,
+                                                          letterSpacing: 0.0,
+                                                          lineHeight: 2.0,
+                                                        ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0x00000000),
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0x00000000),
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                errorBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .error,
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .error,
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                filled: true,
+                                                fillColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                              ),
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        fontSize: 18.0,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                              cursorColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              validator: _model
+                                                  .newTagFieldTextControllerValidator
+                                                  .asValidator(context),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          5.0, 0.0, 5.0, 0.0),
+                                      child: Container(
+                                        decoration: const BoxDecoration(),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              flex: 1,
+                                              child: AutoSizeText(
+                                                'Selected Tags',
+                                                style: FlutterFlowTheme.of(
+                                                        context)
+                                                    .titleMedium
+                                                    .override(
+                                                      fontFamily: 'Readex Pro',
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primaryText,
+                                                      letterSpacing: 0.0,
+                                                    ),
+                                              ),
+                                            ),
+                                            Flexible(
+                                              flex: 1,
+                                              child: Container(
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                            .width *
+                                                        1.0,
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.9,
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryBackground,
+                                                ),
+                                                child: Builder(
+                                                  builder: (context) {
+                                                    final selectedTagsItemsRow =
+                                                        _model
+                                                            .selectedTagsPageState
+                                                            .toList();
+                                                    if (selectedTagsItemsRow
+                                                        .isEmpty) {
+                                                      return const ListButtonWidget();
+                                                    }
+
+                                                    return SingleChildScrollView(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: List.generate(
+                                                            selectedTagsItemsRow
+                                                                .length,
+                                                            (selectedTagsItemsRowIndex) {
+                                                          final selectedTagsItemsRowItem =
+                                                              selectedTagsItemsRow[
+                                                                  selectedTagsItemsRowIndex];
+                                                          return InkWell(
+                                                            splashColor: Colors
+                                                                .transparent,
+                                                            focusColor: Colors
+                                                                .transparent,
+                                                            hoverColor: Colors
+                                                                .transparent,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onTap: () async {
+                                                              if (!_model
+                                                                  .allTagsPageState
+                                                                  .contains(
+                                                                      selectedTagsItemsRowItem)) {
+                                                                // Add item to allTags
+                                                                _model.addToAllTagsPageState(
+                                                                    selectedTagsItemsRowItem);
+                                                              }
+                                                              // Remove item from selectedTags
+                                                              _model.removeFromSelectedTagsPageState(
+                                                                  selectedTagsItemsRowItem);
+                                                              safeSetState(
+                                                                  () {});
+                                                            },
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8.0),
+                                                              child: Container(
+                                                                height: 48.0,
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                  minWidth:
+                                                                      48.0,
+                                                                  minHeight:
+                                                                      48.0,
+                                                                  maxHeight:
+                                                                      54.0,
+                                                                ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .accent1,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.0),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                  ),
+                                                                ),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      const AlignmentDirectional(
+                                                                          0.0,
+                                                                          0.0),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                    child: Text(
+                                                                      valueOrDefault<
+                                                                          String>(
+                                                                        selectedTagsItemsRowItem
+                                                                            .name,
+                                                                        'no_tag',
+                                                                      ),
+                                                                      style: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .override(
+                                                                            fontFamily:
+                                                                                'Readex Pro',
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                          ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).divide(const SizedBox(
+                                                            width: 3.0)),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          5.0, 0.0, 5.0, 0.0),
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: const BoxDecoration(),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            AutoSizeText(
+                                              'All Tags',
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .titleMedium
+                                                  .override(
+                                                    fontFamily: 'Readex Pro',
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryText,
+                                                    letterSpacing: 0.0,
+                                                  ),
+                                            ),
+                                            Flexible(
+                                              flex: 1,
+                                              child: Container(
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                            .width *
+                                                        1.0,
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.9,
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryBackground,
+                                                ),
+                                                child: Builder(
+                                                  builder: (context) {
+                                                    final allTagsItemList =
+                                                        _model.allTagsPageState
+                                                            .toList();
+                                                    if (allTagsItemList
+                                                        .isEmpty) {
+                                                      return const ListButtonWidget();
+                                                    }
+
+                                                    return SingleChildScrollView(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: List.generate(
+                                                            allTagsItemList
+                                                                .length,
+                                                            (allTagsItemListIndex) {
+                                                          final allTagsItemListItem =
+                                                              allTagsItemList[
+                                                                  allTagsItemListIndex];
+                                                          return InkWell(
+                                                            splashColor: Colors
+                                                                .transparent,
+                                                            focusColor: Colors
+                                                                .transparent,
+                                                            hoverColor: Colors
+                                                                .transparent,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onTap: () async {
+                                                              if (!_model
+                                                                  .selectedTagsPageState
+                                                                  .contains(
+                                                                      allTagsItemListItem)) {
+                                                                // Put tag item in selectedTags
+                                                                _model.addToSelectedTagsPageState(
+                                                                    allTagsItemListItem);
+                                                              }
+                                                              // Remove from allTags
+                                                              _model.removeFromAllTagsPageState(
+                                                                  allTagsItemListItem);
+                                                              safeSetState(
+                                                                  () {});
+                                                            },
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8.0),
+                                                              child: Container(
+                                                                height: 48.0,
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                  minWidth:
+                                                                      48.0,
+                                                                  minHeight:
+                                                                      48.0,
+                                                                  maxHeight:
+                                                                      54.0,
+                                                                ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .accent1,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.0),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                  ),
+                                                                ),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      const AlignmentDirectional(
+                                                                          0.0,
+                                                                          0.0),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        AutoSizeText(
+                                                                      valueOrDefault<
+                                                                          String>(
+                                                                        allTagsItemListItem
+                                                                            .name,
+                                                                        'no_tag',
+                                                                      ),
+                                                                      minFontSize:
+                                                                          15.0,
+                                                                      style: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .override(
+                                                                            fontFamily:
+                                                                                'Readex Pro',
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                          ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).divide(const SizedBox(
+                                                            width: 3.0)),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -653,10 +1175,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   currentSpeakingDate: 'none',
                                   nextSpeakingDate: 'none',
                                   tagIds: valueOrDefault<String>(
-                                    functions.extractTagsIds(_model
-                                        .tagListModel.selectedTagListState
-                                        .toList()),
-                                    '\'[1]\'',
+                                    functions.formatSelectedTagsToIds(
+                                        _model.selectedTagsPageState.toList()),
+                                    '\"[1]\"',
                                   ),
                                 );
                                 // Return last Flashcard Id
@@ -684,13 +1205,15 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       .controller
                                       .forward(from: 0.0);
                                 }
+                                // Reset tags states
+                                _model.selectedTagsPageState = [];
+                                _model.allTagsPageState = [];
                                 // Reset fields
                                 safeSetState(() {
                                   _model.nameFieldTextController?.clear();
                                   _model.textRectoFieldTextController?.clear();
                                   _model.textVersoFieldTextController?.clear();
-                                  _model.tagListModel.newTagFieldTextController
-                                      ?.clear();
+                                  _model.newTagFieldTextController?.clear();
                                 });
                                 // isCreatingFlashacard toggle
                                 _model.isCreatingFlashcard =
