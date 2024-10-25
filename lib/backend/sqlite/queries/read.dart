@@ -642,7 +642,8 @@ Future<List<FlashcardsForConversationWithDeckIdRow>>
 SELECT 
   f.id as flashcardID, 
   f.textVerso as textVerso,
-  f.textRecto  as textRecto
+  f.textRecto  as textRecto,
+  f.tagIds as tagIds
 FROM flashcards as f
 INNER JOIN
   decksFlashcards as df ON f.id = df.flashcardId
