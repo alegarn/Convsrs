@@ -187,8 +187,17 @@ String? calculateNextRecallDate(int? retrievalIntervalDurationSec) {
 
 List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
     List<FlashcardsForConversationWithDeckIdRow>? cardsData) {
-  List<FlashcardConversationStatusStruct> flashcardConversationStatusList = [];
+  List<int> stringToIntList(String? str) {
+    if (str != null) {
+      // Remove the square brackets
+      str = str.replaceAll('[', '').replaceAll(']', '');
+      // Split the string by commas and convert to integers
+      return str.split(',').map(int.parse).toList();
+    }
+    return []; // Return an empty list if str is null
+  }
 
+  List<FlashcardConversationStatusStruct> flashcardConversationStatusList = [];
   if (cardsData != null) {
     for (var cardData in cardsData) {
       FlashcardConversationStatusStruct flashcardConversationStatus =
@@ -198,11 +207,11 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
         textRecto: cardData.textRecto,
         timesValidatedByClickCount: 0,
         isFullyValidated: false,
+        tagIds: stringToIntList(cardData.tagIds), // Now this can accept null
       );
       flashcardConversationStatusList.add(flashcardConversationStatus);
     }
   }
-
   return flashcardConversationStatusList;
 }
 

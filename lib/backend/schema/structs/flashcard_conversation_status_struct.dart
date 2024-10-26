@@ -12,11 +12,13 @@ class FlashcardConversationStatusStruct extends BaseStruct {
     String? textRecto,
     int? timesValidatedByClickCount,
     bool? isFullyValidated,
+    List<int>? tagIds,
   })  : _id = id,
         _textVerso = textVerso,
         _textRecto = textRecto,
         _timesValidatedByClickCount = timesValidatedByClickCount,
-        _isFullyValidated = isFullyValidated;
+        _isFullyValidated = isFullyValidated,
+        _tagIds = tagIds;
 
   // "id" field.
   int? _id;
@@ -58,6 +60,17 @@ class FlashcardConversationStatusStruct extends BaseStruct {
 
   bool hasIsFullyValidated() => _isFullyValidated != null;
 
+  // "tagIds" field.
+  List<int>? _tagIds;
+  List<int> get tagIds => _tagIds ?? const [];
+  set tagIds(List<int>? val) => _tagIds = val;
+
+  void updateTagIds(Function(List<int>) updateFn) {
+    updateFn(_tagIds ??= []);
+  }
+
+  bool hasTagIds() => _tagIds != null;
+
   static FlashcardConversationStatusStruct fromMap(Map<String, dynamic> data) =>
       FlashcardConversationStatusStruct(
         id: castToType<int>(data['id']),
@@ -66,6 +79,7 @@ class FlashcardConversationStatusStruct extends BaseStruct {
         timesValidatedByClickCount:
             castToType<int>(data['timesValidatedByClickCount']),
         isFullyValidated: data['isFullyValidated'] as bool?,
+        tagIds: getDataList(data['tagIds']),
       );
 
   static FlashcardConversationStatusStruct? maybeFromMap(dynamic data) => data
@@ -79,6 +93,7 @@ class FlashcardConversationStatusStruct extends BaseStruct {
         'textRecto': _textRecto,
         'timesValidatedByClickCount': _timesValidatedByClickCount,
         'isFullyValidated': _isFullyValidated,
+        'tagIds': _tagIds,
       }.withoutNulls;
 
   @override
@@ -102,6 +117,11 @@ class FlashcardConversationStatusStruct extends BaseStruct {
         'isFullyValidated': serializeParam(
           _isFullyValidated,
           ParamType.bool,
+        ),
+        'tagIds': serializeParam(
+          _tagIds,
+          ParamType.int,
+          isList: true,
         ),
       }.withoutNulls;
 
@@ -133,6 +153,11 @@ class FlashcardConversationStatusStruct extends BaseStruct {
           ParamType.bool,
           false,
         ),
+        tagIds: deserializeParam<int>(
+          data['tagIds'],
+          ParamType.int,
+          true,
+        ),
       );
 
   @override
@@ -140,17 +165,25 @@ class FlashcardConversationStatusStruct extends BaseStruct {
 
   @override
   bool operator ==(Object other) {
+    const listEquality = ListEquality();
     return other is FlashcardConversationStatusStruct &&
         id == other.id &&
         textVerso == other.textVerso &&
         textRecto == other.textRecto &&
         timesValidatedByClickCount == other.timesValidatedByClickCount &&
-        isFullyValidated == other.isFullyValidated;
+        isFullyValidated == other.isFullyValidated &&
+        listEquality.equals(tagIds, other.tagIds);
   }
 
   @override
-  int get hashCode => const ListEquality().hash(
-      [id, textVerso, textRecto, timesValidatedByClickCount, isFullyValidated]);
+  int get hashCode => const ListEquality().hash([
+        id,
+        textVerso,
+        textRecto,
+        timesValidatedByClickCount,
+        isFullyValidated,
+        tagIds
+      ]);
 }
 
 FlashcardConversationStatusStruct createFlashcardConversationStatusStruct({

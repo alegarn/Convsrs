@@ -660,6 +660,7 @@ class FlashcardsForConversationWithDeckIdRow extends SqliteRow {
   int? get flashcardID => data['flashcardID'] as int?;
   String? get textVerso => data['textVerso'] as String?;
   String? get textRecto => data['textRecto'] as String?;
+  String? get tagIds => data['tagIds'] as String?;
 }
 
 /// END FLASHCARDS FOR CONVERSATION WITH DECKID
