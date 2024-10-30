@@ -211,295 +211,295 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                               children: [
                                 Stack(
                                   children: [
-                                    Container(
-                                      width: MediaQuery.sizeOf(context).width *
-                                          1.0,
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              1.0,
-                                      decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                      ),
-                                      child: Builder(
-                                        builder: (context) {
-                                          final tags = _model
-                                              .conversationTagsLists
-                                              .toList();
+                                    SafeArea(
+                                      child: Container(
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                                1.0,
+                                        height:
+                                            MediaQuery.sizeOf(context).height *
+                                                1.0,
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryBackground,
+                                        ),
+                                        child: Builder(
+                                          builder: (context) {
+                                            final tags = _model
+                                                .conversationTagsLists
+                                                .toList();
 
-                                          return SingleChildScrollView(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: List.generate(
-                                                  tags.length, (tagsIndex) {
-                                                final tagsItem =
-                                                    tags[tagsIndex];
-                                                return Container(
-                                                  width:
-                                                      MediaQuery.sizeOf(context)
-                                                              .width *
-                                                          1.0,
-                                                  constraints: BoxConstraints(
-                                                    minWidth: MediaQuery.sizeOf(
+                                            return SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: List.generate(
+                                                    tags.length, (tagsIndex) {
+                                                  final tagsItem =
+                                                      tags[tagsIndex];
+                                                  return Container(
+                                                    width: MediaQuery.sizeOf(
                                                                 context)
                                                             .width *
                                                         1.0,
-                                                    minHeight: 100.0,
-                                                    maxWidth: MediaQuery.sizeOf(
-                                                                context)
-                                                            .width *
-                                                        1.0,
-                                                    maxHeight:
-                                                        MediaQuery.sizeOf(
-                                                                    context)
-                                                                .height *
-                                                            1.0,
-                                                  ),
-                                                  decoration: const BoxDecoration(),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    children: [
-                                                      Text(
-                                                        valueOrDefault<String>(
-                                                          functions
-                                                              .getNamesFromTagList(
-                                                                  tagsItem
-                                                                      .tagsLists
-                                                                      .toList()),
-                                                          'no_tag',
-                                                        ),
-                                                        style: FlutterFlowTheme
-                                                                .of(context)
-                                                            .bodyMedium
-                                                            .override(
-                                                              fontFamily:
-                                                                  'Readex Pro',
-                                                              fontSize: 20.0,
-                                                              letterSpacing:
-                                                                  0.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Builder(
-                                                          builder: (context) {
-                                                            final flashcardsPerTagCombinationList =
+                                                    constraints: BoxConstraints(
+                                                      minWidth:
+                                                          MediaQuery.sizeOf(
+                                                                      context)
+                                                                  .width *
+                                                              1.0,
+                                                      minHeight: 100.0,
+                                                      maxWidth:
+                                                          MediaQuery.sizeOf(
+                                                                      context)
+                                                                  .width *
+                                                              1.0,
+                                                      maxHeight:
+                                                          MediaQuery.sizeOf(
+                                                                      context)
+                                                                  .height *
+                                                              1.0,
+                                                    ),
+                                                    decoration: const BoxDecoration(),
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                        Text(
+                                                          valueOrDefault<
+                                                              String>(
+                                                            functions.getNamesFromTagList(
                                                                 tagsItem
-                                                                    .flashcardInfosList
-                                                                    .toList();
+                                                                    .tagsLists
+                                                                    .toList()),
+                                                            'no_tag',
+                                                          ),
+                                                          style: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .bodyMedium
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Readex Pro',
+                                                                fontSize: 20.0,
+                                                                letterSpacing:
+                                                                    0.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                              ),
+                                                        ),
+                                                        Expanded(
+                                                          child: Builder(
+                                                            builder: (context) {
+                                                              final flashcardsPerTagCombinationList =
+                                                                  tagsItem
+                                                                      .flashcardInfosList
+                                                                      .toList();
 
-                                                            return Wrap(
-                                                              spacing: 1.0,
-                                                              runSpacing: 1.0,
-                                                              alignment:
-                                                                  WrapAlignment
-                                                                      .start,
-                                                              crossAxisAlignment:
-                                                                  WrapCrossAlignment
-                                                                      .start,
-                                                              direction: Axis
-                                                                  .horizontal,
-                                                              runAlignment:
-                                                                  WrapAlignment
-                                                                      .start,
-                                                              verticalDirection:
-                                                                  VerticalDirection
-                                                                      .down,
-                                                              clipBehavior: Clip
-                                                                  .antiAlias,
-                                                              children: List.generate(
-                                                                  flashcardsPerTagCombinationList
-                                                                      .length,
-                                                                  (flashcardsPerTagCombinationListIndex) {
-                                                                final flashcardsPerTagCombinationListItem =
-                                                                    flashcardsPerTagCombinationList[
-                                                                        flashcardsPerTagCombinationListIndex];
-                                                                return InkWell(
-                                                                  splashColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  focusColor: Colors
-                                                                      .transparent,
-                                                                  hoverColor: Colors
-                                                                      .transparent,
-                                                                  highlightColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  onTap:
-                                                                      () async {
-                                                                    // FlashcardStatus Update
-                                                                    _model
-                                                                        .updateConversationTagsListsAtIndex(
-                                                                      tagsIndex,
-                                                                      (e) => e
-                                                                        ..updateFlashcardInfosList(
-                                                                          (e) => e[
-                                                                              valueOrDefault<int>(
-                                                                            flashcardsPerTagCombinationListIndex,
-                                                                            1,
-                                                                          )]
-                                                                            ..incrementTimesValidatedByClickCount(1),
-                                                                        ),
-                                                                    );
-                                                                    safeSetState(
-                                                                        () {});
-                                                                    if (tagsItem
-                                                                            .flashcardInfosList[valueOrDefault<
-                                                                                int>(
-                                                                          flashcardsPerTagCombinationListIndex,
-                                                                          0,
-                                                                        )]
-                                                                            .timesValidatedByClickCount ==
+                                                              return Wrap(
+                                                                spacing: 1.0,
+                                                                runSpacing: 1.0,
+                                                                alignment:
+                                                                    WrapAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    WrapCrossAlignment
+                                                                        .start,
+                                                                direction: Axis
+                                                                    .horizontal,
+                                                                runAlignment:
+                                                                    WrapAlignment
+                                                                        .start,
+                                                                verticalDirection:
+                                                                    VerticalDirection
+                                                                        .down,
+                                                                clipBehavior: Clip
+                                                                    .antiAlias,
+                                                                children: List.generate(
+                                                                    flashcardsPerTagCombinationList
+                                                                        .length,
+                                                                    (flashcardsPerTagCombinationListIndex) {
+                                                                  final flashcardsPerTagCombinationListItem =
+                                                                      flashcardsPerTagCombinationList[
+                                                                          flashcardsPerTagCombinationListIndex];
+                                                                  return Align(
+                                                                    alignment:
+                                                                        const AlignmentDirectional(
+                                                                            -1.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        InkWell(
+                                                                      splashColor:
+                                                                          Colors
+                                                                              .transparent,
+                                                                      focusColor:
+                                                                          Colors
+                                                                              .transparent,
+                                                                      hoverColor:
+                                                                          Colors
+                                                                              .transparent,
+                                                                      highlightColor:
+                                                                          Colors
+                                                                              .transparent,
+                                                                      onTap:
+                                                                          () async {
+                                                                        // FlashcardStatus Update
                                                                         _model
-                                                                            .timeToValidateWord) {
-                                                                      // wordIsValidated
-                                                                      _model
-                                                                          .updateConversationTagsListsAtIndex(
-                                                                        valueOrDefault<
-                                                                            int>(
+                                                                            .updateConversationTagsListsAtIndex(
                                                                           tagsIndex,
-                                                                          0,
-                                                                        ),
-                                                                        (e) => e
-                                                                          ..updateFlashcardInfosList(
-                                                                            (e) => e[valueOrDefault<int>(
+                                                                          (e) => e
+                                                                            ..updateFlashcardInfosList(
+                                                                              (e) => e[valueOrDefault<int>(
+                                                                                flashcardsPerTagCombinationListIndex,
+                                                                                1,
+                                                                              )]
+                                                                                ..incrementTimesValidatedByClickCount(1),
+                                                                            ),
+                                                                        );
+                                                                        safeSetState(
+                                                                            () {});
+                                                                        if (tagsItem
+                                                                                .flashcardInfosList[valueOrDefault<int>(
                                                                               flashcardsPerTagCombinationListIndex,
                                                                               0,
                                                                             )]
-                                                                              ..isFullyValidated = true,
-                                                                          ),
-                                                                      );
-                                                                      // State WordValidatedCount
-                                                                      _model.validatedCardNumber =
-                                                                          _model.validatedCardNumber! +
-                                                                              1;
-                                                                      safeSetState(
-                                                                          () {});
-                                                                    } else {
-                                                                      return;
-                                                                    }
-                                                                  },
-                                                                  child:
-                                                                      Container(
-                                                                    constraints:
-                                                                        BoxConstraints(
-                                                                      maxWidth:
-                                                                          MediaQuery.sizeOf(context).width *
-                                                                              1.0,
-                                                                      maxHeight:
-                                                                          300.0,
-                                                                    ),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: valueOrDefault<
-                                                                          Color>(
-                                                                        flashcardsPerTagCombinationListItem.isFullyValidated
-                                                                            ? FlutterFlowTheme.of(context).warning
-                                                                            : FlutterFlowTheme.of(context).primary,
-                                                                        FlutterFlowTheme.of(context)
-                                                                            .primary,
-                                                                      ),
-                                                                      boxShadow: const [
-                                                                        BoxShadow(
-                                                                          blurRadius:
-                                                                              4.0,
-                                                                          color:
-                                                                              Color(0x33000000),
-                                                                          offset:
-                                                                              Offset(
-                                                                            0.0,
-                                                                            2.0,
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              10.0),
-                                                                      border:
-                                                                          Border
-                                                                              .all(
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .accent1,
-                                                                      ),
-                                                                    ),
-                                                                    child:
-                                                                        Padding(
-                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                                                          3.0,
-                                                                          0.0,
-                                                                          3.0,
-                                                                          0.0),
+                                                                                .timesValidatedByClickCount ==
+                                                                            _model.timeToValidateWord) {
+                                                                          // wordIsValidated
+                                                                          _model
+                                                                              .updateConversationTagsListsAtIndex(
+                                                                            valueOrDefault<int>(
+                                                                              tagsIndex,
+                                                                              0,
+                                                                            ),
+                                                                            (e) => e
+                                                                              ..updateFlashcardInfosList(
+                                                                                (e) => e[valueOrDefault<int>(
+                                                                                  flashcardsPerTagCombinationListIndex,
+                                                                                  0,
+                                                                                )]
+                                                                                  ..isFullyValidated = true,
+                                                                              ),
+                                                                          );
+                                                                          // State WordValidatedCount
+                                                                          _model.validatedCardNumber =
+                                                                              _model.validatedCardNumber! + 1;
+                                                                          safeSetState(
+                                                                              () {});
+                                                                        } else {
+                                                                          return;
+                                                                        }
+                                                                      },
                                                                       child:
-                                                                          Row(
-                                                                        mainAxisSize:
-                                                                            MainAxisSize.max,
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.spaceAround,
-                                                                        children: [
-                                                                          AutoSizeText(
-                                                                            valueOrDefault<String>(
-                                                                              _model.showVerso
-                                                                                  ? valueOrDefault<String>(
-                                                                                      flashcardsPerTagCombinationListItem.textVerso,
-                                                                                      'textVerso',
-                                                                                    )
-                                                                                  : valueOrDefault<String>(
-                                                                                      flashcardsPerTagCombinationListItem.textRecto,
-                                                                                      'textRecto',
-                                                                                    ),
-                                                                              'Verso',
-                                                                            ),
-                                                                            textAlign:
-                                                                                TextAlign.center,
-                                                                            style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                  fontFamily: 'Readex Pro',
-                                                                                  color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).primaryBackground,
-                                                                                  fontSize: 48.0,
-                                                                                  letterSpacing: 0.0,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                ),
+                                                                          ClipRRect(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10.0),
+                                                                        child:
+                                                                            Container(
+                                                                          constraints:
+                                                                              BoxConstraints(
+                                                                            maxWidth:
+                                                                                MediaQuery.sizeOf(context).width * 1.0,
+                                                                            maxHeight:
+                                                                                300.0,
                                                                           ),
-                                                                          Text(
-                                                                            valueOrDefault<String>(
-                                                                              flashcardsPerTagCombinationListItem.timesValidatedByClickCount.toString(),
-                                                                              '0',
-                                                                            ).maybeHandleOverflow(
-                                                                              maxChars: 2,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                valueOrDefault<Color>(
+                                                                              flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).warning : FlutterFlowTheme.of(context).primary,
+                                                                              FlutterFlowTheme.of(context).primary,
                                                                             ),
-                                                                            textAlign:
-                                                                                TextAlign.center,
-                                                                            style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                  fontFamily: 'Readex Pro',
-                                                                                  color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).warning,
-                                                                                  fontSize: 24.0,
-                                                                                  letterSpacing: 0.0,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontStyle: FontStyle.italic,
+                                                                            boxShadow: const [
+                                                                              BoxShadow(
+                                                                                blurRadius: 4.0,
+                                                                                color: Color(0x33000000),
+                                                                                offset: Offset(
+                                                                                  0.0,
+                                                                                  2.0,
                                                                                 ),
+                                                                              )
+                                                                            ],
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(10.0),
+                                                                            border:
+                                                                                Border.all(
+                                                                              color: FlutterFlowTheme.of(context).accent1,
+                                                                            ),
                                                                           ),
-                                                                        ],
+                                                                          child:
+                                                                              Padding(
+                                                                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                                                                3.0,
+                                                                                0.0,
+                                                                                3.0,
+                                                                                0.0),
+                                                                            child:
+                                                                                Row(
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                              children: [
+                                                                                AutoSizeText(
+                                                                                  valueOrDefault<String>(
+                                                                                    _model.showVerso
+                                                                                        ? valueOrDefault<String>(
+                                                                                            flashcardsPerTagCombinationListItem.textVerso,
+                                                                                            'textVerso',
+                                                                                          )
+                                                                                        : valueOrDefault<String>(
+                                                                                            flashcardsPerTagCombinationListItem.textRecto,
+                                                                                            'textRecto',
+                                                                                          ),
+                                                                                    'Verso',
+                                                                                  ),
+                                                                                  textAlign: TextAlign.center,
+                                                                                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                        fontFamily: 'Readex Pro',
+                                                                                        color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).primaryBackground,
+                                                                                        fontSize: 48.0,
+                                                                                        letterSpacing: 0.0,
+                                                                                        fontWeight: FontWeight.w500,
+                                                                                      ),
+                                                                                ),
+                                                                                Text(
+                                                                                  valueOrDefault<String>(
+                                                                                    flashcardsPerTagCombinationListItem.timesValidatedByClickCount.toString(),
+                                                                                    '0',
+                                                                                  ).maybeHandleOverflow(
+                                                                                    maxChars: 2,
+                                                                                  ),
+                                                                                  textAlign: TextAlign.center,
+                                                                                  style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                        fontFamily: 'Readex Pro',
+                                                                                        color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).warning,
+                                                                                        fontSize: 24.0,
+                                                                                        letterSpacing: 0.0,
+                                                                                        fontWeight: FontWeight.bold,
+                                                                                        fontStyle: FontStyle.italic,
+                                                                                      ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ),
                                                                       ),
+                                                                    ).animateOnActionTrigger(
+                                                                      animationsMap[
+                                                                          'containerOnActionTriggerAnimation']!,
                                                                     ),
-                                                                  ),
-                                                                ).animateOnActionTrigger(
-                                                                  animationsMap[
-                                                                      'containerOnActionTriggerAnimation']!,
-                                                                );
-                                                              }),
-                                                            );
-                                                          },
+                                                                  );
+                                                                }),
+                                                              );
+                                                            },
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }),
-                                            ),
-                                          );
-                                        },
+                                                      ],
+                                                    ),
+                                                  );
+                                                }),
+                                              ),
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
                                     Align(
