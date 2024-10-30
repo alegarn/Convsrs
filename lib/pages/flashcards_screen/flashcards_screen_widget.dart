@@ -632,11 +632,10 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   Flexible(
                                     flex: 2,
                                     child: Align(
-                                      alignment:
-                                          const AlignmentDirectional(0.0, 0.0),
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
                                       child: Padding(
-                                        padding: const EdgeInsetsDirectional
-                                            .fromSTEB(5.0, 0.0, 5.0, 0.0),
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            5.0, 0.0, 5.0, 0.0),
                                         child: Container(
                                           width:
                                               MediaQuery.sizeOf(context).width *
@@ -653,8 +652,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                             color: FlutterFlowTheme.of(context)
                                                 .secondaryBackground,
                                           ),
-                                          alignment: const AlignmentDirectional(
-                                              0.0, 0.0),
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
                                           child: SizedBox(
                                             width: MediaQuery.sizeOf(context)
                                                     .width *
@@ -797,9 +796,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   Flexible(
                                     flex: 2,
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsetsDirectional.fromSTEB(
-                                              5.0, 0.0, 5.0, 0.0),
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          5.0, 0.0, 5.0, 0.0),
                                       child: Container(
                                         decoration: const BoxDecoration(),
                                         child: Column(
@@ -930,10 +928,10 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                                       Padding(
                                                                     padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
-                                                                        8.0,
-                                                                        0.0,
-                                                                        8.0,
-                                                                        0.0),
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
                                                                     child: Text(
                                                                       valueOrDefault<
                                                                           String>(
@@ -956,9 +954,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                               ),
                                                             ),
                                                           );
-                                                        }).divide(
-                                                            const SizedBox(
-                                                                width: 3.0)),
+                                                        }).divide(const SizedBox(
+                                                            width: 3.0)),
                                                       ),
                                                     );
                                                   },
@@ -973,9 +970,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                   Flexible(
                                     flex: 2,
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsetsDirectional.fromSTEB(
-                                              5.0, 0.0, 5.0, 0.0),
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          5.0, 0.0, 5.0, 0.0),
                                       child: Container(
                                         width: double.infinity,
                                         height: double.infinity,
@@ -1103,10 +1099,10 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                                       Padding(
                                                                     padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
-                                                                        8.0,
-                                                                        0.0,
-                                                                        8.0,
-                                                                        0.0),
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
                                                                     child:
                                                                         AutoSizeText(
                                                                       valueOrDefault<
@@ -1132,9 +1128,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                               ),
                                                             ),
                                                           );
-                                                        }).divide(
-                                                            const SizedBox(
-                                                                width: 3.0)),
+                                                        }).divide(const SizedBox(
+                                                            width: 3.0)),
                                                       ),
                                                     );
                                                   },
@@ -1154,9 +1149,6 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                             flex: 1,
                             child: FFButtonWidget(
                               onPressed: () async {
-                                debugPrint(
-                                    "_model.selectedTagsPageState: ${_model.selectedTagsPageState}");
-
                                 // Create Flashcard
                                 await SQLiteManager.instance.flashcardCreate(
                                   userId: valueOrDefault<String>(
@@ -1236,9 +1228,8 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                 height: MediaQuery.sizeOf(context).height * 0.1,
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
-                                iconPadding:
-                                    const EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 0.0, 0.0, 0.0),
+                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).success,
                                 textStyle: FlutterFlowTheme.of(context)
                                     .titleSmall
