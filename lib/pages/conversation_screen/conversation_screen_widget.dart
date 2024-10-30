@@ -436,29 +436,33 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                                 mainAxisSize: MainAxisSize.min,
                                                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                                                 children: [
-                                                                                  AutoSizeText(
-                                                                                    valueOrDefault<String>(
-                                                                                      _model.showVerso
-                                                                                          ? valueOrDefault<String>(
-                                                                                              flashcardsPerTagCombinationListItem.textVerso,
-                                                                                              'textVerso',
-                                                                                            )
-                                                                                          : valueOrDefault<String>(
-                                                                                              flashcardsPerTagCombinationListItem.textRecto,
-                                                                                              'textRecto',
-                                                                                            ),
-                                                                                      'Verso',
+                                                                                  Expanded(
+                                                                                    child: AutoSizeText(
+                                                                                      valueOrDefault<String>(
+                                                                                        _model.showVerso
+                                                                                            ? valueOrDefault<String>(
+                                                                                                flashcardsPerTagCombinationListItem.textVerso,
+                                                                                                'textVerso',
+                                                                                              )
+                                                                                            : valueOrDefault<String>(
+                                                                                                flashcardsPerTagCombinationListItem.textRecto,
+                                                                                                'textRecto',
+                                                                                              ),
+                                                                                        'Verso',
+                                                                                      ),
+                                                                                      textAlign: TextAlign.center,
+                                                                                      maxLines: 3,
+                                                                                      minFontSize: 18.0,
+                                                                                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                            fontFamily: 'Readex Pro',
+                                                                                            color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).primaryBackground,
+                                                                                            fontSize: 48.0,
+                                                                                            letterSpacing: 0.0,
+                                                                                            fontWeight: FontWeight.w500,
+                                                                                          ),
                                                                                     ),
-                                                                                    textAlign: TextAlign.center,
-                                                                                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                                                                          fontFamily: 'Readex Pro',
-                                                                                          color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).primaryBackground,
-                                                                                          fontSize: 48.0,
-                                                                                          letterSpacing: 0.0,
-                                                                                          fontWeight: FontWeight.w500,
-                                                                                        ),
                                                                                   ),
-                                                                                  Text(
+                                                                                  AutoSizeText(
                                                                                     valueOrDefault<String>(
                                                                                       flashcardsPerTagCombinationListItem.timesValidatedByClickCount.toString(),
                                                                                       '0',
@@ -466,6 +470,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                                       maxChars: 2,
                                                                                     ),
                                                                                     textAlign: TextAlign.center,
+                                                                                    minFontSize: 18.0,
                                                                                     style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                           fontFamily: 'Readex Pro',
                                                                                           color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).warning,
