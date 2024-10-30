@@ -212,90 +212,95 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                 Stack(
                                   children: [
                                     SafeArea(
-                                      child: Container(
-                                        width:
-                                            MediaQuery.sizeOf(context).width *
-                                                1.0,
-                                        constraints: BoxConstraints(
-                                          maxWidth:
+                                      child: ClipRRect(
+                                        child: Container(
+                                          width:
                                               MediaQuery.sizeOf(context).width *
                                                   1.0,
-                                          maxHeight: MediaQuery.sizeOf(context)
+                                          height: MediaQuery.sizeOf(context)
                                                   .height *
                                               1.0,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
-                                        ),
-                                        child: Builder(
-                                          builder: (context) {
-                                            final tags = _model
-                                                .conversationTagsLists
-                                                .toList();
+                                          constraints: BoxConstraints(
+                                            maxWidth: MediaQuery.sizeOf(context)
+                                                    .width *
+                                                1.0,
+                                            maxHeight:
+                                                MediaQuery.sizeOf(context)
+                                                        .height *
+                                                    1.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                          ),
+                                          child: Builder(
+                                            builder: (context) {
+                                              final tags = _model
+                                                  .conversationTagsLists
+                                                  .toList();
 
-                                            return SingleChildScrollView(
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: List.generate(
-                                                    tags.length, (tagsIndex) {
-                                                  final tagsItem =
-                                                      tags[tagsIndex];
-                                                  return ClipRRect(
-                                                    child: Container(
-                                                      width: MediaQuery.sizeOf(
-                                                                  context)
-                                                              .width *
-                                                          1.0,
-                                                      constraints:
-                                                          BoxConstraints(
-                                                        minWidth:
+                                              return SingleChildScrollView(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: List.generate(
+                                                      tags.length, (tagsIndex) {
+                                                    final tagsItem =
+                                                        tags[tagsIndex];
+                                                    return ClipRRect(
+                                                      child: Container(
+                                                        width:
                                                             MediaQuery.sizeOf(
                                                                         context)
                                                                     .width *
                                                                 1.0,
-                                                        minHeight: 100.0,
-                                                        maxWidth:
-                                                            MediaQuery.sizeOf(
-                                                                        context)
-                                                                    .width *
-                                                                1.0,
-                                                      ),
-                                                      decoration:
-                                                          const BoxDecoration(),
-                                                      alignment:
-                                                          const AlignmentDirectional(
-                                                              -1.0, 0.0),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        children: [
-                                                          Text(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              functions.getNamesFromTagList(
-                                                                  tagsItem
-                                                                      .tagsLists
-                                                                      .toList()),
-                                                              'no_tag',
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          minWidth:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .width *
+                                                                  1.0,
+                                                          maxWidth:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .width *
+                                                                  1.0,
+                                                        ),
+                                                        decoration:
+                                                            const BoxDecoration(),
+                                                        alignment:
+                                                            const AlignmentDirectional(
+                                                                -1.0, -1.0),
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                functions.getNamesFromTagList(
+                                                                    tagsItem
+                                                                        .tagsLists
+                                                                        .toList()),
+                                                                'no_tag',
+                                                              ),
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Readex Pro',
+                                                                    fontSize:
+                                                                        20.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
                                                             ),
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  fontSize:
-                                                                      20.0,
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Builder(
+                                                            Builder(
                                                               builder:
                                                                   (context) {
                                                                 final flashcardsPerTagCombinationList =
@@ -484,15 +489,15 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                 );
                                                               },
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                }),
-                                              ),
-                                            );
-                                          },
+                                                    );
+                                                  }),
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ),
