@@ -287,12 +287,11 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                                         text: 'Extract',
                                         options: FFButtonOptions(
                                           height: 40.0,
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 0.0),
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(0.0, 0.0, 0.0, 0.0),
                                           iconPadding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 0.0),
+                                              const EdgeInsetsDirectional
+                                                  .fromSTEB(0.0, 0.0, 0.0, 0.0),
                                           color: FlutterFlowTheme.of(context)
                                               .primary,
                                           textStyle: FlutterFlowTheme.of(
@@ -416,6 +415,9 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                                     .flashcardReadAll(
                                   userId: FFAppState().userUuid,
                                 );
+                                debugPrint(
+                                    'Flashcards: ${_model.flashcards?.toList().map((flashcard) => flashcard.tagIds)}');
+
                                 // New dataExtract row
                                 await SQLiteManager.instance
                                     .dataExtractCREATE1Row(
@@ -723,8 +725,9 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                                 height: 40.0,
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
+                                iconPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).primary,
                                 textStyle: FlutterFlowTheme.of(context)
                                     .headlineMedium
@@ -808,10 +811,10 @@ class _ExtractDataScreenWidgetState extends State<ExtractDataScreenWidget> {
                   text: 'Save to clipboard',
                   options: FFButtonOptions(
                     height: 40.0,
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                    iconPadding:
-                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        24.0, 0.0, 24.0, 0.0),
+                    iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                        0.0, 0.0, 0.0, 0.0),
                     color: FlutterFlowTheme.of(context).primary,
                     textStyle: FlutterFlowTheme.of(context).titleSmall.override(
                           fontFamily: 'Readex Pro',

@@ -14,12 +14,6 @@ import '/backend/supabase/supabase.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/auth/supabase_auth/auth_util.dart';
 
-String? updateCardToRetrieveFunction() {
-  /// HomePage: focus = run
-  /// cron job: toRecall pass from 0 to 1 if the date is <= dateToday
-  return null;
-}
-
 FlashcardStruct? getNextCurrentCardInFlashcardsList(
   List<FlashcardStruct> flashcardsList,
   FlashcardStruct currentCard,
@@ -187,7 +181,19 @@ String? calculateNextRecallDate(int? retrievalIntervalDurationSec) {
 
 List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
     List<FlashcardsForConversationWithDeckIdRow>? cardsData) {
+  bool isNotNullOrEmpty(String? str) {
+    // Regular expression to match a list of numbers in square brackets
+    final RegExp regex = RegExp(r'^\[\s*(\d+\s*(,\s*\d+\s*)*)?\]$');
+
+    // Check if the input string is valid
+    if (str == null || !regex.hasMatch(str) || str.isEmpty) {
+      return false; // Return default list if the format is incorrect
+    }
+    return true;
+  }
+
   List<int> stringToIntList(String? str) {
+    debugPrint("stringToIntList: $str");
     if (str != null) {
       // Remove the square brackets
       str = str.replaceAll('[', '').replaceAll(']', '');
@@ -200,6 +206,8 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
   List<FlashcardConversationStatusStruct> flashcardConversationStatusList = [];
   if (cardsData != null) {
     for (var cardData in cardsData) {
+      debugPrint("cardData.tagIds: ${cardData.tagIds}");
+      debugPrint("cardData : ${cardData.data.toString()}");
       FlashcardConversationStatusStruct flashcardConversationStatus =
           FlashcardConversationStatusStruct(
         id: cardData.flashcardID,
@@ -207,7 +215,9 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
         textRecto: cardData.textRecto,
         timesValidatedByClickCount: 0,
         isFullyValidated: false,
-        tagIds: stringToIntList(cardData.tagIds), // Now this can accept null
+        tagIds: isNotNullOrEmpty(cardData.tagIds)
+            ? stringToIntList(cardData.tagIds)
+            : [1],
       );
       flashcardConversationStatusList.add(flashcardConversationStatus);
     }
@@ -250,19 +260,25 @@ List<FlashcardStruct>? updateCardToReviewListState(
 }
 
 String? createListValidatedCardsIds(
-    List<FlashcardConversationStatusStruct>? flashcardsConversationStatus) {
-  if (flashcardsConversationStatus == null ||
-      flashcardsConversationStatus.isEmpty) {
+    List<ConversationTagsListsStruct>? conversationTagsList) {
+  if (conversationTagsList == null || conversationTagsList.isEmpty) {
     return null;
   }
 
-  // Extracting ids from flashcardsConversationStatus only if isFullyValidated is true
-  String cardIds = jsonEncode(flashcardsConversationStatus
-      .where((status) => status.isFullyValidated == true)
-      .map((status) => status.id.toString())
-      .toList());
+  // Extracting ids from flashcardInfosList only if isFullyValidated is true
+  List<String> validatedCardIds = [];
 
-  return cardIds;
+  for (var conversationTags in conversationTagsList) {
+    for (var flashcard in conversationTags.flashcardInfosList) {
+      if (flashcard.isFullyValidated == true) {
+        validatedCardIds.add(flashcard.id.toString());
+      }
+    }
+  }
+
+  // Convert the list of validated card IDs to a JSON string
+  String cardIds = jsonEncode(validatedCardIds);
+  return cardIds.isNotEmpty ? cardIds : null;
 }
 
 int extractLenghtInStringArray(String stringArray) {
@@ -655,13 +671,17 @@ String? csvFromRetrievalSessions(
 }
 
 String? extractFlashcards(
-    List<FlashcardConversationStatusStruct>? flashcardConversationStatusList) {
+    List<ConversationTagsListsStruct>? conversationTagsList) {
   String flashcardData = '';
-  if (flashcardConversationStatusList != null) {
-    for (var status in flashcardConversationStatusList) {
-      flashcardData += '${status.textRecto} : ${status.textVerso}\n';
+
+  if (conversationTagsList != null) {
+    for (var conversationTags in conversationTagsList) {
+      for (var flashcard in conversationTags.flashcardInfosList) {
+        flashcardData += '${flashcard.textRecto} : ${flashcard.textVerso}\n';
+      }
     }
   }
+
   return flashcardData.isNotEmpty ? flashcardData.trim() : null;
 }
 
@@ -742,4 +762,21 @@ bool? detectTagIds(String tagIds) {
 
 List<TagStruct> newSelectedTag() {
   return [TagStruct(id: 1, name: "no_tag")];
+}
+
+String? getNamesFromTagList(List<TagStruct> tagList) {
+  // Create a Set to hold unique names
+  Set<String> uniqueNames = {};
+
+  // Iterate through the tag list and add names to the Set
+  for (var tag in tagList) {
+    uniqueNames.add(tag.name);
+  }
+
+  // Combine the unique names into a single string
+  String combinedNames = uniqueNames.join('| ');
+
+  return combinedNames.isNotEmpty
+      ? combinedNames
+      : null; // Return null if no names are present
 }
