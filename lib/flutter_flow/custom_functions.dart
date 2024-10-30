@@ -193,7 +193,6 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
   }
 
   List<int> stringToIntList(String? str) {
-    debugPrint("stringToIntList: $str");
     if (str != null) {
       // Remove the square brackets
       str = str.replaceAll('[', '').replaceAll(']', '');
@@ -206,8 +205,6 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
   List<FlashcardConversationStatusStruct> flashcardConversationStatusList = [];
   if (cardsData != null) {
     for (var cardData in cardsData) {
-      debugPrint("cardData.tagIds: ${cardData.tagIds}");
-      debugPrint("cardData : ${cardData.data.toString()}");
       FlashcardConversationStatusStruct flashcardConversationStatus =
           FlashcardConversationStatusStruct(
         id: cardData.flashcardID,
@@ -399,7 +396,7 @@ String? csvFromFlashcards(List<FlashcardReadAllRow>? flashcards) {
 
   final List<String> csvLines = [];
   csvLines.add(
-      'id,userId,name,textRecto,textVerso,audioRectoUrl,audioVersoUrl,imageRectoUrl,imageVersoUrl,currentRetrievalStep,currentSpeakingStep,toRecall,currentRecallDate,nextRecallDate,currentSpeakingDate,nextSpeakingDate,successCount,totalReviewCount,mentalImageBool');
+      'id,userId,name,textRecto,textVerso,audioRectoUrl,audioVersoUrl,imageRectoUrl,imageVersoUrl,currentRetrievalStep,currentSpeakingStep,toRecall,currentRecallDate,nextRecallDate,currentSpeakingDate,nextSpeakingDate,successCount,totalReviewCount,mentalImageBool,tagIds');
 
   for (final flashcard in flashcards) {
     final List<String> rowData = [
@@ -421,7 +418,8 @@ String? csvFromFlashcards(List<FlashcardReadAllRow>? flashcards) {
       flashcard.nextSpeakingDate ?? 'default',
       flashcard.successCount.toString(),
       flashcard.totalReviewCount.toString(),
-      flashcard.mentalImageBool.toString()
+      flashcard.mentalImageBool.toString(),
+      flashcard.tagIds.toString()
     ];
     csvLines.add(rowData.join(','));
   }

@@ -308,8 +308,8 @@ class _FlashcardUpdateScreenWidgetState
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            8.0, 4.0, 8.0, 4.0),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(8.0, 4.0, 8.0, 4.0),
                         child: TextFormField(
                           controller: _model.cardNameFieldTextController,
                           focusNode: _model.cardNameFieldFocusNode,
@@ -421,8 +421,7 @@ class _FlashcardUpdateScreenWidgetState
                                                             0.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          const EdgeInsets.all(
-                                                              10.0),
+                                                          const EdgeInsets.all(10.0),
                                                       child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -598,7 +597,7 @@ class _FlashcardUpdateScreenWidgetState
                                                                 contentPadding:
                                                                     const EdgeInsets
                                                                         .all(
-                                                                        3.0),
+                                                                            3.0),
                                                               ),
                                                               style: FlutterFlowTheme
                                                                       .of(context)
@@ -657,8 +656,7 @@ class _FlashcardUpdateScreenWidgetState
                                                                 },
                                                                 text:
                                                                     'Insert Image',
-                                                                icon:
-                                                                    const Icon(
+                                                                icon: const Icon(
                                                                   Icons
                                                                       .image_sharp,
                                                                   size: 15.0,
@@ -666,16 +664,14 @@ class _FlashcardUpdateScreenWidgetState
                                                                 options:
                                                                     FFButtonOptions(
                                                                   height: 40.0,
-                                                                  padding:
-                                                                      const EdgeInsetsDirectional
-                                                                          .fromSTEB(
+                                                                  padding: const EdgeInsetsDirectional
+                                                                      .fromSTEB(
                                                                           24.0,
                                                                           0.0,
                                                                           24.0,
                                                                           0.0),
-                                                                  iconPadding:
-                                                                      const EdgeInsetsDirectional
-                                                                          .fromSTEB(
+                                                                  iconPadding: const EdgeInsetsDirectional
+                                                                      .fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           0.0,
@@ -736,8 +732,7 @@ class _FlashcardUpdateScreenWidgetState
                                                             0.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          const EdgeInsets.all(
-                                                              10.0),
+                                                          const EdgeInsets.all(10.0),
                                                       child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -908,7 +903,7 @@ class _FlashcardUpdateScreenWidgetState
                                                                 contentPadding:
                                                                     const EdgeInsets
                                                                         .all(
-                                                                        3.0),
+                                                                            3.0),
                                                               ),
                                                               style: FlutterFlowTheme
                                                                       .of(context)
@@ -967,8 +962,7 @@ class _FlashcardUpdateScreenWidgetState
                                                                 },
                                                                 text:
                                                                     'Insert Image',
-                                                                icon:
-                                                                    const Icon(
+                                                                icon: const Icon(
                                                                   Icons
                                                                       .image_sharp,
                                                                   size: 15.0,
@@ -976,16 +970,14 @@ class _FlashcardUpdateScreenWidgetState
                                                                 options:
                                                                     FFButtonOptions(
                                                                   height: 40.0,
-                                                                  padding:
-                                                                      const EdgeInsetsDirectional
-                                                                          .fromSTEB(
+                                                                  padding: const EdgeInsetsDirectional
+                                                                      .fromSTEB(
                                                                           24.0,
                                                                           0.0,
                                                                           24.0,
                                                                           0.0),
-                                                                  iconPadding:
-                                                                      const EdgeInsetsDirectional
-                                                                          .fromSTEB(
+                                                                  iconPadding: const EdgeInsetsDirectional
+                                                                      .fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           0.0,
@@ -1042,11 +1034,9 @@ class _FlashcardUpdateScreenWidgetState
                                           ),
                                           Align(
                                             alignment:
-                                                const AlignmentDirectional(
-                                                    1.0, -1.0),
+                                                const AlignmentDirectional(1.0, -1.0),
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                              padding: const EdgeInsets.all(8.0),
                                               child: Text(
                                                 valueOrDefault<String>(
                                                   _model.showRecto == true
@@ -1096,9 +1086,8 @@ class _FlashcardUpdateScreenWidgetState
                                       MediaQuery.sizeOf(context).height * 0.08,
                                   padding: const EdgeInsetsDirectional.fromSTEB(
                                       24.0, 0.0, 24.0, 0.0),
-                                  iconPadding:
-                                      const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 0.0, 0.0, 0.0),
+                                  iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 0.0, 0.0),
                                   color: FlutterFlowTheme.of(context).primary,
                                   textStyle: FlutterFlowTheme.of(context)
                                       .titleSmall
@@ -1328,8 +1317,7 @@ class _FlashcardUpdateScreenWidgetState
                                                 },
                                                 child: Container(
                                                   height: 32.0,
-                                                  constraints:
-                                                      const BoxConstraints(
+                                                  constraints: const BoxConstraints(
                                                     minWidth: 48.0,
                                                     minHeight: 48.0,
                                                   ),
@@ -1354,8 +1342,11 @@ class _FlashcardUpdateScreenWidgetState
                                                     child: Padding(
                                                       padding:
                                                           const EdgeInsetsDirectional
-                                                              .fromSTEB(8.0,
-                                                              0.0, 8.0, 0.0),
+                                                              .fromSTEB(
+                                                                  8.0,
+                                                                  0.0,
+                                                                  8.0,
+                                                                  0.0),
                                                       child: Text(
                                                         valueOrDefault<String>(
                                                           selectedTagsItemsRowItem
@@ -1377,8 +1368,7 @@ class _FlashcardUpdateScreenWidgetState
                                                   ),
                                                 ),
                                               );
-                                            }).divide(
-                                                const SizedBox(width: 3.0)),
+                                            }).divide(const SizedBox(width: 3.0)),
                                           ),
                                         );
                                       },
@@ -1446,9 +1436,8 @@ class _FlashcardUpdateScreenWidgetState
                                                     allTagsItemList[
                                                         allTagsItemListIndex];
                                                 return Padding(
-                                                  padding:
-                                                      const EdgeInsetsDirectional
-                                                          .fromSTEB(
+                                                  padding: const EdgeInsetsDirectional
+                                                      .fromSTEB(
                                                           0.0, 0.0, 0.0, 3.0),
                                                   child: InkWell(
                                                     splashColor:
@@ -1501,10 +1490,10 @@ class _FlashcardUpdateScreenWidgetState
                                                           padding:
                                                               const EdgeInsetsDirectional
                                                                   .fromSTEB(
-                                                                  8.0,
-                                                                  0.0,
-                                                                  8.0,
-                                                                  0.0),
+                                                                      8.0,
+                                                                      0.0,
+                                                                      8.0,
+                                                                      0.0),
                                                           child: Text(
                                                             valueOrDefault<
                                                                 String>(
@@ -1529,8 +1518,7 @@ class _FlashcardUpdateScreenWidgetState
                                                 );
                                               }).divide(true
                                                   ? const SizedBox(width: 3.0)
-                                                  : const SizedBox(
-                                                      height: 3.0)),
+                                                  : const SizedBox(height: 3.0)),
                                             ),
                                           );
                                         },
@@ -1604,10 +1592,6 @@ class _FlashcardUpdateScreenWidgetState
                                     ),
                                     onPressed: () async {
                                       var shouldSetState = false;
-
-                                      debugPrint(
-                                          "update _model.selectedTags = ${_model.selectedTags}");
-
                                       if (widget.isCreation) {
                                         // Create Flashcard
                                         await SQLiteManager.instance

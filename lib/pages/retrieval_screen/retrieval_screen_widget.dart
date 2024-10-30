@@ -115,6 +115,10 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
             'none',
           ),
           userId: FFAppState().userUuid,
+          tagIds: valueOrDefault<String>(
+            widget.flashcards?[_model.counter].tagIds,
+            '[1]',
+          ),
         ));
         // +1 counter
         _model.counter = _model.counter + 1;
@@ -151,6 +155,12 @@ class _RetrievalScreenWidgetState extends State<RetrievalScreenWidget>
             widget.flashcards?[_model.counter].currentRetrievalStep,
             0,
           ),
+          hasMentalImage: (String mentalImageBool) {
+            return mentalImageBool == "0" ? false : true;
+          }(valueOrDefault<String>(
+            widget.flashcards?[_model.counter].mentalImageBool.toString(),
+            '0',
+          )),
         ));
         // +1 counter
         _model.counter = _model.counter + 1;

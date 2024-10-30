@@ -239,7 +239,10 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
             currentCard?.mentalImageBool,
             0,
           ),
-          tagIds: null,
+          tagIds: valueOrDefault<String>(
+            currentCard?.tagIds,
+            '[1]',
+          ),
         );
         // Remove ReviewedList item
         removeAtIndexFromCardReviewedList(0);

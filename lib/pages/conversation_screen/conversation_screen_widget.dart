@@ -11,7 +11,6 @@ import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -61,9 +60,6 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
           await SQLiteManager.instance.flashcardsForConversationWithDeckId(
         deckId: widget.deckId,
       );
-
-      debugPrint('flashcardsConvOutput: ${_model.flashcardsConvOutput}');
-
       // Fetch the tags from tags ids in flashcards
       _model.conversationTagsList = await actions.getConversationTagsLists(
         functions
@@ -71,9 +67,6 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                 _model.flashcardsConvOutput?.toList())
             ?.toList(),
       );
-
-      debugPrint('conversationTagsList: ${_model.conversationTagsList}');
-
       // Update ConversationTagsLists with tags
       _model.conversationTagsLists = _model.conversationTagsList!
           .toList()
@@ -251,9 +244,12 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                             .width *
                                                         1.0,
                                                     minHeight: 100.0,
+                                                    maxWidth: MediaQuery.sizeOf(
+                                                                context)
+                                                            .width *
+                                                        1.0,
                                                   ),
-                                                  decoration:
-                                                      const BoxDecoration(),
+                                                  decoration: const BoxDecoration(),
                                                   child: Column(
                                                     mainAxisSize:
                                                         MainAxisSize.max,
@@ -281,10 +277,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                       .w600,
                                                             ),
                                                       ),
-                                                      Align(
-                                                        alignment:
-                                                            const AlignmentDirectional(
-                                                                -1.0, 0.0),
+                                                      Expanded(
                                                         child: Builder(
                                                           builder: (context) {
                                                             final flashcardsPerTagCombinationList =
@@ -293,8 +286,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                     .toList();
 
                                                             return Wrap(
-                                                              spacing: 0.0,
-                                                              runSpacing: 0.0,
+                                                              spacing: 1.0,
+                                                              runSpacing: 1.0,
                                                               alignment:
                                                                   WrapAlignment
                                                                       .start,
@@ -309,8 +302,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                               verticalDirection:
                                                                   VerticalDirection
                                                                       .down,
-                                                              clipBehavior:
-                                                                  Clip.none,
+                                                              clipBehavior: Clip
+                                                                  .antiAlias,
                                                               children: List.generate(
                                                                   flashcardsPerTagCombinationList
                                                                       .length,
@@ -390,9 +383,6 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                       maxWidth:
                                                                           MediaQuery.sizeOf(context).width *
                                                                               1.0,
-                                                                      maxHeight:
-                                                                          MediaQuery.sizeOf(context).height *
-                                                                              0.3,
                                                                     ),
                                                                     decoration:
                                                                         BoxDecoration(
@@ -429,8 +419,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                     ),
                                                                     child:
                                                                         Padding(
-                                                                      padding: const EdgeInsetsDirectional
-                                                                          .fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           3.0,
                                                                           0.0,
                                                                           3.0,
@@ -438,11 +427,11 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                       child:
                                                                           Row(
                                                                         mainAxisSize:
-                                                                            MainAxisSize.min,
+                                                                            MainAxisSize.max,
                                                                         children: [
                                                                           Flexible(
                                                                             child:
-                                                                                AutoSizeText(
+                                                                                Text(
                                                                               valueOrDefault<String>(
                                                                                 _model.showVerso
                                                                                     ? valueOrDefault<String>(
@@ -515,9 +504,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                         child: Stack(
                                           children: [
                                             Align(
-                                              alignment:
-                                                  const AlignmentDirectional(
-                                                      0.95, 0.97),
+                                              alignment: const AlignmentDirectional(
+                                                  0.95, 0.97),
                                               child: FlutterFlowIconButton(
                                                 borderColor: Colors.transparent,
                                                 borderRadius: 20.0,
@@ -549,9 +537,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                             ),
                                             if (_model.showOptionButtons)
                                               Align(
-                                                alignment:
-                                                    const AlignmentDirectional(
-                                                        0.7, 0.95),
+                                                alignment: const AlignmentDirectional(
+                                                    0.7, 0.95),
                                                 child: FlutterFlowIconButton(
                                                   borderColor:
                                                       Colors.transparent,
@@ -576,9 +563,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                               ),
                                             if (_model.showOptionButtons)
                                               Align(
-                                                alignment:
-                                                    const AlignmentDirectional(
-                                                        0.45, 0.95),
+                                                alignment: const AlignmentDirectional(
+                                                    0.45, 0.95),
                                                 child: FlutterFlowIconButton(
                                                   borderColor:
                                                       Colors.transparent,
@@ -683,8 +669,11 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsetsDirectional
-                                                                .fromSTEB(3.0,
-                                                                0.0, 3.0, 0.0),
+                                                                .fromSTEB(
+                                                                    3.0,
+                                                                    0.0,
+                                                                    3.0,
+                                                                    0.0),
                                                         child: SelectionArea(
                                                             child: Text(
                                                           cheatSheetListViewCheatsheetRowsREADConceptAnswerRow
@@ -714,8 +703,11 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsetsDirectional
-                                                                .fromSTEB(3.0,
-                                                                0.0, 3.0, 0.0),
+                                                                .fromSTEB(
+                                                                    3.0,
+                                                                    0.0,
+                                                                    3.0,
+                                                                    0.0),
                                                         child: SelectionArea(
                                                             child: Text(
                                                           cheatSheetListViewCheatsheetRowsREADConceptAnswerRow
@@ -747,14 +739,12 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                       },
                                     ),
                                     Align(
-                                      alignment:
-                                          const AlignmentDirectional(0.0, 0.0),
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
                                       child: Stack(
                                         children: [
                                           Align(
                                             alignment:
-                                                const AlignmentDirectional(
-                                                    0.9, 0.95),
+                                                const AlignmentDirectional(0.9, 0.95),
                                             child: FlutterFlowIconButton(
                                               borderColor: Colors.transparent,
                                               borderRadius: 20.0,
@@ -837,8 +827,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                         animationsMap['pageViewOnPageLoadAnimation']!),
                   ),
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                        0.0, 12.0, 0.0, 0.0),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
                     child: Container(
                       width: double.infinity,
                       height: MediaQuery.sizeOf(context).height * 0.1,
@@ -965,10 +955,6 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                 _model.bigLoopCurrentItem =
                                     _model.conversationTagsLists[
                                         _model.bigLoopCounter];
-                                debugPrint(
-                                    '_model.conversationTagsLists length: ${_model.conversationTagsList?.length}');
-                                debugPrint(
-                                    '_model.bigLoopCounter: ${_model.bigLoopCounter}');
                                 while (_model
                                         .conversationTagsLists[
                                             _model.bigLoopCounter]
@@ -976,10 +962,6 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                         .length >=
                                     _model.loopCounter!) {
                                   // Update loopCurrentItem with its flashcard
-                                  debugPrint(
-                                    'loopCounter: ${_model.loopCounter} / ${_model.conversationTagsLists[_model.bigLoopCounter].flashcardInfosList.length}',
-                                  );
-
                                   _model.loopCurrentItem = _model
                                       .conversationTagsLists[
                                           _model.bigLoopCounter]
@@ -1333,8 +1315,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                             milliSecond: false,
                           ),
                           controller: _model.timerController,
-                          updateStateInterval:
-                              const Duration(milliseconds: 1000),
+                          updateStateInterval: const Duration(milliseconds: 1000),
                           onChanged: (value, displayTime, shouldUpdate) {
                             _model.timerMilliseconds = value;
                             _model.timerValue = displayTime;
@@ -1368,8 +1349,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                             milliSecond: false,
                           ),
                           controller: _model.totalTimerController,
-                          updateStateInterval:
-                              const Duration(milliseconds: 1000),
+                          updateStateInterval: const Duration(milliseconds: 1000),
                           onChanged: (value, displayTime, shouldUpdate) {
                             _model.totalTimerMilliseconds = value;
                             _model.totalTimerValue = displayTime;
