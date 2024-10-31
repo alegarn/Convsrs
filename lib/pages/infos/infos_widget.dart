@@ -280,7 +280,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
                             Builder(
                               builder: (context) {
@@ -293,7 +293,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                 return FlutterFlowDataTable<
                                     FlashcardReadAllRow>(
                                   controller:
-                                      _model.flashCardDataTableController1,
+                                      _model.dataTableFlashcardController,
                                   data: flashcardsData,
                                   columnsBuilder: (onSortChanged) => [
                                     DataColumn2(
@@ -755,7 +755,7 @@ class _InfosWidgetState extends State<InfosWidget> {
 
                           return FlutterFlowDataTable<
                               RetrievalSessionsREADAllFromUserIdRow>(
-                            controller: _model.flashCardDataTableController2,
+                            controller: _model.flashCardDataTableController1,
                             data: retrievalSessionsDataTable,
                             columnsBuilder: (onSortChanged) => [
                               DataColumn2(
@@ -937,7 +937,7 @@ class _InfosWidgetState extends State<InfosWidget> {
 
                           return FlutterFlowDataTable<
                               RetrievalSessionsDecksREADAllRow>(
-                            controller: _model.flashCardDataTableController3,
+                            controller: _model.flashCardDataTableController2,
                             data: sessionsDecksData,
                             columnsBuilder: (onSortChanged) => [
                               DataColumn2(
@@ -1087,7 +1087,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                           }
 
                           return FlutterFlowDataTable<SRSParametersREADAllRow>(
-                            controller: _model.flashCardDataTableController4,
+                            controller: _model.flashCardDataTableController3,
                             data: srsParametersTable,
                             columnsBuilder: (onSortChanged) => [
                               DataColumn2(
@@ -1275,7 +1275,7 @@ class _InfosWidgetState extends State<InfosWidget> {
                                 return FlutterFlowDataTable<
                                     ConversationsREADAllRow>(
                                   controller:
-                                      _model.flashCardDataTableController5,
+                                      _model.conversationDataTableController,
                                   data: conversationsTable,
                                   columnsBuilder: (onSortChanged) => [
                                     DataColumn2(
