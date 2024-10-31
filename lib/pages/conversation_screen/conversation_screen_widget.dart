@@ -965,7 +965,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                               // Reset BigLoopCounter / loopCounter
                               _model.loopCounter = 0;
                               _model.bigLoopCounter = 0;
-                              while (_model.conversationTagsLists.length >=
+                              while (_model.conversationTagsLists.length >
                                   valueOrDefault<int>(
                                     _model.bigLoopCounter,
                                     0,
@@ -978,7 +978,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                         .conversationTagsLists[
                                             _model.bigLoopCounter]
                                         .flashcardInfosList
-                                        .length >=
+                                        .length >
                                     _model.loopCounter!) {
                                   // Update loopCurrentItem with its flashcard
                                   _model.loopCurrentItem = _model
