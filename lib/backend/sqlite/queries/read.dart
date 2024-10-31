@@ -449,7 +449,8 @@ SELECT
   f.successCount,
   f.totalReviewCount,
   f.mentalImageBool,
-  f.totalReviewCount
+  f.totalReviewCount,
+  f.tagIds
 FROM flashcards f
 JOIN decksFlashcards df ON f.id = df.flashcardId
 WHERE f.userId = '$userId'
@@ -478,6 +479,7 @@ class FlashcardsInfosForRetrievalSessionRow extends SqliteRow {
   String get nextSpeakingDate => data['nextSpeakingDate'] as String;
   String get currentSpeakingDate => data['currentSpeakingDate'] as String;
   String get name => data['name'] as String;
+  String get tagIds => data['tagIds'] as String;
 }
 
 /// END FLASHCARDS INFOS FOR RETRIEVAL SESSION

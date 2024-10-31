@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
@@ -56,18 +57,24 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // Flashcards to use
-      _model.flashcardsTextId =
+      _model.flashcardsConvOutput =
           await SQLiteManager.instance.flashcardsForConversationWithDeckId(
         deckId: widget.deckId,
       );
-      // Update FlashcardsConversationStatus
-      _model.flashcardsConversationStatus = functions
-          .updateFlashcardConversationStatus(_model.flashcardsTextId?.toList())!
+      // Fetch the tags from tags ids in flashcards
+      _model.conversationTagsList = await actions.getConversationTagsLists(
+        functions
+            .updateFlashcardConversationStatus(
+                _model.flashcardsConvOutput?.toList())
+            ?.toList(),
+      );
+      // Update ConversationTagsLists with tags
+      _model.conversationTagsLists = _model.conversationTagsList!
           .toList()
-          .cast<FlashcardConversationStatusStruct>();
+          .cast<ConversationTagsListsStruct>();
       // totalCardNumber state
       _model.totalCardNumber = valueOrDefault<int>(
-        _model.flashcardsConversationStatus.length,
+        _model.flashcardsConvOutput?.length,
         0,
       );
       // Update the timeToValidateWord
@@ -204,232 +211,308 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                               children: [
                                 Stack(
                                   children: [
-                                    SingleChildScrollView(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Padding(
-                                            padding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                    3.0, 5.0, 3.0, 0.0),
-                                            child: Builder(
-                                              builder: (context) {
-                                                final wordList = _model
-                                                    .flashcardsConversationStatus
-                                                    .toList();
+                                    SafeArea(
+                                      child: ClipRRect(
+                                        child: Container(
+                                          width:
+                                              MediaQuery.sizeOf(context).width *
+                                                  1.0,
+                                          height: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              1.0,
+                                          constraints: BoxConstraints(
+                                            maxWidth: MediaQuery.sizeOf(context)
+                                                    .width *
+                                                1.0,
+                                            maxHeight:
+                                                MediaQuery.sizeOf(context)
+                                                        .height *
+                                                    1.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                          ),
+                                          child: Builder(
+                                            builder: (context) {
+                                              final tags = _model
+                                                  .conversationTagsLists
+                                                  .toList();
 
-                                                return Wrap(
-                                                  spacing: 3.0,
-                                                  runSpacing: 2.0,
-                                                  alignment:
-                                                      WrapAlignment.start,
-                                                  crossAxisAlignment:
-                                                      WrapCrossAlignment.start,
-                                                  direction: Axis.horizontal,
-                                                  runAlignment:
-                                                      WrapAlignment.start,
-                                                  verticalDirection:
-                                                      VerticalDirection.down,
-                                                  clipBehavior: Clip.none,
+                                              return SingleChildScrollView(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: List.generate(
-                                                      wordList.length,
-                                                      (wordListIndex) {
-                                                    final wordListItem =
-                                                        wordList[wordListIndex];
-                                                    return InkWell(
-                                                      splashColor:
-                                                          Colors.transparent,
-                                                      focusColor:
-                                                          Colors.transparent,
-                                                      hoverColor:
-                                                          Colors.transparent,
-                                                      highlightColor:
-                                                          Colors.transparent,
-                                                      onTap: () async {
-                                                        // FlashcardStatus Update
-                                                        _model
-                                                            .updateFlashcardsConversationStatusAtIndex(
-                                                          wordListIndex,
-                                                          (e) => e
-                                                            ..incrementTimesValidatedByClickCount(
-                                                                1),
-                                                        );
-                                                        safeSetState(() {});
-                                                        if (_model
-                                                                .flashcardsConversationStatus[
-                                                                    wordListIndex]
-                                                                .timesValidatedByClickCount ==
-                                                            _model
-                                                                .timeToValidateWord) {
-                                                          // wordIsValidated
-                                                          _model
-                                                              .updateFlashcardsConversationStatusAtIndex(
-                                                            wordListIndex,
-                                                            (e) => e
-                                                              ..isFullyValidated =
-                                                                  true,
-                                                          );
-                                                          // State WordValidatedCount
-                                                          _model.validatedCardNumber =
-                                                              _model.validatedCardNumber! +
-                                                                  1;
-                                                          safeSetState(() {});
-                                                        } else {
-                                                          return;
-                                                        }
-                                                      },
+                                                      tags.length, (tagsIndex) {
+                                                    final tagsItem =
+                                                        tags[tagsIndex];
+                                                    return ClipRRect(
                                                       child: Container(
+                                                        width:
+                                                            MediaQuery.sizeOf(
+                                                                        context)
+                                                                    .width *
+                                                                1.0,
                                                         constraints:
                                                             BoxConstraints(
+                                                          minWidth:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .width *
+                                                                  1.0,
                                                           maxWidth:
                                                               MediaQuery.sizeOf(
                                                                           context)
                                                                       .width *
                                                                   1.0,
-                                                          maxHeight:
-                                                              MediaQuery.sizeOf(
-                                                                          context)
-                                                                      .height *
-                                                                  0.1,
                                                         ),
                                                         decoration:
-                                                            BoxDecoration(
-                                                          color: valueOrDefault<
-                                                              Color>(
-                                                            wordListItem
-                                                                    .isFullyValidated
-                                                                ? FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .warning
-                                                                : FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .primary,
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                          ),
-                                                          boxShadow: const [
-                                                            BoxShadow(
-                                                              blurRadius: 4.0,
-                                                              color: Color(
-                                                                  0x33000000),
-                                                              offset: Offset(
-                                                                0.0,
-                                                                2.0,
+                                                            const BoxDecoration(),
+                                                        alignment:
+                                                            const AlignmentDirectional(
+                                                                -1.0, -1.0),
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                functions.getNamesFromTagList(
+                                                                    tagsItem
+                                                                        .tagsLists
+                                                                        .toList()),
+                                                                'no_tag',
                                                               ),
-                                                            )
-                                                          ],
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          border: Border.all(
-                                                            color: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .accent1,
-                                                          ),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      3.0,
-                                                                      0.0,
-                                                                      3.0,
-                                                                      0.0),
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              Flexible(
-                                                                child:
-                                                                    AutoSizeText(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    _model
-                                                                            .showVerso
-                                                                        ? valueOrDefault<
-                                                                            String>(
-                                                                            wordListItem.textVerso,
-                                                                            'none',
-                                                                          )
-                                                                        : valueOrDefault<
-                                                                            String>(
-                                                                            wordListItem.textRecto,
-                                                                            'none',
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Readex Pro',
+                                                                    fontSize:
+                                                                        20.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                            ),
+                                                            Builder(
+                                                              builder:
+                                                                  (context) {
+                                                                final flashcardsPerTagCombinationList =
+                                                                    tagsItem
+                                                                        .flashcardInfosList
+                                                                        .toList();
+
+                                                                return Wrap(
+                                                                  spacing: 1.0,
+                                                                  runSpacing:
+                                                                      1.0,
+                                                                  alignment:
+                                                                      WrapAlignment
+                                                                          .start,
+                                                                  crossAxisAlignment:
+                                                                      WrapCrossAlignment
+                                                                          .start,
+                                                                  direction: Axis
+                                                                      .horizontal,
+                                                                  runAlignment:
+                                                                      WrapAlignment
+                                                                          .start,
+                                                                  verticalDirection:
+                                                                      VerticalDirection
+                                                                          .down,
+                                                                  clipBehavior:
+                                                                      Clip.antiAlias,
+                                                                  children: List.generate(
+                                                                      flashcardsPerTagCombinationList
+                                                                          .length,
+                                                                      (flashcardsPerTagCombinationListIndex) {
+                                                                    final flashcardsPerTagCombinationListItem =
+                                                                        flashcardsPerTagCombinationList[
+                                                                            flashcardsPerTagCombinationListIndex];
+                                                                    return Align(
+                                                                      alignment:
+                                                                          const AlignmentDirectional(
+                                                                              -1.0,
+                                                                              0.0),
+                                                                      child:
+                                                                          InkWell(
+                                                                        splashColor:
+                                                                            Colors.transparent,
+                                                                        focusColor:
+                                                                            Colors.transparent,
+                                                                        hoverColor:
+                                                                            Colors.transparent,
+                                                                        highlightColor:
+                                                                            Colors.transparent,
+                                                                        onTap:
+                                                                            () async {
+                                                                          // FlashcardStatus Update
+                                                                          _model
+                                                                              .updateConversationTagsListsAtIndex(
+                                                                            tagsIndex,
+                                                                            (e) => e
+                                                                              ..updateFlashcardInfosList(
+                                                                                (e) => e[valueOrDefault<int>(
+                                                                                  flashcardsPerTagCombinationListIndex,
+                                                                                  1,
+                                                                                )]
+                                                                                  ..incrementTimesValidatedByClickCount(1),
+                                                                              ),
+                                                                          );
+                                                                          safeSetState(
+                                                                              () {});
+                                                                          if (tagsItem
+                                                                                  .flashcardInfosList[valueOrDefault<int>(
+                                                                                flashcardsPerTagCombinationListIndex,
+                                                                                0,
+                                                                              )]
+                                                                                  .timesValidatedByClickCount ==
+                                                                              _model.timeToValidateWord) {
+                                                                            // wordIsValidated
+                                                                            _model.updateConversationTagsListsAtIndex(
+                                                                              valueOrDefault<int>(
+                                                                                tagsIndex,
+                                                                                0,
+                                                                              ),
+                                                                              (e) => e
+                                                                                ..updateFlashcardInfosList(
+                                                                                  (e) => e[valueOrDefault<int>(
+                                                                                    flashcardsPerTagCombinationListIndex,
+                                                                                    0,
+                                                                                  )]
+                                                                                    ..isFullyValidated = true,
+                                                                                ),
+                                                                            );
+                                                                            // State WordValidatedCount
+                                                                            _model.validatedCardNumber =
+                                                                                _model.validatedCardNumber! + 1;
+                                                                            safeSetState(() {});
+                                                                          } else {
+                                                                            return;
+                                                                          }
+                                                                        },
+                                                                        child:
+                                                                            ClipRRect(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(10.0),
+                                                                          child:
+                                                                              Container(
+                                                                            constraints:
+                                                                                BoxConstraints(
+                                                                              minWidth: MediaQuery.sizeOf(context).width * 0.1,
+                                                                              maxWidth: MediaQuery.sizeOf(context).width * 1.0,
+                                                                              maxHeight: 300.0,
+                                                                            ),
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              color: valueOrDefault<Color>(
+                                                                                flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).warning : FlutterFlowTheme.of(context).primary,
+                                                                                FlutterFlowTheme.of(context).primary,
+                                                                              ),
+                                                                              boxShadow: const [
+                                                                                BoxShadow(
+                                                                                  blurRadius: 4.0,
+                                                                                  color: Color(0x33000000),
+                                                                                  offset: Offset(
+                                                                                    0.0,
+                                                                                    2.0,
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                              borderRadius: BorderRadius.circular(10.0),
+                                                                              border: Border.all(
+                                                                                color: FlutterFlowTheme.of(context).accent1,
+                                                                              ),
+                                                                            ),
+                                                                            child:
+                                                                                Padding(
+                                                                              padding: const EdgeInsetsDirectional.fromSTEB(3.0, 0.0, 3.0, 0.0),
+                                                                              child: Row(
+                                                                                mainAxisSize: MainAxisSize.min,
+                                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                                children: [
+                                                                                  ClipRRect(
+                                                                                    child: Container(
+                                                                                      constraints: BoxConstraints(
+                                                                                        maxWidth: MediaQuery.sizeOf(context).width * 0.9,
+                                                                                        maxHeight: 300.0,
+                                                                                      ),
+                                                                                      decoration: const BoxDecoration(),
+                                                                                      child: AutoSizeText(
+                                                                                        valueOrDefault<String>(
+                                                                                          _model.showVerso
+                                                                                              ? valueOrDefault<String>(
+                                                                                                  flashcardsPerTagCombinationListItem.textVerso,
+                                                                                                  'textVerso',
+                                                                                                )
+                                                                                              : valueOrDefault<String>(
+                                                                                                  flashcardsPerTagCombinationListItem.textRecto,
+                                                                                                  'textRecto',
+                                                                                                ),
+                                                                                          'Verso',
+                                                                                        ),
+                                                                                        textAlign: TextAlign.center,
+                                                                                        maxLines: 3,
+                                                                                        minFontSize: 18.0,
+                                                                                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                              fontFamily: 'Readex Pro',
+                                                                                              color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).primaryBackground,
+                                                                                              fontSize: 48.0,
+                                                                                              letterSpacing: 0.0,
+                                                                                              fontWeight: FontWeight.w500,
+                                                                                            ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                  AutoSizeText(
+                                                                                    valueOrDefault<String>(
+                                                                                      flashcardsPerTagCombinationListItem.timesValidatedByClickCount.toString(),
+                                                                                      '0',
+                                                                                    ).maybeHandleOverflow(
+                                                                                      maxChars: 2,
+                                                                                    ),
+                                                                                    textAlign: TextAlign.center,
+                                                                                    minFontSize: 18.0,
+                                                                                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                                                          fontFamily: 'Readex Pro',
+                                                                                          color: flashcardsPerTagCombinationListItem.isFullyValidated ? FlutterFlowTheme.of(context).primaryText : FlutterFlowTheme.of(context).warning,
+                                                                                          fontSize: 24.0,
+                                                                                          letterSpacing: 0.0,
+                                                                                          fontWeight: FontWeight.bold,
+                                                                                          fontStyle: FontStyle.italic,
+                                                                                        ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
                                                                           ),
-                                                                    'Verso',
-                                                                  ),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Readex Pro',
-                                                                        color: wordListItem.isFullyValidated
-                                                                            ? FlutterFlowTheme.of(context).primaryText
-                                                                            : FlutterFlowTheme.of(context).primaryBackground,
-                                                                        fontSize:
-                                                                            48.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
+                                                                        ),
+                                                                      ).animateOnActionTrigger(
+                                                                        animationsMap[
+                                                                            'containerOnActionTriggerAnimation']!,
                                                                       ),
-                                                                ),
-                                                              ),
-                                                              Flexible(
-                                                                child: Text(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    wordListItem
-                                                                        .timesValidatedByClickCount
-                                                                        .toString(),
-                                                                    '0',
-                                                                  ).maybeHandleOverflow(
-                                                                    maxChars: 2,
-                                                                  ),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Readex Pro',
-                                                                        color: wordListItem.isFullyValidated
-                                                                            ? FlutterFlowTheme.of(context).primaryText
-                                                                            : FlutterFlowTheme.of(context).warning,
-                                                                        fontSize:
-                                                                            24.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        fontStyle:
-                                                                            FontStyle.italic,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
+                                                                    );
+                                                                  }),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
-                                                    ).animateOnActionTrigger(
-                                                      animationsMap[
-                                                          'containerOnActionTriggerAnimation']!,
                                                     );
                                                   }),
-                                                );
-                                              },
-                                            ),
+                                                ),
+                                              );
+                                            },
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                     Align(
@@ -524,7 +607,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                                     String>(
                                                       functions.extractFlashcards(
                                                           _model
-                                                              .flashcardsConversationStatus
+                                                              .conversationTagsLists
                                                               .toList()),
                                                       'textRecto : textVerso',
                                                     )));
@@ -859,7 +942,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                 durationMs: _model.totalTimerMilliseconds,
                                 date: functions.dateNow(),
                                 totalCardNumber: valueOrDefault<int>(
-                                  _model.flashcardsConversationStatus.length,
+                                  _model.flashcardsConvOutput?.length,
                                   0,
                                 ),
                                 validatedCardNumber: valueOrDefault<int>(
@@ -867,9 +950,8 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                   0,
                                 ),
                                 validatedCardIds: valueOrDefault<String>(
-                                  functions.createListValidatedCardsIds(_model
-                                      .flashcardsConversationStatus
-                                      .toList()),
+                                  functions.createListValidatedCardsIds(
+                                      _model.conversationTagsLists.toList()),
                                   '[]',
                                 ),
                                 timeSpoken: _model.timeSpoken!,
@@ -880,228 +962,247 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                   .conversationsREADLastConversationID();
                               // Second Timer Stop
                               _model.timerController.onStopTimer();
-                              // Reset loopCounter
+                              // Reset BigLoopCounter / loopCounter
                               _model.loopCounter = 0;
-                              while (
-                                  _model.flashcardsConversationStatus.length >=
-                                      valueOrDefault<int>(
-                                        _model.loopCounter,
-                                        0,
-                                      )) {
-                                // save loopCurrentItem
-                                _model.loopCurrentItem =
-                                    _model.flashcardsConversationStatus.first;
-                                if (_model.loopCurrentItem?.isFullyValidated ==
-                                    true) {
-                                  // Flashcard info extract
-                                  _model.flashcardToUpdate = await SQLiteManager
-                                      .instance
-                                      .flashcardRead1WithId(
-                                    flashcardId: valueOrDefault<int>(
-                                      _model.flashcardsConversationStatus.first
-                                          .id,
-                                      0,
-                                    ),
-                                  );
-                                  // converstationStepsIntervalsSec from stepNumber
-                                  _model.converstationStepsIntervalsSec =
-                                      await SQLiteManager.instance
-                                          .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
-                                    stepNumber: valueOrDefault<int>(
-                                      valueOrDefault<int>(
-                                                _model.flashcardToUpdate?.first
-                                                    .currentSpeakingStep,
-                                                0,
-                                              ) ==
-                                              0
-                                          ? 1
-                                          : valueOrDefault<int>(
-                                              _model.flashcardToUpdate?.first
-                                                  .currentSpeakingStep,
-                                              1,
-                                            ),
-                                      1,
-                                    ),
-                                  );
-                                  if (() {
-                                    if (functions.extractLenghtInStringArray(
-                                            valueOrDefault<String>(
-                                          _model
-                                              .converstationStepsIntervalsSec
-                                              ?.first
-                                              .conversationStepsIntervalsSec,
-                                          '[0]',
-                                        )) <
-                                        valueOrDefault<int>(
-                                          _model.flashcardToUpdate?.first
-                                              .currentSpeakingStep,
-                                          1,
-                                        )) {
-                                      return false;
-                                    } else if (functions
-                                            .extractLenghtInStringArray(
-                                                valueOrDefault<String>(
-                                          _model
-                                              .converstationStepsIntervalsSec
-                                              ?.first
-                                              .conversationStepsIntervalsSec,
-                                          '[0]',
-                                        )) >=
-                                        valueOrDefault<int>(
-                                          _model.flashcardToUpdate?.first
-                                              .currentSpeakingStep,
-                                          1,
-                                        )) {
-                                      return true;
-                                    } else {
-                                      return true;
-                                    }
-                                  }()) {
-                                    // Update currentSpeakingDate, currentSpeakingStep in corresponding Flashcard
-                                    await SQLiteManager.instance
-                                        .flashcardUpdate(
+                              _model.bigLoopCounter = 0;
+                              while (_model.conversationTagsLists.length >=
+                                  valueOrDefault<int>(
+                                    _model.bigLoopCounter,
+                                    0,
+                                  )) {
+                                // save BigLoopCurrentItem
+                                _model.bigLoopCurrentItem =
+                                    _model.conversationTagsLists[
+                                        _model.bigLoopCounter];
+                                while (_model
+                                        .conversationTagsLists[
+                                            _model.bigLoopCounter]
+                                        .flashcardInfosList
+                                        .length >=
+                                    _model.loopCounter!) {
+                                  // Update loopCurrentItem with its flashcard
+                                  _model.loopCurrentItem = _model
+                                      .conversationTagsLists[
+                                          _model.bigLoopCounter]
+                                      .flashcardInfosList[_model.loopCounter!];
+                                  safeSetState(() {});
+                                  if (_model
+                                          .loopCurrentItem?.isFullyValidated ==
+                                      true) {
+                                    // Flashcard info extract
+                                    _model.flashcardToUpdate =
+                                        await SQLiteManager.instance
+                                            .flashcardRead1WithId(
                                       flashcardId: valueOrDefault<int>(
                                         _model.loopCurrentItem?.id,
-                                        0,
-                                      ),
-                                      currentSpeakingStep: valueOrDefault<int>(
-                                        valueOrDefault<int>(
-                                              _model.flashcardToUpdate?.first
-                                                  .currentSpeakingStep,
-                                              1,
-                                            ) +
-                                            1,
                                         1,
                                       ),
-                                      currentSpeakingDate:
-                                          valueOrDefault<String>(
-                                        functions
-                                            .updateFlashcardCurrentSpeakingDate(
-                                                valueOrDefault<int>(
+                                    );
+                                    // converstationStepsIntervalsSec from stepNumber
+                                    _model.converstationStepsIntervalsSec =
+                                        await SQLiteManager.instance
+                                            .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
+                                      stepNumber: valueOrDefault<int>(
+                                        valueOrDefault<int>(
                                                   _model
                                                       .flashcardToUpdate
                                                       ?.first
                                                       .currentSpeakingStep,
-                                                  1,
-                                                ),
-                                                valueOrDefault<String>(
-                                                  _model
-                                                      .converstationStepsIntervalsSec
-                                                      ?.first
-                                                      .conversationStepsIntervalsSec,
-                                                  '[0]',
-                                                ),
-                                                valueOrDefault<String>(
-                                                  _model
-                                                      .flashcardToUpdate
-                                                      ?.first
-                                                      .currentSpeakingDate,
-                                                  'none',
-                                                )),
-                                        'none',
-                                      ),
-                                      name: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first.name,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      textRecto: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .textRecto,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      textVerso: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .textVerso,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      audioRectoUrl: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .audioRectoUrl,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      audioVersoUrl: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .audioVersoUrl,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      imageRectoUrl: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .imageRectoUrl,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      imageVersoUrl: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .imageVersoUrl,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      currentRetrievalStep: valueOrDefault<int>(
-                                        _model.flashcardToUpdate?.first
-                                            .currentRetrievalStep,
+                                                  0,
+                                                ) ==
+                                                0
+                                            ? 1
+                                            : valueOrDefault<int>(
+                                                _model.flashcardToUpdate?.first
+                                                    .currentSpeakingStep,
+                                                1,
+                                              ),
                                         1,
-                                      ),
-                                      toRecall: valueOrDefault<int>(
-                                        _model
-                                            .flashcardToUpdate?.first.toRecall,
-                                        0,
-                                      ),
-                                      currentRecallDate: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .currentRecallDate,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      nextRecallDate: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .nextRecallDate,
-                                        'nextRecallDateDefault',
-                                      ),
-                                      successCount: valueOrDefault<int>(
-                                        _model.flashcardToUpdate?.first
-                                            .successCount,
-                                        1,
-                                      ),
-                                      totalReviewCount: valueOrDefault<int>(
-                                        _model.flashcardToUpdate?.first
-                                            .totalReviewCount,
-                                        1,
-                                      ),
-                                      mentalImageBool: valueOrDefault<int>(
-                                        _model.flashcardToUpdate?.first
-                                            .mentalImageBool,
-                                        1,
-                                      ),
-                                      nextSpeakingDate: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first
-                                            .nextSpeakingDate,
-                                        'conversationUpdateDefault',
-                                      ),
-                                      tagIds: valueOrDefault<String>(
-                                        _model.flashcardToUpdate?.first.tagIds,
-                                        '\"[1]\"',
                                       ),
                                     );
+                                    if (() {
+                                      if (functions.extractLenghtInStringArray(
+                                              valueOrDefault<String>(
+                                            _model
+                                                .converstationStepsIntervalsSec
+                                                ?.first
+                                                .conversationStepsIntervalsSec,
+                                            '[0]',
+                                          )) <
+                                          valueOrDefault<int>(
+                                            _model.flashcardToUpdate?.first
+                                                .currentSpeakingStep,
+                                            1,
+                                          )) {
+                                        return false;
+                                      } else if (functions
+                                              .extractLenghtInStringArray(
+                                                  valueOrDefault<String>(
+                                            _model
+                                                .converstationStepsIntervalsSec
+                                                ?.first
+                                                .conversationStepsIntervalsSec,
+                                            '[0]',
+                                          )) >=
+                                          valueOrDefault<int>(
+                                            _model.flashcardToUpdate?.first
+                                                .currentSpeakingStep,
+                                            1,
+                                          )) {
+                                        return true;
+                                      } else {
+                                        return true;
+                                      }
+                                    }()) {
+                                      // Update currentSpeakingDate, currentSpeakingStep in corresponding Flashcard
+                                      await SQLiteManager.instance
+                                          .flashcardUpdate(
+                                        flashcardId: valueOrDefault<int>(
+                                          _model.loopCurrentItem?.id,
+                                          0,
+                                        ),
+                                        currentSpeakingStep:
+                                            valueOrDefault<int>(
+                                          valueOrDefault<int>(
+                                                _model.flashcardToUpdate?.first
+                                                    .currentSpeakingStep,
+                                                1,
+                                              ) +
+                                              1,
+                                          1,
+                                        ),
+                                        currentSpeakingDate:
+                                            valueOrDefault<String>(
+                                          functions
+                                              .updateFlashcardCurrentSpeakingDate(
+                                                  valueOrDefault<int>(
+                                                    _model
+                                                        .flashcardToUpdate
+                                                        ?.first
+                                                        .currentSpeakingStep,
+                                                    1,
+                                                  ),
+                                                  valueOrDefault<String>(
+                                                    _model
+                                                        .converstationStepsIntervalsSec
+                                                        ?.first
+                                                        .conversationStepsIntervalsSec,
+                                                    '[0]',
+                                                  ),
+                                                  valueOrDefault<String>(
+                                                    _model
+                                                        .flashcardToUpdate
+                                                        ?.first
+                                                        .currentSpeakingDate,
+                                                    'none',
+                                                  )),
+                                          'none',
+                                        ),
+                                        name: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first.name,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        textRecto: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .textRecto,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        textVerso: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .textVerso,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        audioRectoUrl: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .audioRectoUrl,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        audioVersoUrl: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .audioVersoUrl,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        imageRectoUrl: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .imageRectoUrl,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        imageVersoUrl: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .imageVersoUrl,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        currentRetrievalStep:
+                                            valueOrDefault<int>(
+                                          _model.flashcardToUpdate?.first
+                                              .currentRetrievalStep,
+                                          1,
+                                        ),
+                                        toRecall: valueOrDefault<int>(
+                                          _model.flashcardToUpdate?.first
+                                              .toRecall,
+                                          0,
+                                        ),
+                                        currentRecallDate:
+                                            valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .currentRecallDate,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        nextRecallDate: valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .nextRecallDate,
+                                          'nextRecallDateDefault',
+                                        ),
+                                        successCount: valueOrDefault<int>(
+                                          _model.flashcardToUpdate?.first
+                                              .successCount,
+                                          1,
+                                        ),
+                                        totalReviewCount: valueOrDefault<int>(
+                                          _model.flashcardToUpdate?.first
+                                              .totalReviewCount,
+                                          1,
+                                        ),
+                                        mentalImageBool: valueOrDefault<int>(
+                                          _model.flashcardToUpdate?.first
+                                              .mentalImageBool,
+                                          1,
+                                        ),
+                                        nextSpeakingDate:
+                                            valueOrDefault<String>(
+                                          _model.flashcardToUpdate?.first
+                                              .nextSpeakingDate,
+                                          'conversationUpdateDefault',
+                                        ),
+                                        tagIds: valueOrDefault<String>(
+                                          _model
+                                              .flashcardToUpdate?.first.tagIds,
+                                          '\"[1]\"',
+                                        ),
+                                      );
+                                    }
                                   }
+                                  // insert conversationsFlashcards row
+                                  await SQLiteManager.instance
+                                      .conversationsFlashcardsCREATEAfterConversation(
+                                    flashcardId: valueOrDefault<int>(
+                                      _model.loopCurrentItem?.id,
+                                      0,
+                                    ),
+                                    conversationId: valueOrDefault<int>(
+                                      _model.conversationId?.first.id,
+                                      0,
+                                    ),
+                                  );
+                                  // loopCounter incrementation
+                                  _model.loopCounter = _model.loopCounter! + 1;
                                 }
-                                // insert conversationsFlashcards row
-                                await SQLiteManager.instance
-                                    .conversationsFlashcardsCREATEAfterConversation(
-                                  flashcardId: valueOrDefault<int>(
-                                    _model.loopCurrentItem?.id,
-                                    0,
-                                  ),
-                                  conversationId: valueOrDefault<int>(
-                                    _model.conversationId?.first.id,
-                                    0,
-                                  ),
-                                );
-                                // change first item in flashcardsConversationStatus to the end
-                                _model.flashcardsConversationStatus = functions
-                                    .moveFirstItemFlashConvStatToEndOfList(
-                                        _model.flashcardsConversationStatus
-                                            .toList())!
-                                    .toList()
-                                    .cast<FlashcardConversationStatusStruct>();
-                                // Counter incrementation
-                                _model.loopCounter = _model.loopCounter! + 1;
+                                // Reset loopCounter
+                                _model.loopCounter = 0;
+                                // BigLoopCounter incrementation
+                                _model.bigLoopCounter =
+                                    _model.bigLoopCounter + 1;
                               }
                               // New conversationsPersonas
                               await SQLiteManager.instance
