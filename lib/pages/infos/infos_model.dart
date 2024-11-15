@@ -104,20 +104,20 @@ class InfosModel extends FlutterFlowModel<InfosWidget> {
   List<SRSParametersREADAllRow>? srsParameters;
   // Stores action output result for [Backend Call - SQLite (Conversations READ all)] action in Infos widget.
   List<ConversationsREADAllRow>? conversations;
-  // State field(s) for FlashCardDataTable widget.
-  final flashCardDataTableController1 =
+  // State field(s) for DataTableFlashcard widget.
+  final dataTableFlashcardController =
       FlutterFlowDataTableController<FlashcardReadAllRow>();
   // State field(s) for FlashCardDataTable widget.
-  final flashCardDataTableController2 =
+  final flashCardDataTableController1 =
       FlutterFlowDataTableController<RetrievalSessionsREADAllFromUserIdRow>();
   // State field(s) for FlashCardDataTable widget.
-  final flashCardDataTableController3 =
+  final flashCardDataTableController2 =
       FlutterFlowDataTableController<RetrievalSessionsDecksREADAllRow>();
   // State field(s) for FlashCardDataTable widget.
-  final flashCardDataTableController4 =
+  final flashCardDataTableController3 =
       FlutterFlowDataTableController<SRSParametersREADAllRow>();
-  // State field(s) for FlashCardDataTable widget.
-  final flashCardDataTableController5 =
+  // State field(s) for ConversationDataTable widget.
+  final conversationDataTableController =
       FlutterFlowDataTableController<ConversationsREADAllRow>();
 
   @override
@@ -125,10 +125,10 @@ class InfosModel extends FlutterFlowModel<InfosWidget> {
 
   @override
   void dispose() {
+    dataTableFlashcardController.dispose();
     flashCardDataTableController1.dispose();
     flashCardDataTableController2.dispose();
     flashCardDataTableController3.dispose();
-    flashCardDataTableController4.dispose();
-    flashCardDataTableController5.dispose();
+    conversationDataTableController.dispose();
   }
 }

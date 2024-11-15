@@ -15,23 +15,6 @@ class ConversationScreenModel
 
   int? timeSpoken = 0;
 
-  List<FlashcardConversationStatusStruct> flashcardsConversationStatus = [];
-  void addToFlashcardsConversationStatus(
-          FlashcardConversationStatusStruct item) =>
-      flashcardsConversationStatus.add(item);
-  void removeFromFlashcardsConversationStatus(
-          FlashcardConversationStatusStruct item) =>
-      flashcardsConversationStatus.remove(item);
-  void removeAtIndexFromFlashcardsConversationStatus(int index) =>
-      flashcardsConversationStatus.removeAt(index);
-  void insertAtIndexInFlashcardsConversationStatus(
-          int index, FlashcardConversationStatusStruct item) =>
-      flashcardsConversationStatus.insert(index, item);
-  void updateFlashcardsConversationStatusAtIndex(
-          int index, Function(FlashcardConversationStatusStruct) updateFn) =>
-      flashcardsConversationStatus[index] =
-          updateFn(flashcardsConversationStatus[index]);
-
   List<CheatsheetRowsReadAllFromCheatsheetIdRow> cheatsheetRows = [];
   void addToCheatsheetRows(CheatsheetRowsReadAllFromCheatsheetIdRow item) =>
       cheatsheetRows.add(item);
@@ -67,10 +50,34 @@ class ConversationScreenModel
 
   bool showOptionButtons = false;
 
+  List<ConversationTagsListsStruct> conversationTagsLists = [];
+  void addToConversationTagsLists(ConversationTagsListsStruct item) =>
+      conversationTagsLists.add(item);
+  void removeFromConversationTagsLists(ConversationTagsListsStruct item) =>
+      conversationTagsLists.remove(item);
+  void removeAtIndexFromConversationTagsLists(int index) =>
+      conversationTagsLists.removeAt(index);
+  void insertAtIndexInConversationTagsLists(
+          int index, ConversationTagsListsStruct item) =>
+      conversationTagsLists.insert(index, item);
+  void updateConversationTagsListsAtIndex(
+          int index, Function(ConversationTagsListsStruct) updateFn) =>
+      conversationTagsLists[index] = updateFn(conversationTagsLists[index]);
+
+  ConversationTagsListsStruct? bigLoopCurrentItem;
+  void updateBigLoopCurrentItemStruct(
+      Function(ConversationTagsListsStruct) updateFn) {
+    updateFn(bigLoopCurrentItem ??= ConversationTagsListsStruct());
+  }
+
+  int bigLoopCounter = 0;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (Flashcards for conversation with deckId)] action in ConversationScreen widget.
-  List<FlashcardsForConversationWithDeckIdRow>? flashcardsTextId;
+  List<FlashcardsForConversationWithDeckIdRow>? flashcardsConvOutput;
+  // Stores action output result for [Custom Action - getConversationTagsLists] action in ConversationScreen widget.
+  List<ConversationTagsListsStruct>? conversationTagsList;
   // State field(s) for ConversationPagesViews widget.
   PageController? conversationPagesViewsController;
 

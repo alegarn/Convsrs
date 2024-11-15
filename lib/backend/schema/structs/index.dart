@@ -3,6 +3,7 @@ export '/backend/schema/util/schema_util.dart';
 export 'cheatsheet_struct.dart';
 export 'cheatsheet_row_struct.dart';
 export 'conversation_struct.dart';
+export 'conversation_tags_lists_struct.dart';
 export 'deck_struct.dart';
 export 'flashcard_struct.dart';
 export 'flashcard_conversation_status_struct.dart';

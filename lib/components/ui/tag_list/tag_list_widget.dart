@@ -1,12 +1,10 @@
 import '/backend/schema/structs/index.dart';
-import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'tag_list_model.dart';
 export 'tag_list_model.dart';
 
@@ -33,11 +31,8 @@ class TagListWidget extends StatefulWidget {
   State<TagListWidget> createState() => _TagListWidgetState();
 }
 
-class _TagListWidgetState extends State<TagListWidget>
-    with TickerProviderStateMixin {
+class _TagListWidgetState extends State<TagListWidget> {
   late TagListModel _model;
-
-  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void setState(VoidCallback callback) {
@@ -61,43 +56,6 @@ class _TagListWidgetState extends State<TagListWidget>
 
     _model.newTagFieldTextController ??= TextEditingController();
     _model.newTagFieldFocusNode ??= FocusNode();
-
-    animationsMap.addAll({
-      'rowOnActionTriggerAnimation': AnimationInfo(
-        trigger: AnimationTrigger.onActionTrigger,
-        applyInitialState: true,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 200.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 200.0.ms,
-            duration: 400.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-        ],
-      ),
-      'wrapOnActionTriggerAnimation': AnimationInfo(
-        trigger: AnimationTrigger.onActionTrigger,
-        applyInitialState: true,
-        effectsBuilder: () => [
-          VisibilityEffect(duration: 200.ms),
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 200.0.ms,
-            duration: 400.0.ms,
-            begin: 0.0,
-            end: 1.0,
-          ),
-        ],
-      ),
-    });
-    setupAnimations(
-      animationsMap.values.where((anim) =>
-          anim.trigger == AnimationTrigger.onActionTrigger ||
-          !anim.applyInitialState),
-      this,
-    );
   }
 
   @override
@@ -324,8 +282,6 @@ class _TagListWidgetState extends State<TagListWidget>
                                       );
                                     }).divide(const SizedBox(width: 3.0)),
                                   ),
-                                ).animateOnActionTrigger(
-                                  animationsMap['rowOnActionTriggerAnimation']!,
                                 );
                               },
                             ),
@@ -449,9 +405,6 @@ class _TagListWidgetState extends State<TagListWidget>
                                         ),
                                       );
                                     }),
-                                  ).animateOnActionTrigger(
-                                    animationsMap[
-                                        'wrapOnActionTriggerAnimation']!,
                                   );
                                 },
                               ),
