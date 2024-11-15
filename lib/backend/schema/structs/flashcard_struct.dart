@@ -26,6 +26,7 @@ class FlashcardStruct extends BaseStruct {
     String? imageVersoUrl,
     String? currentRecallDate,
     String? nextRecallDate,
+    String? tagIds,
   })  : _id = id,
         _userId = userId,
         _name = name,
@@ -44,7 +45,8 @@ class FlashcardStruct extends BaseStruct {
         _imageRectoUrl = imageRectoUrl,
         _imageVersoUrl = imageVersoUrl,
         _currentRecallDate = currentRecallDate,
-        _nextRecallDate = nextRecallDate;
+        _nextRecallDate = nextRecallDate,
+        _tagIds = tagIds;
 
   // "id" field.
   int? _id;
@@ -198,6 +200,13 @@ class FlashcardStruct extends BaseStruct {
 
   bool hasNextRecallDate() => _nextRecallDate != null;
 
+  // "tagIds" field.
+  String? _tagIds;
+  String get tagIds => _tagIds ?? '\"[1]\"';
+  set tagIds(String? val) => _tagIds = val;
+
+  bool hasTagIds() => _tagIds != null;
+
   static FlashcardStruct fromMap(Map<String, dynamic> data) => FlashcardStruct(
         id: castToType<int>(data['id']),
         userId: data['userId'] as String?,
@@ -218,6 +227,7 @@ class FlashcardStruct extends BaseStruct {
         imageVersoUrl: data['imageVersoUrl'] as String?,
         currentRecallDate: data['currentRecallDate'] as String?,
         nextRecallDate: data['nextRecallDate'] as String?,
+        tagIds: data['tagIds'] as String?,
       );
 
   static FlashcardStruct? maybeFromMap(dynamic data) => data is Map
@@ -244,6 +254,7 @@ class FlashcardStruct extends BaseStruct {
         'imageVersoUrl': _imageVersoUrl,
         'currentRecallDate': _currentRecallDate,
         'nextRecallDate': _nextRecallDate,
+        'tagIds': _tagIds,
       }.withoutNulls;
 
   @override
@@ -322,6 +333,10 @@ class FlashcardStruct extends BaseStruct {
         ),
         'nextRecallDate': serializeParam(
           _nextRecallDate,
+          ParamType.String,
+        ),
+        'tagIds': serializeParam(
+          _tagIds,
           ParamType.String,
         ),
       }.withoutNulls;
@@ -423,6 +438,11 @@ class FlashcardStruct extends BaseStruct {
           ParamType.String,
           false,
         ),
+        tagIds: deserializeParam(
+          data['tagIds'],
+          ParamType.String,
+          false,
+        ),
       );
 
   @override
@@ -449,7 +469,8 @@ class FlashcardStruct extends BaseStruct {
         imageRectoUrl == other.imageRectoUrl &&
         imageVersoUrl == other.imageVersoUrl &&
         currentRecallDate == other.currentRecallDate &&
-        nextRecallDate == other.nextRecallDate;
+        nextRecallDate == other.nextRecallDate &&
+        tagIds == other.tagIds;
   }
 
   @override
@@ -472,7 +493,8 @@ class FlashcardStruct extends BaseStruct {
         imageRectoUrl,
         imageVersoUrl,
         currentRecallDate,
-        nextRecallDate
+        nextRecallDate,
+        tagIds
       ]);
 }
 
@@ -496,6 +518,7 @@ FlashcardStruct createFlashcardStruct({
   String? imageVersoUrl,
   String? currentRecallDate,
   String? nextRecallDate,
+  String? tagIds,
 }) =>
     FlashcardStruct(
       id: id,
@@ -517,4 +540,5 @@ FlashcardStruct createFlashcardStruct({
       imageVersoUrl: imageVersoUrl,
       currentRecallDate: currentRecallDate,
       nextRecallDate: nextRecallDate,
+      tagIds: tagIds,
     );

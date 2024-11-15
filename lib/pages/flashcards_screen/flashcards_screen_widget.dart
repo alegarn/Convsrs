@@ -1,10 +1,14 @@
+import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
+import '/components/ui/list_button/list_button_widget.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -43,6 +47,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Get deck from Id
       _model.deckInfos = await SQLiteManager.instance.deckRead1FromId(
         id: widget.deckId,
       );
@@ -56,6 +61,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
 
     _model.textVersoFieldTextController ??= TextEditingController();
     _model.textVersoFieldFocusNode ??= FocusNode();
+
+    _model.newTagFieldTextController ??= TextEditingController();
+    _model.newTagFieldFocusNode ??= FocusNode();
 
     animationsMap.addAll({
       'buttonOnActionTriggerAnimation': AnimationInfo(
@@ -205,37 +213,38 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                 ),
                               );
                             }
-                            final listViewFlashcardsReadAllFromDeckNameAndIdRowList =
+                            final flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList =
                                 snapshot.data!;
 
                             return ListView.builder(
                               padding: EdgeInsets.zero,
                               scrollDirection: Axis.vertical,
                               itemCount:
-                                  listViewFlashcardsReadAllFromDeckNameAndIdRowList
+                                  flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList
                                       .length,
-                              itemBuilder: (context, listViewIndex) {
-                                final listViewFlashcardsReadAllFromDeckNameAndIdRow =
-                                    listViewFlashcardsReadAllFromDeckNameAndIdRowList[
-                                        listViewIndex];
+                              itemBuilder: (context, flashcardListViewIndex) {
+                                final flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow =
+                                    flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList[
+                                        flashcardListViewIndex];
                                 return wrapWithModel(
-                                  model: _model.listCrudRowModels.getModel(
-                                    listViewIndex.toString(),
-                                    listViewIndex,
+                                  model: _model.flashcardListCrudRowModels
+                                      .getModel(
+                                    flashcardListViewIndex.toString(),
+                                    flashcardListViewIndex,
                                   ),
                                   updateCallback: () => safeSetState(() {}),
                                   updateOnChange: true,
                                   child: ListCrudRowWidget(
                                     key: Key(
-                                      'Keybpt_${listViewIndex.toString()}',
+                                      'Keybpt_${flashcardListViewIndex.toString()}',
                                     ),
                                     rowName: valueOrDefault<String>(
-                                      listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                      flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                           .name,
                                       'deck',
                                     ),
                                     elementdId:
-                                        listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                        flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                             .id,
                                     navigateAction: () async {
                                       // Navigate to FlashcardUpdate
@@ -244,7 +253,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                         'FlashcardUpdateScreen',
                                         queryParameters: {
                                           'flashcardId': serializeParam(
-                                            listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                            flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                                 .id,
                                             ParamType.int,
                                           ),
@@ -264,7 +273,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       await SQLiteManager.instance
                                           .flashcardDeleteWithId(
                                         flashcardId: valueOrDefault<int>(
-                                          listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                          flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                               .id,
                                           0,
                                         ),
@@ -273,7 +282,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                       await SQLiteManager.instance
                                           .decksFlashcardsDELETERowByFlashcardId(
                                         flashcardId:
-                                            listViewFlashcardsReadAllFromDeckNameAndIdRow
+                                            flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
                                                 .id,
                                       );
                                       // Update component
@@ -305,6 +314,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                     size: 48.0,
                   ),
                   onPressed: () async {
+                    await _model.getTagsInState(context);
+                    safeSetState(() {});
+                    // Show modal
                     _model.isCreatingFlashcard = !_model.isCreatingFlashcard;
                     safeSetState(() {});
                   },
@@ -316,352 +328,930 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                   child: Container(
                     width: MediaQuery.sizeOf(context).width * 1.0,
                     height: MediaQuery.sizeOf(context).height * 1.0,
+                    constraints: const BoxConstraints(
+                      maxHeight: 950.0,
+                    ),
                     decoration: BoxDecoration(
                       color: FlutterFlowTheme.of(context).secondaryBackground,
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Create your Flashcard',
-                            textAlign: TextAlign.center,
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  fontSize: 30.0,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            child: TextFormField(
-                              controller: _model.nameFieldTextController,
-                              focusNode: _model.nameFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.nameFieldTextController',
-                                const Duration(milliseconds: 2000),
-                                () => safeSetState(() {}),
-                              ),
-                              autofocus: false,
-                              textInputAction: TextInputAction.done,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                labelText: 'Flashcard name:',
-                                labelStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Create your Flashcard',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
                                     .override(
                                       fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      fontSize: 18.0,
+                                      fontSize: 30.0,
                                       letterSpacing: 0.0,
                                     ),
-                                hintText: 'Typeflashcard\'s  name here...',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      letterSpacing: 0.0,
-                                    ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                              validator: _model.nameFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            child: TextFormField(
-                              controller: _model.textRectoFieldTextController,
-                              focusNode: _model.textRectoFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.textRectoFieldTextController',
-                                const Duration(milliseconds: 2000),
-                                () => safeSetState(() {}),
-                              ),
-                              autofocus: false,
-                              textInputAction: TextInputAction.done,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                labelText: 'Text recto: (known)',
-                                labelStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      fontSize: 18.0,
-                                      letterSpacing: 0.0,
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 1.0,
+                                child: TextFormField(
+                                  controller: _model.nameFieldTextController,
+                                  focusNode: _model.nameFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.nameFieldTextController',
+                                    const Duration(milliseconds: 2000),
+                                    () => safeSetState(() {}),
+                                  ),
+                                  autofocus: false,
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Flashcard name:',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText: 'Typeflashcard\'s  name here...',
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                hintText:
-                                    'Type flashcard\'s text recto here...',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      letterSpacing: 0.0,
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 2.0,
+                                    errorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedErrorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        fontSize: 24.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  minLines: 1,
+                                  validator: _model
+                                      .nameFieldTextControllerValidator
+                                      .asValidator(context),
                                 ),
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                              maxLines: 3,
-                              validator: _model
-                                  .textRectoFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            child: TextFormField(
-                              controller: _model.textVersoFieldTextController,
-                              focusNode: _model.textVersoFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.textVersoFieldTextController',
-                                const Duration(milliseconds: 2000),
-                                () => safeSetState(() {}),
-                              ),
-                              autofocus: false,
-                              textInputAction: TextInputAction.done,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                labelText: 'Text verso: (to learn)',
-                                labelStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      fontSize: 18.0,
-                                      letterSpacing: 0.0,
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 1.0,
+                                child: TextFormField(
+                                  controller:
+                                      _model.textRectoFieldTextController,
+                                  focusNode: _model.textRectoFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.textRectoFieldTextController',
+                                    const Duration(milliseconds: 2000),
+                                    () => safeSetState(() {}),
+                                  ),
+                                  autofocus: false,
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Text recto: (known)',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText:
+                                        'Type flashcard\'s text recto here...',
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                hintText: 'Type flascard\'s text verso here...',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      letterSpacing: 0.0,
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color:
-                                        FlutterFlowTheme.of(context).alternate,
-                                    width: 2.0,
+                                    errorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedErrorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).primary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        fontSize: 24.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  maxLines: 3,
+                                  minLines: 1,
+                                  validator: _model
+                                      .textRectoFieldTextControllerValidator
+                                      .asValidator(context),
                                 ),
                               ),
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                              maxLines: 3,
-                              validator: _model
-                                  .textVersoFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                        FFButtonWidget(
-                          onPressed: () async {
-                            // Create Flashcard
-                            await SQLiteManager.instance.flashcardCreate(
-                              userId: valueOrDefault<String>(
-                                FFAppState().userUuid,
-                                'CreateFlashcardUserUUID',
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 1.0,
+                                child: TextFormField(
+                                  controller:
+                                      _model.textVersoFieldTextController,
+                                  focusNode: _model.textVersoFieldFocusNode,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    '_model.textVersoFieldTextController',
+                                    const Duration(milliseconds: 2000),
+                                    () => safeSetState(() {}),
+                                  ),
+                                  autofocus: false,
+                                  textInputAction: TextInputAction.done,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Text verso: (to learn)',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          fontSize: 18.0,
+                                          letterSpacing: 0.0,
+                                        ),
+                                    hintText:
+                                        'Type flascard\'s text verso here...',
+                                    hintStyle: FlutterFlowTheme.of(context)
+                                        .labelMedium
+                                        .override(
+                                          fontFamily: 'Readex Pro',
+                                          letterSpacing: 0.0,
+                                        ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .alternate,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primary,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    errorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    focusedErrorBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            FlutterFlowTheme.of(context).error,
+                                        width: 2.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                        fontSize: 24.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  maxLines: 3,
+                                  minLines: 1,
+                                  validator: _model
+                                      .textVersoFieldTextControllerValidator
+                                      .asValidator(context),
+                                ),
                               ),
-                              textRecto:
-                                  _model.textRectoFieldTextController.text,
-                              textVerso:
-                                  _model.textVersoFieldTextController.text,
-                              name: _model.nameFieldTextController.text,
-                              audioRectoUrl: 'none',
-                              audioVersoUrl: 'none',
-                              imageRectoUrl: 'none',
-                              imageVersoUrl: 'none',
-                              currentRetrievalStep: 0,
-                              currentSpeakingStep: 0,
-                              toRecall: 0,
-                              currentRecallDate: 'none',
-                              nextRecallDate: 'none',
-                              successCount: 0,
-                              totalReviewCount: 0,
-                              mentalImageBool: 0,
-                              currentSpeakingDate: 'none',
-                              nextSpeakingDate: 'none',
-                            );
-                            // Return last Flashcard Id
-                            _model.lastFlashcardId = await SQLiteManager
-                                .instance
-                                .flashcardsSELECTLastId();
-                            // Link FlashcardsDeck
-                            await SQLiteManager.instance
-                                .decksFlashcardsCREATERow(
-                              deckId: widget.deckId,
-                              flashcardId: _model.lastFlashcardId!.first.id!,
-                            );
-                            // totalCards Deck Update
-                            await SQLiteManager.instance
-                                .decksIncrementTotalCards(
-                              deckId: widget.deckId,
-                            );
-                            // Button shines
-                            if (animationsMap[
-                                    'buttonOnActionTriggerAnimation'] !=
-                                null) {
-                              await animationsMap[
-                                      'buttonOnActionTriggerAnimation']!
-                                  .controller
-                                  .forward(from: 0.0);
-                            }
-                            // isCreatingFlashacard toggle
-                            _model.isCreatingFlashcard =
-                                !_model.isCreatingFlashcard;
-                            safeSetState(() {});
-                            // Reset fields
-                            safeSetState(() {
-                              _model.nameFieldTextController?.clear();
-                              _model.textRectoFieldTextController?.clear();
-                              _model.textVersoFieldTextController?.clear();
-                            });
-
-                            safeSetState(() {});
-                          },
-                          text: 'Validate',
-                          options: FFButtonOptions(
-                            width: MediaQuery.sizeOf(context).width * 0.5,
-                            height: MediaQuery.sizeOf(context).height * 0.1,
+                            ),
+                          ),
+                          Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                24.0, 0.0, 24.0, 0.0),
-                            iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            color: FlutterFlowTheme.of(context).success,
-                            textStyle: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  color: Colors.white,
-                                  fontSize: 48.0,
-                                  letterSpacing: 0.0,
-                                ),
-                            elevation: 3.0,
-                            borderSide: const BorderSide(
-                              color: Colors.transparent,
-                              width: 1.0,
+                                0.0, 3.0, 0.0, 3.0),
+                            child: Container(
+                              width: MediaQuery.sizeOf(context).width * 1.0,
+                              constraints: const BoxConstraints(
+                                minHeight: 200.0,
+                                maxHeight: 350.0,
+                              ),
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Flexible(
+                                    flex: 2,
+                                    child: Align(
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            5.0, 0.0, 5.0, 0.0),
+                                        child: Container(
+                                          width:
+                                              MediaQuery.sizeOf(context).width *
+                                                  1.0,
+                                          height: double.infinity,
+                                          constraints: BoxConstraints(
+                                            minHeight: 50.0,
+                                            maxHeight:
+                                                MediaQuery.sizeOf(context)
+                                                        .height *
+                                                    0.3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                          ),
+                                          alignment:
+                                              const AlignmentDirectional(0.0, 0.0),
+                                          child: SizedBox(
+                                            width: MediaQuery.sizeOf(context)
+                                                    .width *
+                                                1.0,
+                                            child: TextFormField(
+                                              controller: _model
+                                                  .newTagFieldTextController,
+                                              focusNode:
+                                                  _model.newTagFieldFocusNode,
+                                              onFieldSubmitted: (_) async {
+                                                // Create new tag (need to verify existance)
+                                                await SQLiteManager.instance
+                                                    .tagsINSERTNew(
+                                                  name: valueOrDefault<String>(
+                                                    _model
+                                                        .newTagFieldTextController
+                                                        .text,
+                                                    'newTagDefault',
+                                                  ),
+                                                  categoriesList:
+                                                      '[\"flashcard\"]',
+                                                );
+                                                // Get new tag for the list
+                                                _model.allTagsNew =
+                                                    await SQLiteManager.instance
+                                                        .tagsGETAll();
+                                                // Format all the new tags + reset new tag field
+                                                _model.allTagsPageState =
+                                                    functions
+                                                        .formatNewTags(_model
+                                                            .allTagsNew
+                                                            ?.toList())
+                                                        .toList()
+                                                        .cast<TagStruct>();
+                                                safeSetState(() {});
+                                                // Reset newTag field
+                                                safeSetState(() {
+                                                  _model
+                                                      .newTagFieldTextController
+                                                      ?.clear();
+                                                });
+
+                                                safeSetState(() {});
+                                              },
+                                              autofocus: false,
+                                              obscureText: false,
+                                              decoration: InputDecoration(
+                                                isDense: true,
+                                                labelText: 'New tag',
+                                                labelStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .override(
+                                                          fontFamily:
+                                                              'Readex Pro',
+                                                          fontSize: 14.0,
+                                                          letterSpacing: 0.0,
+                                                        ),
+                                                alignLabelWithHint: false,
+                                                hintText: 'Enter your new Tag',
+                                                hintStyle:
+                                                    FlutterFlowTheme.of(context)
+                                                        .labelMedium
+                                                        .override(
+                                                          fontFamily:
+                                                              'Readex Pro',
+                                                          fontSize: 18.0,
+                                                          letterSpacing: 0.0,
+                                                          lineHeight: 2.0,
+                                                        ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0x00000000),
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: const BorderSide(
+                                                    color: Color(0x00000000),
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                errorBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .error,
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .error,
+                                                    width: 1.0,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                filled: true,
+                                                fillColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                              ),
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        fontSize: 18.0,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                              cursorColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              validator: _model
+                                                  .newTagFieldTextControllerValidator
+                                                  .asValidator(context),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          5.0, 0.0, 5.0, 0.0),
+                                      child: Container(
+                                        decoration: const BoxDecoration(),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              flex: 1,
+                                              child: AutoSizeText(
+                                                'Selected Tags',
+                                                style: FlutterFlowTheme.of(
+                                                        context)
+                                                    .titleMedium
+                                                    .override(
+                                                      fontFamily: 'Readex Pro',
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primaryText,
+                                                      letterSpacing: 0.0,
+                                                    ),
+                                              ),
+                                            ),
+                                            Flexible(
+                                              flex: 1,
+                                              child: Container(
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                            .width *
+                                                        1.0,
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.9,
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryBackground,
+                                                ),
+                                                child: Builder(
+                                                  builder: (context) {
+                                                    final selectedTagsItemsRow =
+                                                        _model
+                                                            .selectedTagsPageState
+                                                            .toList();
+                                                    if (selectedTagsItemsRow
+                                                        .isEmpty) {
+                                                      return const ListButtonWidget();
+                                                    }
+
+                                                    return SingleChildScrollView(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: List.generate(
+                                                            selectedTagsItemsRow
+                                                                .length,
+                                                            (selectedTagsItemsRowIndex) {
+                                                          final selectedTagsItemsRowItem =
+                                                              selectedTagsItemsRow[
+                                                                  selectedTagsItemsRowIndex];
+                                                          return InkWell(
+                                                            splashColor: Colors
+                                                                .transparent,
+                                                            focusColor: Colors
+                                                                .transparent,
+                                                            hoverColor: Colors
+                                                                .transparent,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onTap: () async {
+                                                              if (!_model
+                                                                  .allTagsPageState
+                                                                  .contains(
+                                                                      selectedTagsItemsRowItem)) {
+                                                                // Add item to allTags
+                                                                _model.addToAllTagsPageState(
+                                                                    selectedTagsItemsRowItem);
+                                                              }
+                                                              // Remove item from selectedTags
+                                                              _model.removeFromSelectedTagsPageState(
+                                                                  selectedTagsItemsRowItem);
+                                                              safeSetState(
+                                                                  () {});
+                                                            },
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8.0),
+                                                              child: Container(
+                                                                height: 48.0,
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                  minWidth:
+                                                                      48.0,
+                                                                  minHeight:
+                                                                      48.0,
+                                                                  maxHeight:
+                                                                      54.0,
+                                                                ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .accent1,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.0),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                  ),
+                                                                ),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      const AlignmentDirectional(
+                                                                          0.0,
+                                                                          0.0),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                    child: Text(
+                                                                      valueOrDefault<
+                                                                          String>(
+                                                                        selectedTagsItemsRowItem
+                                                                            .name,
+                                                                        'no_tag',
+                                                                      ),
+                                                                      style: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .override(
+                                                                            fontFamily:
+                                                                                'Readex Pro',
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                          ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).divide(const SizedBox(
+                                                            width: 3.0)),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          5.0, 0.0, 5.0, 0.0),
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: const BoxDecoration(),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            AutoSizeText(
+                                              'All Tags',
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .titleMedium
+                                                  .override(
+                                                    fontFamily: 'Readex Pro',
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primaryText,
+                                                    letterSpacing: 0.0,
+                                                  ),
+                                            ),
+                                            Flexible(
+                                              flex: 1,
+                                              child: Container(
+                                                width:
+                                                    MediaQuery.sizeOf(context)
+                                                            .width *
+                                                        1.0,
+                                                height:
+                                                    MediaQuery.sizeOf(context)
+                                                            .height *
+                                                        0.9,
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryBackground,
+                                                ),
+                                                child: Builder(
+                                                  builder: (context) {
+                                                    final allTagsItemList =
+                                                        _model.allTagsPageState
+                                                            .toList();
+                                                    if (allTagsItemList
+                                                        .isEmpty) {
+                                                      return const ListButtonWidget();
+                                                    }
+
+                                                    return SingleChildScrollView(
+                                                      scrollDirection:
+                                                          Axis.horizontal,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: List.generate(
+                                                            allTagsItemList
+                                                                .length,
+                                                            (allTagsItemListIndex) {
+                                                          final allTagsItemListItem =
+                                                              allTagsItemList[
+                                                                  allTagsItemListIndex];
+                                                          return InkWell(
+                                                            splashColor: Colors
+                                                                .transparent,
+                                                            focusColor: Colors
+                                                                .transparent,
+                                                            hoverColor: Colors
+                                                                .transparent,
+                                                            highlightColor:
+                                                                Colors
+                                                                    .transparent,
+                                                            onTap: () async {
+                                                              if (!_model
+                                                                  .selectedTagsPageState
+                                                                  .contains(
+                                                                      allTagsItemListItem)) {
+                                                                // Put tag item in selectedTags
+                                                                _model.addToSelectedTagsPageState(
+                                                                    allTagsItemListItem);
+                                                              }
+                                                              // Remove from allTags
+                                                              _model.removeFromAllTagsPageState(
+                                                                  allTagsItemListItem);
+                                                              safeSetState(
+                                                                  () {});
+                                                            },
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8.0),
+                                                              child: Container(
+                                                                height: 48.0,
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                  minWidth:
+                                                                      48.0,
+                                                                  minHeight:
+                                                                      48.0,
+                                                                  maxHeight:
+                                                                      54.0,
+                                                                ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .accent1,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.0),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primary,
+                                                                  ),
+                                                                ),
+                                                                child: Align(
+                                                                  alignment:
+                                                                      const AlignmentDirectional(
+                                                                          0.0,
+                                                                          0.0),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: const EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            8.0,
+                                                                            0.0,
+                                                                            8.0,
+                                                                            0.0),
+                                                                    child:
+                                                                        AutoSizeText(
+                                                                      valueOrDefault<
+                                                                          String>(
+                                                                        allTagsItemListItem
+                                                                            .name,
+                                                                        'no_tag',
+                                                                      ),
+                                                                      minFontSize:
+                                                                          15.0,
+                                                                      style: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyMedium
+                                                                          .override(
+                                                                            fontFamily:
+                                                                                'Readex Pro',
+                                                                            letterSpacing:
+                                                                                0.0,
+                                                                          ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).divide(const SizedBox(
+                                                            width: 3.0)),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                        ).animateOnActionTrigger(
-                          animationsMap['buttonOnActionTriggerAnimation']!,
-                        ),
-                      ],
+                          Flexible(
+                            flex: 1,
+                            child: FFButtonWidget(
+                              onPressed: () async {
+                                // Create Flashcard
+                                await SQLiteManager.instance.flashcardCreate(
+                                  userId: valueOrDefault<String>(
+                                    FFAppState().userUuid,
+                                    'CreateFlashcardUserUUID',
+                                  ),
+                                  textRecto:
+                                      _model.textRectoFieldTextController.text,
+                                  textVerso:
+                                      _model.textVersoFieldTextController.text,
+                                  name: _model.nameFieldTextController.text,
+                                  audioRectoUrl: 'none',
+                                  audioVersoUrl: 'none',
+                                  imageRectoUrl: 'none',
+                                  imageVersoUrl: 'none',
+                                  currentRetrievalStep: 0,
+                                  currentSpeakingStep: 0,
+                                  toRecall: 0,
+                                  currentRecallDate: 'none',
+                                  nextRecallDate: 'none',
+                                  successCount: 0,
+                                  totalReviewCount: 0,
+                                  mentalImageBool: 0,
+                                  currentSpeakingDate: 'none',
+                                  nextSpeakingDate: 'none',
+                                  tagIds: valueOrDefault<String>(
+                                    functions.formatSelectedTagsToIds(
+                                        _model.selectedTagsPageState.toList()),
+                                    '\"[1]\"',
+                                  ),
+                                );
+                                // Return last Flashcard Id
+                                _model.lastFlashcardId = await SQLiteManager
+                                    .instance
+                                    .flashcardsSELECTLastId();
+                                // Link FlashcardsDeck
+                                await SQLiteManager.instance
+                                    .decksFlashcardsCREATERow(
+                                  deckId: widget.deckId,
+                                  flashcardId:
+                                      _model.lastFlashcardId!.first.id!,
+                                );
+                                // totalCards Deck Update
+                                await SQLiteManager.instance
+                                    .decksIncrementTotalCards(
+                                  deckId: widget.deckId,
+                                );
+                                // Button shines
+                                if (animationsMap[
+                                        'buttonOnActionTriggerAnimation'] !=
+                                    null) {
+                                  await animationsMap[
+                                          'buttonOnActionTriggerAnimation']!
+                                      .controller
+                                      .forward(from: 0.0);
+                                }
+                                // Reset tags states
+                                _model.selectedTagsPageState = [];
+                                _model.allTagsPageState = [];
+                                // Reset fields
+                                safeSetState(() {
+                                  _model.nameFieldTextController?.clear();
+                                  _model.textRectoFieldTextController?.clear();
+                                  _model.textVersoFieldTextController?.clear();
+                                  _model.newTagFieldTextController?.clear();
+                                });
+                                // isCreatingFlashacard toggle
+                                _model.isCreatingFlashcard =
+                                    !_model.isCreatingFlashcard;
+                                safeSetState(() {});
+
+                                safeSetState(() {});
+                              },
+                              text: 'Validate',
+                              options: FFButtonOptions(
+                                width: MediaQuery.sizeOf(context).width * 0.5,
+                                height: MediaQuery.sizeOf(context).height * 0.1,
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    24.0, 0.0, 24.0, 0.0),
+                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 0.0, 0.0, 0.0),
+                                color: FlutterFlowTheme.of(context).success,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      color: Colors.white,
+                                      fontSize: 48.0,
+                                      letterSpacing: 0.0,
+                                    ),
+                                elevation: 3.0,
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ).animateOnActionTrigger(
+                              animationsMap['buttonOnActionTriggerAnimation']!,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

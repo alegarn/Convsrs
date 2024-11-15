@@ -355,6 +355,10 @@ class SQLiteManager {
         _database,
       );
 
+  Future<List<TagsGETAllRow>> tagsGETAll() => performTagsGETAll(
+        _database,
+      );
+
   /// END READ QUERY CALLS
 
   /// START UPDATE QUERY CALLS
@@ -554,6 +558,7 @@ class SQLiteManager {
     String? name,
     String? currentSpeakingDate,
     String? nextSpeakingDate,
+    String? tagIds,
   }) =>
       performFlashcardCreate(
         _database,
@@ -575,6 +580,7 @@ class SQLiteManager {
         name: name,
         currentSpeakingDate: currentSpeakingDate,
         nextSpeakingDate: nextSpeakingDate,
+        tagIds: tagIds,
       );
 
   Future flashcardUpdate({
@@ -596,6 +602,7 @@ class SQLiteManager {
     int? mentalImageBool,
     String? currentSpeakingDate,
     String? nextSpeakingDate,
+    String? tagIds,
   }) =>
       performFlashcardUpdate(
         _database,
@@ -617,6 +624,7 @@ class SQLiteManager {
         mentalImageBool: mentalImageBool,
         currentSpeakingDate: currentSpeakingDate,
         nextSpeakingDate: nextSpeakingDate,
+        tagIds: tagIds,
       );
 
   Future flashcardDeleteWithId({
@@ -869,6 +877,16 @@ class SQLiteManager {
       performDecksFlashcardsDELETERowByFlashcardId(
         _database,
         flashcardId: flashcardId,
+      );
+
+  Future tagsINSERTNew({
+    String? name,
+    String? categoriesList,
+  }) =>
+      performTagsINSERTNew(
+        _database,
+        name: name,
+        categoriesList: categoriesList,
       );
 
   /// END UPDATE QUERY CALLS

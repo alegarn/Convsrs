@@ -121,10 +121,6 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         speakingStepsIntervals;
     List<SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow>?
         retrievalIntervalDurationSec;
-    List<SRSParametersGetConversationStepsIntervalsSecFromStepNumberRow>?
-        speakingStepsIntervals2;
-    List<SRSParametersGetRetrievalIntervalDurationSecFromStepNumberRow>?
-        retrievalIntervalDurationSec2;
 
     // Dialog box, please wait
     unawaited(
@@ -153,7 +149,7 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
         FFAppState().userUuid,
         'endOfRetrievalSessionUserUUID',
       ),
-      durationSec: retrievalTimerMilliseconds,
+      durationSec: retrievalTimerMilliseconds ~/ 1000,
       totalCardNumber: totalCardsCount,
       failNumber: cardFailedCount,
       successNumber: cardValidatedCount,
@@ -163,163 +159,126 @@ class RetrievalScreenModel extends FlutterFlowModel<RetrievalScreenWidget> {
     await SQLiteManager.instance.retrievalSessionsDecksCreateINSERTANewRecord(
       deckId: widget!.deckId,
     );
-    while (cardReviewedList.isNotEmpty) {
-      // get first item to currentCard
-      currentCard = cardReviewedList.first;
-      // Get conversationStepsIntervalsSec string from current Flashcard's stepNumber
-      speakingStepsIntervals = await SQLiteManager.instance
-          .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
-        stepNumber: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.currentRetrievalStep,
-                0,
-              ) +
-              1,
-          1,
-        ),
-      );
-      // Get retrievalIntervalDurationSec
-      retrievalIntervalDurationSec = await SQLiteManager.instance
-          .sRSParametersGetRetrievalIntervalDurationSecFromStepNumber(
-        stepNumber: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.currentRetrievalStep,
-                0,
-              ) +
-              1,
-          1,
-        ),
-      );
-      // Update Flashcard with currentCard
-      await SQLiteManager.instance.flashcardUpdate(
-        currentRetrievalStep: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.currentRetrievalStep,
-                0,
-              ) +
-              1,
-          1,
-        ),
-        currentSpeakingStep: 0,
-        successCount: currentCard?.successCount,
-        toRecall: 1,
-        totalReviewCount: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.totalReviewCount,
-                0,
-              ) +
-              1,
-          0,
-        ),
-        currentSpeakingDate: functions.dateNow(),
-        nextSpeakingDate: valueOrDefault<String>(
-          functions.dateNow(),
-          'none',
-        ),
-        flashcardId: currentCard?.id,
-        name: currentCard?.name,
-        textRecto: currentCard?.textRecto,
-        textVerso: currentCard?.textVerso,
-        audioRectoUrl: 'none',
-        audioVersoUrl: 'none',
-        imageRectoUrl: 'none',
-        imageVersoUrl: 'none',
-        currentRecallDate: valueOrDefault<String>(
-          functions.calculateNextRecallDate(retrievalIntervalDurationSec
-              .first.retrievalIntervalDurationSec),
-          'none',
-        ),
-        nextRecallDate: valueOrDefault<String>(
-          functions.calculateNextRecallDate(retrievalIntervalDurationSec
-              .first.retrievalIntervalDurationSec),
-          'none',
-        ),
-        mentalImageBool: valueOrDefault<int>(
-          currentCard?.mentalImageBool,
-          0,
-        ),
-      );
-      // Remove ReviewedList item
-      removeAtIndexFromCardReviewedList(0);
+    if (cardReviewedList.isNotEmpty) {
+      while (cardReviewedList.isNotEmpty) {
+        // get first item to currentCard
+        currentCard = cardReviewedList.first;
+        // Get conversationStepsIntervalsSec string from current Flashcard's stepNumber
+        speakingStepsIntervals = await SQLiteManager.instance
+            .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
+          stepNumber: valueOrDefault<int>(
+            valueOrDefault<int>(
+                  currentCard?.currentRetrievalStep,
+                  0,
+                ) +
+                1,
+            1,
+          ),
+        );
+        // Get retrievalIntervalDurationSec
+        retrievalIntervalDurationSec = await SQLiteManager.instance
+            .sRSParametersGetRetrievalIntervalDurationSecFromStepNumber(
+          stepNumber: valueOrDefault<int>(
+            valueOrDefault<int>(
+                  currentCard?.currentRetrievalStep,
+                  0,
+                ) +
+                1,
+            1,
+          ),
+        );
+        // Update Flashcard with currentCard
+        await SQLiteManager.instance.flashcardUpdate(
+          currentRetrievalStep: valueOrDefault<int>(
+            valueOrDefault<int>(
+                  currentCard?.currentRetrievalStep,
+                  0,
+                ) +
+                1,
+            1,
+          ),
+          currentSpeakingStep: 0,
+          successCount: currentCard?.successCount,
+          toRecall: 1,
+          totalReviewCount: valueOrDefault<int>(
+            valueOrDefault<int>(
+                  currentCard?.totalReviewCount,
+                  0,
+                ) +
+                1,
+            0,
+          ),
+          currentSpeakingDate: functions.dateNow(),
+          nextSpeakingDate: valueOrDefault<String>(
+            functions.dateNow(),
+            'none',
+          ),
+          flashcardId: currentCard?.id,
+          name: currentCard?.name,
+          textRecto: currentCard?.textRecto,
+          textVerso: currentCard?.textVerso,
+          audioRectoUrl: 'none',
+          audioVersoUrl: 'none',
+          imageRectoUrl: 'none',
+          imageVersoUrl: 'none',
+          currentRecallDate: valueOrDefault<String>(
+            functions.calculateNextRecallDate(retrievalIntervalDurationSec
+                .first.retrievalIntervalDurationSec),
+            'none',
+          ),
+          nextRecallDate: valueOrDefault<String>(
+            functions.calculateNextRecallDate(retrievalIntervalDurationSec
+                .first.retrievalIntervalDurationSec),
+            'none',
+          ),
+          mentalImageBool: valueOrDefault<int>(
+            currentCard?.mentalImageBool,
+            0,
+          ),
+          tagIds: valueOrDefault<String>(
+            currentCard?.tagIds,
+            '[1]',
+          ),
+        );
+        // Remove ReviewedList item
+        removeAtIndexFromCardReviewedList(0);
+      }
     }
-    while (cardToReviewListState.isNotEmpty) {
-      // get first item to currentCard
-      currentCard = cardToReviewListState.first;
-      // Get conversationStepsIntervalsSec string from current Flashcard's stepNumber
-      speakingStepsIntervals2 = await SQLiteManager.instance
-          .sRSParametersGetConversationStepsIntervalsSecFromStepNumber(
-        stepNumber: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.currentRetrievalStep,
-                0,
-              ) +
-              1,
-          1,
-        ),
-      );
-      // Get retrievalIntervalDurationSec
-      retrievalIntervalDurationSec2 = await SQLiteManager.instance
-          .sRSParametersGetRetrievalIntervalDurationSecFromStepNumber(
-        stepNumber: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.currentRetrievalStep,
-                0,
-              ) +
-              1,
-          1,
-        ),
-      );
-      // Update non reviewed Flashcard with currentCard
-      await SQLiteManager.instance.flashcardUpdate(
-        currentRetrievalStep: valueOrDefault<int>(
-          valueOrDefault<int>(
-                currentCard?.currentRetrievalStep,
-                0,
-              ) +
-              1,
-          1,
-        ),
-        currentSpeakingStep: 0,
-        successCount: currentCard?.successCount,
-        toRecall: 1,
-        totalReviewCount: valueOrDefault<int>(
-          currentCard?.totalReviewCount,
-          0,
-        ),
-        currentSpeakingDate: functions.dateNow(),
-        nextSpeakingDate: valueOrDefault<String>(
-          functions.dateNow(),
-          'none',
-        ),
-        flashcardId: currentCard?.id,
-        name: currentCard?.name,
-        textRecto: currentCard?.textRecto,
-        textVerso: currentCard?.textVerso,
-        audioRectoUrl: 'none',
-        audioVersoUrl: 'none',
-        imageRectoUrl: 'none',
-        imageVersoUrl: 'none',
-        currentRecallDate: valueOrDefault<String>(
-          functions.calculateNextRecallDate(valueOrDefault<int>(
-            retrievalIntervalDurationSec2.first.retrievalIntervalDurationSec,
+    if (cardToReviewListState.isNotEmpty) {
+      while (cardToReviewListState.isNotEmpty) {
+        // get first item to currentCard
+        currentCard = cardToReviewListState.first;
+        // Update non reviewed Flashcard with currentCard
+        await SQLiteManager.instance.flashcardUpdate(
+          currentRetrievalStep: currentCard?.currentRetrievalStep,
+          currentSpeakingStep: currentCard?.currentSpeakingStep,
+          successCount: currentCard?.successCount,
+          toRecall: currentCard?.toRecall,
+          totalReviewCount: valueOrDefault<int>(
+            currentCard?.totalReviewCount,
             0,
-          )),
-          'none',
-        ),
-        nextRecallDate: valueOrDefault<String>(
-          functions.calculateNextRecallDate(valueOrDefault<int>(
-            retrievalIntervalDurationSec2.first.retrievalIntervalDurationSec,
+          ),
+          currentSpeakingDate: currentCard?.currentSpeakingDate,
+          nextSpeakingDate: currentCard?.nextSpeakingDate,
+          flashcardId: currentCard?.id,
+          name: currentCard?.name,
+          textRecto: currentCard?.textRecto,
+          textVerso: currentCard?.textVerso,
+          audioRectoUrl: 'none',
+          audioVersoUrl: 'none',
+          imageRectoUrl: 'none',
+          imageVersoUrl: 'none',
+          currentRecallDate: currentCard?.currentRecallDate,
+          nextRecallDate: currentCard?.nextRecallDate,
+          mentalImageBool: valueOrDefault<int>(
+            currentCard?.mentalImageBool,
             0,
-          )),
-          'none',
-        ),
-        mentalImageBool: valueOrDefault<int>(
-          currentCard?.mentalImageBool,
-          0,
-        ),
-      );
-      // Remove ReviewedList item
-      removeAtIndexFromCardReviewedList(0);
+          ),
+          tagIds: currentCard?.tagIds,
+        );
+        // Remove CardToReviewListState item
+        removeAtIndexFromCardToReviewListState(0);
+      }
     }
     // Change screen
     if (Navigator.of(context).canPop()) {

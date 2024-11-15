@@ -366,6 +366,26 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: 'ExtractDataScreen',
           path: '/extractDataScreen',
           builder: (context, params) => const ExtractDataScreenWidget(),
+        ),
+        FFRoute(
+          name: 'AIChatScreen',
+          path: '/aIChatScreen',
+          builder: (context, params) => AIChatScreenWidget(
+            textContext: params.getParam(
+              'textContext',
+              ParamType.String,
+            ),
+            language: params.getParam(
+              'language',
+              ParamType.String,
+            ),
+            flashcardsToReview: params.getParam(
+              'flashcardsToReview',
+              ParamType.DataStruct,
+              isList: false,
+              structBuilder: ConversationsFlashcardStruct.fromSerializableMap,
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

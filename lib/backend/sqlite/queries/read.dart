@@ -170,6 +170,7 @@ class FlashcardRead1WithIdRow extends SqliteRow {
   String get name => data['name'] as String;
   String? get currentSpeakingDate => data['currentSpeakingDate'] as String?;
   String? get nextSpeakingDate => data['nextSpeakingDate'] as String?;
+  String? get tagIds => data['tagIds'] as String?;
 }
 
 /// END FLASHCARD READ 1 WITH ID
@@ -448,7 +449,8 @@ SELECT
   f.successCount,
   f.totalReviewCount,
   f.mentalImageBool,
-  f.totalReviewCount
+  f.totalReviewCount,
+  f.tagIds
 FROM flashcards f
 JOIN decksFlashcards df ON f.id = df.flashcardId
 WHERE f.userId = '$userId'
@@ -477,6 +479,7 @@ class FlashcardsInfosForRetrievalSessionRow extends SqliteRow {
   String get nextSpeakingDate => data['nextSpeakingDate'] as String;
   String get currentSpeakingDate => data['currentSpeakingDate'] as String;
   String get name => data['name'] as String;
+  String get tagIds => data['tagIds'] as String;
 }
 
 /// END FLASHCARDS INFOS FOR RETRIEVAL SESSION
@@ -641,7 +644,8 @@ Future<List<FlashcardsForConversationWithDeckIdRow>>
 SELECT 
   f.id as flashcardID, 
   f.textVerso as textVerso,
-  f.textRecto  as textRecto
+  f.textRecto  as textRecto,
+  f.tagIds as tagIds
 FROM flashcards as f
 INNER JOIN
   decksFlashcards as df ON f.id = df.flashcardId
@@ -658,6 +662,7 @@ class FlashcardsForConversationWithDeckIdRow extends SqliteRow {
   int? get flashcardID => data['flashcardID'] as int?;
   String? get textVerso => data['textVerso'] as String?;
   String? get textRecto => data['textRecto'] as String?;
+  String? get tagIds => data['tagIds'] as String?;
 }
 
 /// END FLASHCARDS FOR CONVERSATION WITH DECKID
@@ -792,6 +797,7 @@ class FlashcardReadAllRow extends SqliteRow {
   String? get currentSpeakingDate => data['currentSpeakingDate'] as String?;
   String? get nextSpeakingDate => data['nextSpeakingDate'] as String?;
   int? get id => data['id'] as int?;
+  String? get tagIds => data['tagIds'] as String?;
 }
 
 /// END FLASHCARD READ ALL
@@ -1171,3 +1177,22 @@ class FlashcardsREADLastIdRow extends SqliteRow {
 }
 
 /// END FLASHCARDS READ LAST ID
+
+/// BEGIN TAGS GET ALL
+Future<List<TagsGETAllRow>> performTagsGETAll(
+  Database database,
+) {
+  const query = '''
+SELECT id, name FROM tags;
+''';
+  return _readQuery(database, query, (d) => TagsGETAllRow(d));
+}
+
+class TagsGETAllRow extends SqliteRow {
+  TagsGETAllRow(super.data);
+
+  int? get id => data['id'] as int?;
+  String? get name => data['name'] as String?;
+}
+
+/// END TAGS GET ALL

@@ -289,10 +289,11 @@ Future performFlashcardCreate(
   String? name,
   String? currentSpeakingDate,
   String? nextSpeakingDate,
+  String? tagIds,
 }) {
   final query = '''
 -- Insert the new flashcard into the "flashcards" table
-INSERT INTO flashcards (userId, name, textRecto, textVerso, audioRectoUrl, audioVersoUrl, imageRectoUrl, imageVersoUrl, currentRetrievalStep, currentSpeakingStep, toRecall, currentRecallDate, nextRecallDate, currentSpeakingDate, nextSpeakingDate, successCount, totalReviewCount, mentalImageBool)
+INSERT INTO flashcards (userId, name, textRecto, textVerso, audioRectoUrl, audioVersoUrl, imageRectoUrl, imageVersoUrl, currentRetrievalStep, currentSpeakingStep, toRecall, currentRecallDate, nextRecallDate, currentSpeakingDate, nextSpeakingDate, successCount, totalReviewCount, mentalImageBool, tagIds)
 VALUES (
   '$userId',
    '$name', 
@@ -311,7 +312,8 @@ VALUES (
    '$nextSpeakingDate', 
    $successCount, 
    $totalReviewCount, 
-   $mentalImageBool
+   $mentalImageBool,
+  COALESCE( '$tagIds' , '[1]')
 );
 ''';
   return database.rawQuery(query);
@@ -340,6 +342,7 @@ Future performFlashcardUpdate(
   int? mentalImageBool,
   String? currentSpeakingDate,
   String? nextSpeakingDate,
+  String? tagIds,
 }) {
   final query = '''
 UPDATE flashcards 
@@ -360,7 +363,8 @@ SET
  totalReviewCount = COALESCE($totalReviewCount, totalReviewCount), 
  mentalImageBool = COALESCE($mentalImageBool, mentalImageBool),
  currentSpeakingDate = COALESCE('$currentSpeakingDate', currentSpeakingDate), 
- nextSpeakingDate = COALESCE('$nextSpeakingDate', nextSpeakingDate)
+ nextSpeakingDate = COALESCE('$nextSpeakingDate', nextSpeakingDate),
+ tagIds = COALESCE('$tagIds',tagIds)
  WHERE id = $flashcardId;
 ''';
   return database.rawQuery(query);
@@ -778,3 +782,20 @@ DELETE FROM "decksFlashcards" WHERE "flashcardId" = $flashcardId;
 }
 
 /// END DECKSFLASHCARDS DELETE ROW BY FLASHCARDID
+
+/// BEGIN TAGS INSERT NEW
+Future performTagsINSERTNew(
+  Database database, {
+  String? name,
+  String? categoriesList,
+}) {
+  final query = '''
+INSERT INTO tags
+(name, categories) 
+VALUES 
+('$name', '$categoriesList');
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS INSERT NEW

@@ -14,12 +14,6 @@ import '/backend/supabase/supabase.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/auth/supabase_auth/auth_util.dart';
 
-String? updateCardToRetrieveFunction() {
-  /// HomePage: focus = run
-  /// cron job: toRecall pass from 0 to 1 if the date is <= dateToday
-  return null;
-}
-
 FlashcardStruct? getNextCurrentCardInFlashcardsList(
   List<FlashcardStruct> flashcardsList,
   FlashcardStruct currentCard,
@@ -187,8 +181,28 @@ String? calculateNextRecallDate(int? retrievalIntervalDurationSec) {
 
 List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
     List<FlashcardsForConversationWithDeckIdRow>? cardsData) {
-  List<FlashcardConversationStatusStruct> flashcardConversationStatusList = [];
+  bool isNotNullOrEmpty(String? str) {
+    // Regular expression to match a list of numbers in square brackets
+    final RegExp regex = RegExp(r'^\[\s*(\d+\s*(,\s*\d+\s*)*)?\]$');
 
+    // Check if the input string is valid
+    if (str == null || !regex.hasMatch(str) || str.isEmpty) {
+      return false; // Return default list if the format is incorrect
+    }
+    return true;
+  }
+
+  List<int> stringToIntList(String? str) {
+    if (str != null) {
+      // Remove the square brackets
+      str = str.replaceAll('[', '').replaceAll(']', '');
+      // Split the string by commas and convert to integers
+      return str.split(',').map(int.parse).toList();
+    }
+    return []; // Return an empty list if str is null
+  }
+
+  List<FlashcardConversationStatusStruct> flashcardConversationStatusList = [];
   if (cardsData != null) {
     for (var cardData in cardsData) {
       FlashcardConversationStatusStruct flashcardConversationStatus =
@@ -198,11 +212,13 @@ List<FlashcardConversationStatusStruct>? updateFlashcardConversationStatus(
         textRecto: cardData.textRecto,
         timesValidatedByClickCount: 0,
         isFullyValidated: false,
+        tagIds: isNotNullOrEmpty(cardData.tagIds)
+            ? stringToIntList(cardData.tagIds)
+            : [1],
       );
       flashcardConversationStatusList.add(flashcardConversationStatus);
     }
   }
-
   return flashcardConversationStatusList;
 }
 
@@ -241,19 +257,25 @@ List<FlashcardStruct>? updateCardToReviewListState(
 }
 
 String? createListValidatedCardsIds(
-    List<FlashcardConversationStatusStruct>? flashcardsConversationStatus) {
-  if (flashcardsConversationStatus == null ||
-      flashcardsConversationStatus.isEmpty) {
+    List<ConversationTagsListsStruct>? conversationTagsList) {
+  if (conversationTagsList == null || conversationTagsList.isEmpty) {
     return null;
   }
 
-  // Extracting ids from flashcardsConversationStatus only if isFullyValidated is true
-  String cardIds = jsonEncode(flashcardsConversationStatus
-      .where((status) => status.isFullyValidated == true)
-      .map((status) => status.id.toString())
-      .toList());
+  // Extracting ids from flashcardInfosList only if isFullyValidated is true
+  List<String> validatedCardIds = [];
 
-  return cardIds;
+  for (var conversationTags in conversationTagsList) {
+    for (var flashcard in conversationTags.flashcardInfosList) {
+      if (flashcard.isFullyValidated == true) {
+        validatedCardIds.add(flashcard.id.toString());
+      }
+    }
+  }
+
+  // Convert the list of validated card IDs to a JSON string
+  String cardIds = jsonEncode(validatedCardIds);
+  return cardIds.isNotEmpty ? cardIds : null;
 }
 
 int extractLenghtInStringArray(String stringArray) {
@@ -374,7 +396,7 @@ String? csvFromFlashcards(List<FlashcardReadAllRow>? flashcards) {
 
   final List<String> csvLines = [];
   csvLines.add(
-      'id,userId,name,textRecto,textVerso,audioRectoUrl,audioVersoUrl,imageRectoUrl,imageVersoUrl,currentRetrievalStep,currentSpeakingStep,toRecall,currentRecallDate,nextRecallDate,currentSpeakingDate,nextSpeakingDate,successCount,totalReviewCount,mentalImageBool');
+      'id,userId,name,textRecto,textVerso,audioRectoUrl,audioVersoUrl,imageRectoUrl,imageVersoUrl,currentRetrievalStep,currentSpeakingStep,toRecall,currentRecallDate,nextRecallDate,currentSpeakingDate,nextSpeakingDate,successCount,totalReviewCount,mentalImageBool,tagIds');
 
   for (final flashcard in flashcards) {
     final List<String> rowData = [
@@ -396,7 +418,8 @@ String? csvFromFlashcards(List<FlashcardReadAllRow>? flashcards) {
       flashcard.nextSpeakingDate ?? 'default',
       flashcard.successCount.toString(),
       flashcard.totalReviewCount.toString(),
-      flashcard.mentalImageBool.toString()
+      flashcard.mentalImageBool.toString(),
+      flashcard.tagIds.toString()
     ];
     csvLines.add(rowData.join(','));
   }
@@ -646,12 +669,112 @@ String? csvFromRetrievalSessions(
 }
 
 String? extractFlashcards(
-    List<FlashcardConversationStatusStruct>? flashcardConversationStatusList) {
+    List<ConversationTagsListsStruct>? conversationTagsList) {
   String flashcardData = '';
-  if (flashcardConversationStatusList != null) {
-    for (var status in flashcardConversationStatusList) {
-      flashcardData += '${status.textRecto} : ${status.textVerso}\n';
+
+  if (conversationTagsList != null) {
+    for (var conversationTags in conversationTagsList) {
+      for (var flashcard in conversationTags.flashcardInfosList) {
+        flashcardData += '${flashcard.textRecto} : ${flashcard.textVerso}\n';
+      }
     }
   }
+
   return flashcardData.isNotEmpty ? flashcardData.trim() : null;
+}
+
+List<TagStruct> formatNewTags(List<TagsGETAllRow>? allTagsList) {
+  // Check if the input list is null or empty
+  if (allTagsList == null || allTagsList.isEmpty) {
+    // Return a list with a default TagStruct
+    return [TagStruct(id: 1, name: "no_tag")];
+  }
+
+  // Map the allTagsList to a new List<TagStruct>
+  return allTagsList.map((tag) {
+    return TagStruct(id: tag?.id ?? 1, name: tag?.name ?? "no_tag");
+  }).toList();
+}
+
+String? extractTagsIds(List<TagStruct>? selectedTags) {
+  // Check if the selectedTags list is null or empty
+  if (selectedTags == null || selectedTags.isEmpty) {
+    return '["1"]'; // or return an empty string if preferred
+  }
+
+  // Extract the IDs and join them into a comma-separated string
+  return '[${selectedTags.map((tag) => tag?.id.toString()).where((id) => id != null).join(",")}]'; // Join non-null IDs
+}
+
+List<TagStruct> filterSelectedTagsInAllTags(
+  List<TagStruct>? selectedTagListArg,
+  List<TagStruct> allTags,
+) {
+  debugPrint("filterSelectedTagsInAllTags");
+  debugPrint(
+      "selectedTagListArg = ${selectedTagListArg?.map((tag) => tag.toString())}");
+  debugPrint("allTags = ${allTags.map((tag) => tag.toString())}");
+
+  // If selectedTagListArg is null or empty, return allTags filtered by the default tag
+  if (selectedTagListArg == null || selectedTagListArg.isEmpty) {
+    // Create a set with the default tag ID
+    final defaultTagId = 1; // Assuming we want to filter out tags with id 1
+    return allTags.where((tag) => tag.id != defaultTagId).toList();
+  }
+
+  // Create a set of selected tag IDs for efficient lookup
+  final selectedTagIds = selectedTagListArg.map((tag) => tag.id).toSet();
+
+  debugPrint("selectedTagIds = ${selectedTagIds.toList().toString()}");
+  debugPrint(
+      "filtered allTags =  ${allTags.where((tag) => !selectedTagIds.contains(tag.id)).toList()}");
+
+  // Filter out tags from allTags that are in selectedTagIds
+  return allTags.where((tag) => !selectedTagIds.contains(tag.id)).toList();
+}
+
+String? formatSelectedTagsToIds(List<TagStruct>? selectedTagsArgument) {
+  if (selectedTagsArgument == null || selectedTagsArgument.isEmpty) {
+    // Return a list with a default TagStruct
+    return "[]";
+  }
+
+  // Create a list to hold the IDs
+  final List<int> selectedTagsList = [];
+
+  // Map through the selected tags and add their IDs to the list
+  selectedTagsArgument.forEach((tag) {
+    if (tag != null) {
+      selectedTagsList.add(tag.id);
+    }
+  });
+
+  // Convert the list of IDs to a string
+  return selectedTagsList.toString();
+}
+
+bool? detectTagIds(String tagIds) {
+  RegExp regex = RegExp(r'^\[(\d+)(,\d+)*\]$');
+  return regex.hasMatch(tagIds);
+}
+
+List<TagStruct> newSelectedTag() {
+  return [TagStruct(id: 1, name: "no_tag")];
+}
+
+String? getNamesFromTagList(List<TagStruct> tagList) {
+  // Create a Set to hold unique names
+  Set<String> uniqueNames = {};
+
+  // Iterate through the tag list and add names to the Set
+  for (var tag in tagList) {
+    uniqueNames.add(tag.name);
+  }
+
+  // Combine the unique names into a single string
+  String combinedNames = uniqueNames.join('| ');
+
+  return combinedNames.isNotEmpty
+      ? combinedNames
+      : null; // Return null if no names are present
 }
