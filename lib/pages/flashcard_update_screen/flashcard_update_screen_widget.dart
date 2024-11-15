@@ -178,27 +178,39 @@ class _FlashcardUpdateScreenWidgetState
           // Update name field
           safeSetState(() {
             _model.cardNameFieldTextController?.text = _model.name;
-            _model.cardNameFieldTextController?.selection =
-                TextSelection.collapsed(
-                    offset: _model.cardNameFieldTextController!.text.length);
+            _model.cardNameFieldFocusNode?.requestFocus();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _model.cardNameFieldTextController?.selection =
+                  TextSelection.collapsed(
+                offset: _model.cardNameFieldTextController!.text.length,
+              );
+            });
           });
         }),
         Future(() async {
           // Modify textRecto
           safeSetState(() {
             _model.textRectoFieldTextController?.text = _model.textRecto;
-            _model.textRectoFieldTextController?.selection =
-                TextSelection.collapsed(
-                    offset: _model.textRectoFieldTextController!.text.length);
+            _model.textRectoFieldFocusNode?.requestFocus();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _model.textRectoFieldTextController?.selection =
+                  TextSelection.collapsed(
+                offset: _model.textRectoFieldTextController!.text.length,
+              );
+            });
           });
         }),
         Future(() async {
           // Modify textVerso
           safeSetState(() {
             _model.textVersoFieldTextController?.text = _model.textVerso;
-            _model.textVersoFieldTextController?.selection =
-                TextSelection.collapsed(
-                    offset: _model.textVersoFieldTextController!.text.length);
+            _model.textVersoFieldFocusNode?.requestFocus();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _model.textVersoFieldTextController?.selection =
+                  TextSelection.collapsed(
+                offset: _model.textVersoFieldTextController!.text.length,
+              );
+            });
           });
         }),
       ]);

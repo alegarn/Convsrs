@@ -35,3 +35,5 @@ export '/pages/auth_screen/auth_screen_widget.dart' show AuthScreenWidget;
 export '/pages/infos/infos_widget.dart' show InfosWidget;
 export '/pages/extract_data_screen/extract_data_screen_widget.dart'
     show ExtractDataScreenWidget;
+export '/pages/a_i_chat_screen/a_i_chat_screen_widget.dart'
+    show AIChatScreenWidget;
