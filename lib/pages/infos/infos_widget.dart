@@ -708,7 +708,8 @@ class _InfosWidgetState extends State<InfosWidget> {
                                   showFirstLastButtons: false,
                                   width: 950.0,
                                   height: 500.0,
-                                  minWidth: 100.0,
+                                  minWidth:
+                                      MediaQuery.sizeOf(context).width * 1.0,
                                   headingRowHeight: 56.0,
                                   dataRowHeight: 48.0,
                                   columnSpacing: 20.0,
