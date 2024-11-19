@@ -11,7 +11,7 @@ export 'tag_struct.dart';
 export 'user_struct.dart';
 export 'conversation_persona_struct.dart';
 export 'conversations_flashcard_struct.dart';
-export 'decks_flashcard_struct.dart';
+export 'decks_flashcard_for_list_struct.dart';
 export 'flashcards_retrieval_status_struct.dart';
 export 'persona_struct.dart';
 export 'retrieval_session_struct.dart';
