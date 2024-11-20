@@ -797,6 +797,7 @@ List<DecksFlashcardForListStruct>? addFlashcardsListToDecksFlashcardState(
       listId: index + 1, // Assign id as n + 1
       deckId: deckId, // Use the provided deckId
       flashcardId: flashcard.id, // Assuming flashcard.id is the flashcardId
+      name: flashcard.name,
       isVisible: true, // Defaulting to true for visibility
     );
   }).toList();
