@@ -338,99 +338,112 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                       ),
                     ),
                     Flexible(
-                      child: Container(
-                        width: MediaQuery.sizeOf(context).width * 1.0,
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.sizeOf(context).height * 0.87,
-                        ),
-                        decoration: const BoxDecoration(),
-                        child: Builder(
-                          builder: (context) {
-                            final deckFlashcardsColumn =
-                                _model.flashcardsState.toList();
+                      child: SafeArea(
+                        child: ClipRRect(
+                          child: Container(
+                            width: MediaQuery.sizeOf(context).width * 1.0,
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.sizeOf(context).height * 0.87,
+                            ),
+                            decoration: const BoxDecoration(),
+                            child: Builder(
+                              builder: (context) {
+                                final deckFlashcardsColumn =
+                                    _model.flashcardsState.toList();
 
-                            return Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children:
-                                  List.generate(deckFlashcardsColumn.length,
-                                      (deckFlashcardsColumnIndex) {
-                                final deckFlashcardsColumnItem =
-                                    deckFlashcardsColumn[
-                                        deckFlashcardsColumnIndex];
-                                return wrapWithModel(
-                                  model: _model.flashcardListCrudRowModels
-                                      .getModel(
-                                    deckFlashcardsColumnIndex.toString(),
-                                    deckFlashcardsColumnIndex,
-                                  ),
-                                  updateCallback: () => safeSetState(() {}),
-                                  updateOnChange: true,
-                                  child: ListCrudRowWidget(
-                                    key: Key(
-                                      'Keybpt_${deckFlashcardsColumnIndex.toString()}',
-                                    ),
-                                    rowName: valueOrDefault<String>(
-                                      deckFlashcardsColumnItem.name,
-                                      'default',
-                                    ),
-                                    elementdId: valueOrDefault<int>(
-                                      deckFlashcardsColumnItem.flashcardId,
-                                      0,
-                                    ),
-                                    navigateAction: () async {
-                                      // Navigate to FlashcardUpdate
+                                return SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: List.generate(
+                                        deckFlashcardsColumn.length,
+                                        (deckFlashcardsColumnIndex) {
+                                      final deckFlashcardsColumnItem =
+                                          deckFlashcardsColumn[
+                                              deckFlashcardsColumnIndex];
+                                      return wrapWithModel(
+                                        model: _model.flashcardListCrudRowModels
+                                            .getModel(
+                                          deckFlashcardsColumnIndex.toString(),
+                                          deckFlashcardsColumnIndex,
+                                        ),
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        updateOnChange: true,
+                                        child: ListCrudRowWidget(
+                                          key: Key(
+                                            'Keybpt_${deckFlashcardsColumnIndex.toString()}',
+                                          ),
+                                          rowName: valueOrDefault<String>(
+                                            deckFlashcardsColumnItem.name,
+                                            'default',
+                                          ),
+                                          elementdId: valueOrDefault<int>(
+                                            deckFlashcardsColumnItem
+                                                .flashcardId,
+                                            0,
+                                          ),
+                                          isVisible: deckFlashcardsColumnItem
+                                              .isVisible,
+                                          navigateAction: () async {
+                                            // Navigate to FlashcardUpdate
 
-                                      context.pushNamed(
-                                        'FlashcardUpdateScreen',
-                                        queryParameters: {
-                                          'flashcardId': serializeParam(
-                                            valueOrDefault<int>(
-                                              deckFlashcardsColumnItem
-                                                  .flashcardId,
-                                              0,
-                                            ),
-                                            ParamType.int,
-                                          ),
-                                          'isCreation': serializeParam(
-                                            false,
-                                            ParamType.bool,
-                                          ),
-                                          'deckId': serializeParam(
-                                            valueOrDefault<int>(
-                                              widget.deckId,
-                                              0,
-                                            ),
-                                            ParamType.int,
-                                          ),
-                                        }.withoutNulls,
-                                      );
-                                    },
-                                    deleteRowQueryAction: () async {
-                                      // Flashcard Remove row query by Id
-                                      await SQLiteManager.instance
-                                          .flashcardDeleteWithId(
-                                        flashcardId: valueOrDefault<int>(
-                                          deckFlashcardsColumnItem.flashcardId,
-                                          0,
+                                            context.pushNamed(
+                                              'FlashcardUpdateScreen',
+                                              queryParameters: {
+                                                'flashcardId': serializeParam(
+                                                  valueOrDefault<int>(
+                                                    deckFlashcardsColumnItem
+                                                        .flashcardId,
+                                                    0,
+                                                  ),
+                                                  ParamType.int,
+                                                ),
+                                                'isCreation': serializeParam(
+                                                  false,
+                                                  ParamType.bool,
+                                                ),
+                                                'deckId': serializeParam(
+                                                  valueOrDefault<int>(
+                                                    widget.deckId,
+                                                    0,
+                                                  ),
+                                                  ParamType.int,
+                                                ),
+                                              }.withoutNulls,
+                                            );
+                                          },
+                                          deleteRowQueryAction: () async {
+                                            // Flashcard Remove row query by Id
+                                            await SQLiteManager.instance
+                                                .flashcardDeleteWithId(
+                                              flashcardId: valueOrDefault<int>(
+                                                deckFlashcardsColumnItem
+                                                    .flashcardId,
+                                                0,
+                                              ),
+                                            );
+                                            // Delete row decksFlashcards
+                                            await SQLiteManager.instance
+                                                .decksFlashcardsDELETERowByFlashcardId(
+                                              flashcardId: valueOrDefault<int>(
+                                                deckFlashcardsColumnItem
+                                                    .flashcardId,
+                                                0,
+                                              ),
+                                            );
+                                            // Update component
+
+                                            safeSetState(() {});
+                                          },
                                         ),
                                       );
-                                      // Delete row decksFlashcards
-                                      await SQLiteManager.instance
-                                          .decksFlashcardsDELETERowByFlashcardId(
-                                        flashcardId: valueOrDefault<int>(
-                                          deckFlashcardsColumnItem.flashcardId,
-                                          0,
-                                        ),
-                                      );
-                                      // Update component
-
-                                      safeSetState(() {});
-                                    },
+                                    }),
                                   ),
                                 );
-                              }),
-                            );
-                          },
+                              },
+                            ),
+                          ),
                         ),
                       ),
                     ),
