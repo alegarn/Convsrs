@@ -810,6 +810,9 @@ List<DecksFlashcardForListStruct> updateFlashcardsVisibility(
   String? filterText,
 ) {
   if (filterText == null || filterText.isEmpty) {
+    for (var flashcard in flashcardList) {
+      flashcard.isVisible = true;
+    }
     return flashcardList;
   }
 
