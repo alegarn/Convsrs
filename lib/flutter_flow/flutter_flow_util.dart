@@ -402,6 +402,13 @@ Future<void> startAudioRecording(
   }
 }
 
+String? getFileExtension(String? path) {
+  if (path == null) return null;
+  final index = path.lastIndexOf('.');
+  if (index < 0 || index + 1 >= path.length) return null;
+  return path.substring(index + 1).toLowerCase();
+}
+
 Future<void> stopAudioRecording({
   required AudioRecorder? audioRecorder,
   required String audioName,
@@ -417,8 +424,12 @@ Future<void> stopAudioRecording({
   if (recordedFilePath == null) {
     return;
   }
+
+  // Update extension based on recorded path extension
+  String extension = getFileExtension(recordedPath) ?? 'mp3';
+
   final recordedFileBytes = FFUploadedFile(
-    name: audioName,
+    name: '$audioName.$extension',
     bytes: await XFile(recordedPath!).readAsBytes(),
   );
   onRecordingComplete(
