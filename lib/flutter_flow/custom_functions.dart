@@ -823,3 +823,14 @@ List<DecksFlashcardForListStruct> updateFlashcardsVisibility(
 
   return flashcardList;
 }
+
+String? countTotalCardNumber(
+    List<DecksFlashcardForListStruct>? flashcardsList) {
+  // Check if the list is null
+  if (flashcardsList == null) {
+    return '0'; // Return null if the list is null
+  }
+
+  // Return the count as a string
+  return flashcardsList.length.toString();
+}

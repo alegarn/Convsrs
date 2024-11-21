@@ -53,6 +53,8 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
           int index, Function(DecksFlashcardForListStruct) updateFn) =>
       flashcardsState[index] = updateFn(flashcardsState[index]);
 
+  bool isFilterVisible = false;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (Deck Read 1 from id)] action in FlashcardsScreen widget.
