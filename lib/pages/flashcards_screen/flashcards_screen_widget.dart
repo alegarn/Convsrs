@@ -210,112 +210,148 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                     letterSpacing: 0.0,
                                   ),
                             ),
-                            Icon(
-                              Icons.filter_alt_sharp,
-                              color: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
-                              size: 36.0,
+                            Text(
+                              'Deck cards: ${valueOrDefault<String>(
+                                functions.countTotalCardNumber(
+                                    _model.flashcardsState.toList()),
+                                '0',
+                              )}',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                    fontSize: 16.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                // Display word filter
+                                _model.isFilterVisible =
+                                    !_model.isFilterVisible;
+                                safeSetState(() {});
+                              },
+                              child: Icon(
+                                Icons.filter_alt_sharp,
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                size: 36.0,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(15.0, 3.0, 15.0, 3.0),
-                      child: Container(
-                        width: double.infinity,
-                        height: 40.0,
-                        constraints: const BoxConstraints(
-                          minHeight: 36.0,
-                          maxHeight: 48.0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context).primary,
-                        ),
-                        child: SizedBox(
-                          width: MediaQuery.sizeOf(context).width * 0.8,
-                          child: TextFormField(
-                            controller: _model.filterTextFieldTextController,
-                            focusNode: _model.filterTextFieldFocusNode,
-                            onChanged: (_) => EasyDebounce.debounce(
-                              '_model.filterTextFieldTextController',
-                              const Duration(milliseconds: 1000),
-                              () async {
-                                // Flascard filtration by name
-                                _model.flashcardsState = functions
-                                    .updateFlashcardsVisibility(
-                                        _model.flashcardsState.toList(),
-                                        _model
-                                            .filterTextFieldTextController.text)
-                                    .toList()
-                                    .cast<DecksFlashcardForListStruct>();
-                                safeSetState(() {});
-                              },
-                            ),
-                            autofocus: false,
-                            obscureText: false,
-                            decoration: InputDecoration(
-                              isDense: true,
-                              hintText: 'Word Filters: type to find your word',
-                              hintStyle: FlutterFlowTheme.of(context)
-                                  .labelMedium
+                    if (_model.isFilterVisible)
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            15.0, 3.0, 15.0, 3.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 40.0,
+                          constraints: const BoxConstraints(
+                            minHeight: 36.0,
+                            maxHeight: 48.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context).primary,
+                          ),
+                          child:
+                              // - Update flashcardsState on change
+                              // - Function updateFlashcardsVisibility
+                              // - Requires a list data type using as a parameter "isVisible"
+                              // - Requires some column element displaying your list (FlashcardsListColumn)
+                              // - Each sub-element (created from the column) with some conditionnal visibility
+                              SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.8,
+                            child: TextFormField(
+                              controller: _model.filterTextFieldTextController,
+                              focusNode: _model.filterTextFieldFocusNode,
+                              onChanged: (_) => EasyDebounce.debounce(
+                                '_model.filterTextFieldTextController',
+                                const Duration(milliseconds: 1000),
+                                () async {
+                                  // Flascard filtration by name
+                                  _model.flashcardsState = functions
+                                      .updateFlashcardsVisibility(
+                                          _model.flashcardsState.toList(),
+                                          _model.filterTextFieldTextController
+                                              .text)
+                                      .toList()
+                                      .cast<DecksFlashcardForListStruct>();
+                                  safeSetState(() {});
+                                },
+                              ),
+                              autofocus: false,
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText:
+                                    'Word Filters: type to find your word',
+                                hintStyle: FlutterFlowTheme.of(context)
+                                    .labelMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      fontSize: 24.0,
+                                      letterSpacing: 0.0,
+                                      lineHeight: 1.5,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Color(0x00000000),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Color(0x00000000),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                filled: true,
+                                fillColor: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                              ),
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
                                   .override(
                                     fontFamily: 'Readex Pro',
                                     fontSize: 24.0,
                                     letterSpacing: 0.0,
                                     lineHeight: 1.5,
                                   ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context).error,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context).error,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              filled: true,
-                              fillColor: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
+                              textAlign: TextAlign.start,
+                              cursorColor:
+                                  FlutterFlowTheme.of(context).primaryText,
+                              validator: _model
+                                  .filterTextFieldTextControllerValidator
+                                  .asValidator(context),
                             ),
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Readex Pro',
-                                  fontSize: 24.0,
-                                  letterSpacing: 0.0,
-                                  lineHeight: 1.5,
-                                ),
-                            textAlign: TextAlign.start,
-                            cursorColor:
-                                FlutterFlowTheme.of(context).primaryText,
-                            validator: _model
-                                .filterTextFieldTextControllerValidator
-                                .asValidator(context),
                           ),
                         ),
                       ),
-                    ),
                     Flexible(
                       child: SafeArea(
                         child: ClipRRect(
