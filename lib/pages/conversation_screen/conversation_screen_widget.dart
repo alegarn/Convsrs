@@ -777,15 +777,38 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                 color: Colors.white,
                                               ),
                                               onPressed: () async {
-                                                // Card face swap
-                                                if (animationsMap[
-                                                        'listViewOnActionTriggerAnimation'] !=
-                                                    null) {
-                                                  animationsMap[
-                                                          'listViewOnActionTriggerAnimation']!
-                                                      .controller
-                                                      .forward(from: 0.0);
+                                                if (_model
+                                                    .isScreenReversedState) {
+                                                  // Card face swap
+                                                  if (animationsMap[
+                                                          'listViewOnActionTriggerAnimation'] !=
+                                                      null) {
+                                                    animationsMap[
+                                                            'listViewOnActionTriggerAnimation']!
+                                                        .controller
+                                                        .forward(from: 0.0);
+                                                  }
+                                                } else {
+                                                  // Card face swap-back
+                                                  if (animationsMap[
+                                                          'listViewOnActionTriggerAnimation'] !=
+                                                      null) {
+                                                    animationsMap[
+                                                            'listViewOnActionTriggerAnimation']!
+                                                        .controller
+                                                        .forward(from: 0.0)
+                                                        .whenComplete(animationsMap[
+                                                                'listViewOnActionTriggerAnimation']!
+                                                            .controller
+                                                            .reverse);
+                                                  }
                                                 }
+
+                                                // Update isScreenReversedState
+                                                _model.isScreenReversedState =
+                                                    !_model
+                                                        .isScreenReversedState;
+                                                safeSetState(() {});
                                               },
                                             ),
                                           ),

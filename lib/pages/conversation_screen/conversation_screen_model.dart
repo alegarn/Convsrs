@@ -72,6 +72,8 @@ class ConversationScreenModel
 
   int bigLoopCounter = 0;
 
+  bool isScreenReversedState = true;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (Flashcards for conversation with deckId)] action in ConversationScreen widget.
