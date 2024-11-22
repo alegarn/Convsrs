@@ -1,3 +1,4 @@
+import '/auth/supabase_auth/auth_util.dart';
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/ui/list_button/list_button_widget.dart';
@@ -51,7 +52,26 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
       _model.deckInfos = await SQLiteManager.instance.deckRead1FromId(
         id: widget.deckId,
       );
+      // Get All Deck's Flashcards
+      _model.deckFlashcards =
+          await SQLiteManager.instance.flashcardsReadAllFromDeckNameAndId(
+        deckId: valueOrDefault<int>(
+          widget.deckId,
+          1,
+        ),
+        userId: currentUserUid,
+      );
+      // Flashcards to State
+      _model.flashcardsState = functions
+          .addFlashcardsListToDecksFlashcardState(
+              _model.deckFlashcards?.toList(), widget.deckId)!
+          .toList()
+          .cast<DecksFlashcardForListStruct>();
+      safeSetState(() {});
     });
+
+    _model.filterTextFieldTextController ??= TextEditingController();
+    _model.filterTextFieldFocusNode ??= FocusNode();
 
     _model.nameFieldTextController ??= TextEditingController();
     _model.nameFieldFocusNode ??= FocusNode();
@@ -138,13 +158,24 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
           top: true,
           child: Stack(
             children: [
-              SingleChildScrollView(
-                primary: false,
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.sizeOf(context).width * 1.0,
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.935,
+                ),
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).primary,
+                ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     Container(
                       width: double.infinity,
+                      height: 36.0,
+                      constraints: const BoxConstraints(
+                        minHeight: 36.0,
+                        maxHeight: 48.0,
+                      ),
                       decoration: BoxDecoration(
                         color: FlutterFlowTheme.of(context).primary,
                         boxShadow: const [
@@ -158,14 +189,14 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                           )
                         ],
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                16.0, 0.0, 0.0, 12.0),
-                            child: Text(
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            16.0, 0.0, 16.0, 0.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
                               'Deck: ${valueOrDefault<String>(
                                 widget.deckName,
                                 'deckName',
@@ -179,121 +210,255 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                     letterSpacing: 0.0,
                                   ),
                             ),
-                          ),
-                        ],
+                            Text(
+                              'Deck cards: ${valueOrDefault<String>(
+                                functions.countTotalCardNumber(
+                                    _model.flashcardsState.toList()),
+                                '0',
+                              )}',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                    fontSize: 16.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                // Display word filter
+                                _model.isFilterVisible =
+                                    !_model.isFilterVisible;
+                                safeSetState(() {});
+                              },
+                              child: Icon(
+                                Icons.filter_alt_sharp,
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                size: 36.0,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Flexible(
-                      child: Container(
-                        width: MediaQuery.sizeOf(context).width * 1.0,
-                        height: MediaQuery.sizeOf(context).height * 0.87,
-                        decoration: const BoxDecoration(),
-                        child: FutureBuilder<
-                            List<FlashcardsReadAllFromDeckNameAndIdRow>>(
-                          future: SQLiteManager.instance
-                              .flashcardsReadAllFromDeckNameAndId(
-                            deckId: widget.deckId,
-                            userId: valueOrDefault<String>(
-                              FFAppState().userUuid,
-                              'FlashcardsScreenUserUUID',
+                    if (_model.isFilterVisible)
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            15.0, 3.0, 15.0, 3.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 40.0,
+                          constraints: const BoxConstraints(
+                            minHeight: 36.0,
+                            maxHeight: 48.0,
+                          ),
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context).primary,
+                          ),
+                          child:
+                              // - Update flashcardsState on change
+                              // - Function updateFlashcardsVisibility
+                              // - Requires a list data type using as a parameter "isVisible"
+                              // - Requires some column element displaying your list (FlashcardsListColumn)
+                              // - Each sub-element (created from the column) with some conditionnal visibility
+                              SizedBox(
+                            width: MediaQuery.sizeOf(context).width * 0.8,
+                            child: TextFormField(
+                              controller: _model.filterTextFieldTextController,
+                              focusNode: _model.filterTextFieldFocusNode,
+                              onChanged: (_) => EasyDebounce.debounce(
+                                '_model.filterTextFieldTextController',
+                                const Duration(milliseconds: 1000),
+                                () async {
+                                  // Flascard filtration by name
+                                  _model.flashcardsState = functions
+                                      .updateFlashcardsVisibility(
+                                          _model.flashcardsState.toList(),
+                                          _model.filterTextFieldTextController
+                                              .text)
+                                      .toList()
+                                      .cast<DecksFlashcardForListStruct>();
+                                  safeSetState(() {});
+                                },
+                              ),
+                              autofocus: false,
+                              obscureText: false,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText:
+                                    'Word Filters: type to find your word',
+                                hintStyle: FlutterFlowTheme.of(context)
+                                    .labelMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      fontSize: 24.0,
+                                      letterSpacing: 0.0,
+                                      lineHeight: 1.5,
+                                    ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Color(0x00000000),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Color(0x00000000),
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: FlutterFlowTheme.of(context).error,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                filled: true,
+                                fillColor: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                              ),
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 24.0,
+                                    letterSpacing: 0.0,
+                                    lineHeight: 1.5,
+                                  ),
+                              textAlign: TextAlign.start,
+                              cursorColor:
+                                  FlutterFlowTheme.of(context).primaryText,
+                              validator: _model
+                                  .filterTextFieldTextControllerValidator
+                                  .asValidator(context),
                             ),
                           ),
-                          builder: (context, snapshot) {
-                            // Customize what your widget looks like when it's loading.
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: SizedBox(
-                                  width: 50.0,
-                                  height: 50.0,
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      FlutterFlowTheme.of(context).primary,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                            final flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList =
-                                snapshot.data!;
+                        ),
+                      ),
+                    Flexible(
+                      child: SafeArea(
+                        child: ClipRRect(
+                          child: Container(
+                            width: MediaQuery.sizeOf(context).width * 1.0,
+                            constraints: BoxConstraints(
+                              maxHeight:
+                                  MediaQuery.sizeOf(context).height * 0.87,
+                            ),
+                            decoration: const BoxDecoration(),
+                            child: Builder(
+                              builder: (context) {
+                                final deckFlashcardsColumn =
+                                    _model.flashcardsState.toList();
 
-                            return ListView.builder(
-                              padding: EdgeInsets.zero,
-                              scrollDirection: Axis.vertical,
-                              itemCount:
-                                  flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList
-                                      .length,
-                              itemBuilder: (context, flashcardListViewIndex) {
-                                final flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow =
-                                    flashcardListViewFlashcardsReadAllFromDeckNameAndIdRowList[
-                                        flashcardListViewIndex];
-                                return wrapWithModel(
-                                  model: _model.flashcardListCrudRowModels
-                                      .getModel(
-                                    flashcardListViewIndex.toString(),
-                                    flashcardListViewIndex,
-                                  ),
-                                  updateCallback: () => safeSetState(() {}),
-                                  updateOnChange: true,
-                                  child: ListCrudRowWidget(
-                                    key: Key(
-                                      'Keybpt_${flashcardListViewIndex.toString()}',
-                                    ),
-                                    rowName: valueOrDefault<String>(
-                                      flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
-                                          .name,
-                                      'deck',
-                                    ),
-                                    elementdId:
-                                        flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
-                                            .id,
-                                    navigateAction: () async {
-                                      // Navigate to FlashcardUpdate
+                                return SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: List.generate(
+                                        deckFlashcardsColumn.length,
+                                        (deckFlashcardsColumnIndex) {
+                                      final deckFlashcardsColumnItem =
+                                          deckFlashcardsColumn[
+                                              deckFlashcardsColumnIndex];
+                                      return wrapWithModel(
+                                        model: _model.flashcardListCrudRowModels
+                                            .getModel(
+                                          deckFlashcardsColumnIndex.toString(),
+                                          deckFlashcardsColumnIndex,
+                                        ),
+                                        updateCallback: () =>
+                                            safeSetState(() {}),
+                                        updateOnChange: true,
+                                        child: ListCrudRowWidget(
+                                          key: Key(
+                                            'Keybpt_${deckFlashcardsColumnIndex.toString()}',
+                                          ),
+                                          rowName: valueOrDefault<String>(
+                                            deckFlashcardsColumnItem.name,
+                                            'default',
+                                          ),
+                                          elementdId: valueOrDefault<int>(
+                                            deckFlashcardsColumnItem
+                                                .flashcardId,
+                                            0,
+                                          ),
+                                          isVisible: deckFlashcardsColumnItem
+                                              .isVisible,
+                                          navigateAction: () async {
+                                            // Navigate to FlashcardUpdate
 
-                                      context.pushNamed(
-                                        'FlashcardUpdateScreen',
-                                        queryParameters: {
-                                          'flashcardId': serializeParam(
-                                            flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
-                                                .id,
-                                            ParamType.int,
-                                          ),
-                                          'isCreation': serializeParam(
-                                            false,
-                                            ParamType.bool,
-                                          ),
-                                          'deckId': serializeParam(
-                                            widget.deckId,
-                                            ParamType.int,
-                                          ),
-                                        }.withoutNulls,
-                                      );
-                                    },
-                                    deleteRowQueryAction: () async {
-                                      // Flashcard Remove row query by Id
-                                      await SQLiteManager.instance
-                                          .flashcardDeleteWithId(
-                                        flashcardId: valueOrDefault<int>(
-                                          flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
-                                              .id,
-                                          0,
+                                            context.pushNamed(
+                                              'FlashcardUpdateScreen',
+                                              queryParameters: {
+                                                'flashcardId': serializeParam(
+                                                  valueOrDefault<int>(
+                                                    deckFlashcardsColumnItem
+                                                        .flashcardId,
+                                                    0,
+                                                  ),
+                                                  ParamType.int,
+                                                ),
+                                                'isCreation': serializeParam(
+                                                  false,
+                                                  ParamType.bool,
+                                                ),
+                                                'deckId': serializeParam(
+                                                  valueOrDefault<int>(
+                                                    widget.deckId,
+                                                    0,
+                                                  ),
+                                                  ParamType.int,
+                                                ),
+                                              }.withoutNulls,
+                                            );
+                                          },
+                                          deleteRowQueryAction: () async {
+                                            // Flashcard Remove row query by Id
+                                            await SQLiteManager.instance
+                                                .flashcardDeleteWithId(
+                                              flashcardId: valueOrDefault<int>(
+                                                deckFlashcardsColumnItem
+                                                    .flashcardId,
+                                                0,
+                                              ),
+                                            );
+                                            // Delete row decksFlashcards
+                                            await SQLiteManager.instance
+                                                .decksFlashcardsDELETERowByFlashcardId(
+                                              flashcardId: valueOrDefault<int>(
+                                                deckFlashcardsColumnItem
+                                                    .flashcardId,
+                                                0,
+                                              ),
+                                            );
+                                            // Update component
+
+                                            safeSetState(() {});
+                                          },
                                         ),
                                       );
-                                      // Delete row decksFlashcards
-                                      await SQLiteManager.instance
-                                          .decksFlashcardsDELETERowByFlashcardId(
-                                        flashcardId:
-                                            flashcardListViewFlashcardsReadAllFromDeckNameAndIdRow
-                                                .id,
-                                      );
-                                      // Update component
-
-                                      safeSetState(() {});
-                                    },
+                                    }),
                                   ),
                                 );
                               },
-                            );
-                          },
+                            ),
+                          ),
                         ),
                       ),
                     ),

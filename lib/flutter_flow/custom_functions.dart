@@ -778,3 +778,59 @@ String? getNamesFromTagList(List<TagStruct> tagList) {
       ? combinedNames
       : null; // Return null if no names are present
 }
+
+List<DecksFlashcardForListStruct>? addFlashcardsListToDecksFlashcardState(
+  List<FlashcardsReadAllFromDeckNameAndIdRow>? flashcards,
+  int? deckId,
+) {
+  if (flashcards == null) {
+    return null; // Return null if the input list is null
+  }
+
+  List<DecksFlashcardForListStruct> decksFlashcards =
+      flashcards.asMap().entries.map((entry) {
+    int index = entry.key; // Get the index
+    FlashcardsReadAllFromDeckNameAndIdRow flashcard =
+        entry.value; // Get the flashcard
+
+    return DecksFlashcardForListStruct(
+      listId: index + 1, // Assign id as n + 1
+      deckId: deckId, // Use the provided deckId
+      flashcardId: flashcard.id, // Assuming flashcard.id is the flashcardId
+      name: flashcard.name,
+      isVisible: true, // Defaulting to true for visibility
+    );
+  }).toList();
+
+  return decksFlashcards;
+}
+
+List<DecksFlashcardForListStruct> updateFlashcardsVisibility(
+  List<DecksFlashcardForListStruct> flashcardList,
+  String? filterText,
+) {
+  if (filterText == null || filterText.isEmpty) {
+    for (var flashcard in flashcardList) {
+      flashcard.isVisible = true;
+    }
+    return flashcardList;
+  }
+
+  for (var flashcard in flashcardList) {
+    flashcard.isVisible =
+        flashcard.name.toLowerCase().contains(filterText.toLowerCase());
+  }
+
+  return flashcardList;
+}
+
+String? countTotalCardNumber(
+    List<DecksFlashcardForListStruct>? flashcardsList) {
+  // Check if the list is null
+  if (flashcardsList == null) {
+    return '0'; // Return null if the list is null
+  }
+
+  // Return the count as a string
+  return flashcardsList.length.toString();
+}

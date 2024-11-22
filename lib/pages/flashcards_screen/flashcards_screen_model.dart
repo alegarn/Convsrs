@@ -39,10 +39,33 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   void updateAllTagsPageStateAtIndex(int index, Function(TagStruct) updateFn) =>
       allTagsPageState[index] = updateFn(allTagsPageState[index]);
 
+  List<DecksFlashcardForListStruct> flashcardsState = [];
+  void addToFlashcardsState(DecksFlashcardForListStruct item) =>
+      flashcardsState.add(item);
+  void removeFromFlashcardsState(DecksFlashcardForListStruct item) =>
+      flashcardsState.remove(item);
+  void removeAtIndexFromFlashcardsState(int index) =>
+      flashcardsState.removeAt(index);
+  void insertAtIndexInFlashcardsState(
+          int index, DecksFlashcardForListStruct item) =>
+      flashcardsState.insert(index, item);
+  void updateFlashcardsStateAtIndex(
+          int index, Function(DecksFlashcardForListStruct) updateFn) =>
+      flashcardsState[index] = updateFn(flashcardsState[index]);
+
+  bool isFilterVisible = false;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (Deck Read 1 from id)] action in FlashcardsScreen widget.
   List<DeckRead1FromIdRow>? deckInfos;
+  // Stores action output result for [Backend Call - SQLite (Flashcards read all from deck name and id)] action in FlashcardsScreen widget.
+  List<FlashcardsReadAllFromDeckNameAndIdRow>? deckFlashcards;
+  // State field(s) for FilterTextField widget.
+  FocusNode? filterTextFieldFocusNode;
+  TextEditingController? filterTextFieldTextController;
+  String? Function(BuildContext, String?)?
+      filterTextFieldTextControllerValidator;
   // Models for FlashcardListCrudRow.
   late FlutterFlowDynamicModels<ListCrudRowModel> flashcardListCrudRowModels;
   // State field(s) for NameField widget.
@@ -76,6 +99,9 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
 
   @override
   void dispose() {
+    filterTextFieldFocusNode?.dispose();
+    filterTextFieldTextController?.dispose();
+
     flashcardListCrudRowModels.dispose();
     nameFieldFocusNode?.dispose();
     nameFieldTextController?.dispose();

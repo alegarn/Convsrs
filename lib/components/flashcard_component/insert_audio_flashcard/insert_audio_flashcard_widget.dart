@@ -139,7 +139,7 @@ class _InsertAudioFlashcardWidgetState
                 // Audio recording stops
                 await stopAudioRecording(
                   audioRecorder: _model.audioRecorder,
-                  audioName: 'recordedFileBytes.mp3',
+                  audioName: 'recordedFileBytes',
                   onRecordingComplete: (audioFilePath, audioBytes) {
                     _model.audioRecord = audioFilePath;
                     _model.recordedFileBytes = audioBytes;
