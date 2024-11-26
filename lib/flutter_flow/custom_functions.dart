@@ -234,21 +234,21 @@ List<FlashcardStruct>? updateCardToReviewListState(
           DateFormat('yyyy-MM-ddTHH:mm:ss').format(row.nextRecallDate);
  */
       FlashcardStruct flashcard = FlashcardStruct(
-        id: row.id,
-        name: row.name,
-        textRecto: row.textRecto,
-        textVerso: row.textVerso,
-        currentRetrievalStep: row.currentRetrievalStep,
-        currentSpeakingStep: row.currentSpeakingStep,
-        toRecall: row.toRecall,
-        currentRecallDate: row.currentRecallDate, //currentRecallDateString,
-        nextRecallDate: row.nextRecallDate, //nextRecallDateString,
-        currentSpeakingDate: row.currentSpeakingDate,
-        nextSpeakingDate: row.nextSpeakingDate,
-        successCount: row.successCount,
-        totalReviewCount: row.totalReviewCount,
-        mentalImageBool: row.mentalImageBool,
-      );
+          id: row.id,
+          name: row.name,
+          textRecto: row.textRecto,
+          textVerso: row.textVerso,
+          currentRetrievalStep: row.currentRetrievalStep,
+          currentSpeakingStep: row.currentSpeakingStep,
+          toRecall: row.toRecall,
+          currentRecallDate: row.currentRecallDate, //currentRecallDateString,
+          nextRecallDate: row.nextRecallDate, //nextRecallDateString,
+          currentSpeakingDate: row.currentSpeakingDate,
+          nextSpeakingDate: row.nextSpeakingDate,
+          successCount: row.successCount,
+          totalReviewCount: row.totalReviewCount,
+          mentalImageBool: row.mentalImageBool,
+          tagIds: row.tagIds);
       flashcardList.add(flashcard);
     }
   }
@@ -683,7 +683,7 @@ String? extractFlashcards(
   return flashcardData.isNotEmpty ? flashcardData.trim() : null;
 }
 
-List<TagStruct> formatNewTags(List<TagsGETAllRow>? allTagsList) {
+List<TagStruct> formatNewTags(List<TagsGETAllFromCtgRow>? allTagsList) {
   // Check if the input list is null or empty
   if (allTagsList == null || allTagsList.isEmpty) {
     // Return a list with a default TagStruct

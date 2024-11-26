@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -235,6 +236,20 @@ class _FlashcardUpdateScreenWidgetState
     _model.newTagFieldFocusNode ??= FocusNode();
 
     animationsMap.addAll({
+      'textOnActionTriggerAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: true,
+        effectsBuilder: () => [
+          VisibilityEffect(duration: 1.ms),
+          FadeEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 100.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+        ],
+      ),
       'iconButtonOnActionTriggerAnimation': AnimationInfo(
         trigger: AnimationTrigger.onActionTrigger,
         applyInitialState: true,
@@ -1154,105 +1169,190 @@ class _FlashcardUpdateScreenWidgetState
                                     .secondaryBackground,
                               ),
                               alignment: const AlignmentDirectional(0.0, 0.0),
-                              child: SizedBox(
-                                width: MediaQuery.sizeOf(context).width * 1.0,
-                                child: TextFormField(
-                                  controller: _model.newTagFieldTextController,
-                                  focusNode: _model.newTagFieldFocusNode,
-                                  onFieldSubmitted: (_) async {
-                                    // Create new tag (need to verify existance)
-                                    await SQLiteManager.instance.tagsINSERTNew(
-                                      name: _model.newTag!,
-                                      categoriesList: '[\"flashcard\"]',
-                                    );
-                                    // Update New Tag state
-                                    _model.newTag = _model.newTag;
-                                    // Get new tag for the list
-                                    _model.allTagsNew = await SQLiteManager
-                                        .instance
-                                        .tagsGETAll();
-                                    // Format the tags
-                                    _model.allTags = functions
-                                        .formatNewTags(
-                                            _model.allTagsNew?.toList())
-                                        .toList()
-                                        .cast<TagStruct>();
-                                    // Reset field
-                                    safeSetState(() {
-                                      _model.newTagFieldTextController?.clear();
-                                    });
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.sizeOf(context).width * 1.0,
+                                    child: TextFormField(
+                                      controller:
+                                          _model.newTagFieldTextController,
+                                      focusNode: _model.newTagFieldFocusNode,
+                                      onFieldSubmitted: (_) async {
+                                        // Does tag Exist ?
+                                        _model.tagExistString =
+                                            await actions.verifyIfTagExist(
+                                          _model.newTagFieldTextController.text,
+                                          'flashcard',
+                                        );
+                                        if (_model.tagExistString == 'true') {
+                                          // Shows tag exists
+                                          if (animationsMap[
+                                                  'textOnActionTriggerAnimation'] !=
+                                              null) {
+                                            await animationsMap[
+                                                    'textOnActionTriggerAnimation']!
+                                                .controller
+                                                .forward(from: 0.0)
+                                                .whenComplete(animationsMap[
+                                                        'textOnActionTriggerAnimation']!
+                                                    .controller
+                                                    .reverse);
+                                          }
+                                        } else if (_model.tagExistString ==
+                                            'false') {
+                                          // Create new tag (need to verify existance)
+                                          await SQLiteManager.instance
+                                              .tagsINSERTNew(
+                                            name: _model.newTag!,
+                                            categoriesList: '[\"flashcard\"]',
+                                          );
+                                          // Update New Tag state
+                                          _model.newTag = _model.newTag;
+                                          // Get new tag for the list
+                                          _model.allTagsNewFalse =
+                                              await SQLiteManager.instance
+                                                  .tagsGETAllFromCtg(
+                                            category: 'flashcard',
+                                          );
+                                          // Format the tags
+                                          _model.allTags = functions
+                                              .formatNewTags(_model
+                                                  .allTagsNewFalse
+                                                  ?.toList())
+                                              .toList()
+                                              .cast<TagStruct>();
+                                          // Reset field
+                                          safeSetState(() {
+                                            _model.newTagFieldTextController
+                                                ?.clear();
+                                          });
+                                        } else {
+                                          // Update tag with new category
+                                          await SQLiteManager.instance
+                                              .tagsUPDATEAddCategoryIf(
+                                            newTagName: _model
+                                                .newTagFieldTextController.text,
+                                            category: '\"flashcard\"',
+                                          );
+                                          // Update New Tag state
+                                          _model.newTag = _model.newTag;
+                                          // Get new tag for the list
+                                          _model.allTagsNewUpdate =
+                                              await SQLiteManager.instance
+                                                  .tagsGETAllFromCtg(
+                                            category: 'flashcard',
+                                          );
+                                          // Format the tags
+                                          _model.allTags = functions
+                                              .formatNewTags(_model
+                                                  .allTagsNewUpdate
+                                                  ?.toList())
+                                              .toList()
+                                              .cast<TagStruct>();
+                                          // Reset field
+                                          safeSetState(() {
+                                            _model.newTagFieldTextController
+                                                ?.clear();
+                                          });
+                                        }
 
-                                    safeSetState(() {});
-                                  },
-                                  autofocus: false,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    labelText: 'New tag',
-                                    labelStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          fontSize: 14.0,
-                                          letterSpacing: 0.0,
+                                        safeSetState(() {});
+                                      },
+                                      autofocus: false,
+                                      obscureText: false,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                        labelText: 'New tag',
+                                        labelStyle: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              fontSize: 14.0,
+                                              letterSpacing: 0.0,
+                                            ),
+                                        alignLabelWithHint: false,
+                                        hintText: 'Enter your new Tag',
+                                        hintStyle: FlutterFlowTheme.of(context)
+                                            .labelMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              fontSize: 18.0,
+                                              letterSpacing: 0.0,
+                                              lineHeight: 2.0,
+                                            ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
                                         ),
-                                    alignLabelWithHint: false,
-                                    hintText: 'Enter your new Tag',
-                                    hintStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          fontSize: 18.0,
-                                          letterSpacing: 0.0,
-                                          lineHeight: 2.0,
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
                                         ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Color(0x00000000),
-                                        width: 1.0,
+                                        errorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .error,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: FlutterFlowTheme.of(context)
+                                                .error,
+                                            width: 1.0,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        filled: true,
+                                        fillColor: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
                                       ),
-                                      borderRadius: BorderRadius.circular(8.0),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Readex Pro',
+                                            fontSize: 18.0,
+                                            letterSpacing: 0.0,
+                                          ),
+                                      cursorColor: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      validator: _model
+                                          .newTagFieldTextControllerValidator
+                                          .asValidator(context),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Color(0x00000000),
-                                        width: 1.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 1.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 1.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    filled: true,
-                                    fillColor: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
                                   ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Readex Pro',
-                                        fontSize: 18.0,
-                                        letterSpacing: 0.0,
-                                      ),
-                                  cursorColor:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  validator: _model
-                                      .newTagFieldTextControllerValidator
-                                      .asValidator(context),
-                                ),
+                                  Align(
+                                    alignment: const AlignmentDirectional(-1.0, 0.0),
+                                    child: Text(
+                                      'Tag already exists',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Readex Pro',
+                                            color: FlutterFlowTheme.of(context)
+                                                .error,
+                                            fontSize: 18.0,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ).animateOnActionTrigger(
+                                      animationsMap[
+                                          'textOnActionTriggerAnimation']!,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
