@@ -6,7 +6,7 @@ Future newTagInsert(
   BuildContext context, {
   String? name,
 }) async {
-  List<TagsGETAllRow>? allTagsNew;
+  List<TagsGETAllFromCtgRow>? allTagsNew;
 
   // Create new tag (need to verify existance)
   await SQLiteManager.instance.tagsINSERTNew(
@@ -14,7 +14,9 @@ Future newTagInsert(
     categoriesList: '[\"flashcard\"]',
   );
   // Get new tag for the list
-  allTagsNew = await SQLiteManager.instance.tagsGETAll();
+  allTagsNew = await SQLiteManager.instance.tagsGETAllFromCtg(
+    category: 'flashcard',
+  );
 }
 
 Future moveSelectedTagToAllTags(

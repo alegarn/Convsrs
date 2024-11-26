@@ -355,8 +355,12 @@ class SQLiteManager {
         _database,
       );
 
-  Future<List<TagsGETAllRow>> tagsGETAll() => performTagsGETAll(
+  Future<List<TagsGETAllFromCtgRow>> tagsGETAllFromCtg({
+    String? category,
+  }) =>
+      performTagsGETAllFromCtg(
         _database,
+        category: category,
       );
 
   /// END READ QUERY CALLS
@@ -887,6 +891,16 @@ class SQLiteManager {
         _database,
         name: name,
         categoriesList: categoriesList,
+      );
+
+  Future tagsUPDATEAddCategoryIf({
+    String? newTagName,
+    String? category,
+  }) =>
+      performTagsUPDATEAddCategoryIf(
+        _database,
+        newTagName: newTagName,
+        category: category,
       );
 
   /// END UPDATE QUERY CALLS

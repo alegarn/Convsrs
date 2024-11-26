@@ -479,6 +479,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                     size: 48.0,
                   ),
                   onPressed: () async {
+                    // Get tags in State
                     await _model.getTagsInState(context);
                     safeSetState(() {});
                     // Show modal
@@ -844,7 +845,9 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                 // Get new tag for the list
                                                 _model.allTagsNew =
                                                     await SQLiteManager.instance
-                                                        .tagsGETAll();
+                                                        .tagsGETAllFromCtg(
+                                                  category: 'flashcard',
+                                                );
                                                 // Format all the new tags + reset new tag field
                                                 _model.allTagsPageState =
                                                     functions

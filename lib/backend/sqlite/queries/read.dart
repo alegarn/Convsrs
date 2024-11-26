@@ -1178,21 +1178,24 @@ class FlashcardsREADLastIdRow extends SqliteRow {
 
 /// END FLASHCARDS READ LAST ID
 
-/// BEGIN TAGS GET ALL
-Future<List<TagsGETAllRow>> performTagsGETAll(
-  Database database,
-) {
-  const query = '''
-SELECT id, name FROM tags;
+/// BEGIN TAGS GET ALL FROM CTG
+Future<List<TagsGETAllFromCtgRow>> performTagsGETAllFromCtg(
+  Database database, {
+  String? category,
+}) {
+  final query = '''
+SELECT id, name 
+FROM tags
+WHERE categories LIKE '%$category%';
 ''';
-  return _readQuery(database, query, (d) => TagsGETAllRow(d));
+  return _readQuery(database, query, (d) => TagsGETAllFromCtgRow(d));
 }
 
-class TagsGETAllRow extends SqliteRow {
-  TagsGETAllRow(super.data);
+class TagsGETAllFromCtgRow extends SqliteRow {
+  TagsGETAllFromCtgRow(super.data);
 
   int? get id => data['id'] as int?;
   String? get name => data['name'] as String?;
 }
 
-/// END TAGS GET ALL
+/// END TAGS GET ALL FROM CTG

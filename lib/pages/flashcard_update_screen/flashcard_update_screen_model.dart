@@ -89,8 +89,12 @@ class FlashcardUpdateScreenModel
   FocusNode? newTagFieldFocusNode;
   TextEditingController? newTagFieldTextController;
   String? Function(BuildContext, String?)? newTagFieldTextControllerValidator;
-  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in NewTagField widget.
-  List<TagsGETAllRow>? allTagsNew;
+  // Stores action output result for [Custom Action - verifyIfTagExist] action in NewTagField widget.
+  String? tagExistString;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
+  List<TagsGETAllFromCtgRow>? allTagsNewFalse;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
+  List<TagsGETAllFromCtgRow>? allTagsNewUpdate;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in finishCard widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
 
@@ -124,11 +128,13 @@ class FlashcardUpdateScreenModel
     BuildContext context, {
     String? tagIds,
   }) async {
-    List<TagsGETAllRow>? allTagsParameter;
+    List<TagsGETAllFromCtgRow>? allTagsParameter;
     List<TagStruct>? selectedTagsParameter;
 
     // Get all tags
-    allTagsParameter = await SQLiteManager.instance.tagsGETAll();
+    allTagsParameter = await SQLiteManager.instance.tagsGETAllFromCtg(
+      category: 'flashcard',
+    );
     // Get selected tags from Ids
     selectedTagsParameter = await actions.getSelectedTagsFromTagIds(
       valueOrDefault<String>(

@@ -799,3 +799,19 @@ VALUES
 }
 
 /// END TAGS INSERT NEW
+
+/// BEGIN TAGS UPDATE ADD CATEGORY IF
+Future performTagsUPDATEAddCategoryIf(
+  Database database, {
+  String? newTagName,
+  String? category,
+}) {
+  final query = '''
+UPDATE tags
+SET categories = REPLACE(categories, ']', ',\"$category]\"')
+WHERE name = '$newTagName' AND categories NOT LIKE '%$category%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS UPDATE ADD CATEGORY IF
