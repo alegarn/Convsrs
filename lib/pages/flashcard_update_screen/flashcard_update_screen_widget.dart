@@ -1139,6 +1139,17 @@ class _FlashcardUpdateScreenWidgetState
                   ),
                 ),
               ),
+
+              // Create / Move your tags saved in a column tagIds (Flashcards)
+              // TagListContainer all needs list:
+              // - Page action: ManageGetTags on page loading
+              // - tagIds col in Flashcards
+              // - selectedTagsState (List <Tag>)
+              // - allTagsState (List <Tag>)
+              // - from a state to other state transfer 2 functions
+              // - Tags *CRU*(D) functions including SQL
+              // - formatNewTags()
+              // - Reset tags states
               Flexible(
                 flex: 6,
                 child: Container(
@@ -1171,6 +1182,7 @@ class _FlashcardUpdateScreenWidgetState
                               alignment: const AlignmentDirectional(0.0, 0.0),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
                                     width:
@@ -1205,11 +1217,13 @@ class _FlashcardUpdateScreenWidgetState
                                           // Create new tag (need to verify existance)
                                           await SQLiteManager.instance
                                               .tagsINSERTNew(
-                                            name: _model.newTag!,
+                                            name: valueOrDefault<String>(
+                                              _model.newTagFieldTextController
+                                                  .text,
+                                              'newTagField INSERT default',
+                                            ),
                                             categoriesList: '[\"flashcard\"]',
                                           );
-                                          // Update New Tag state
-                                          _model.newTag = _model.newTag;
                                           // Get new tag for the list
                                           _model.allTagsNewFalse =
                                               await SQLiteManager.instance
@@ -1232,12 +1246,13 @@ class _FlashcardUpdateScreenWidgetState
                                           // Update tag with new category
                                           await SQLiteManager.instance
                                               .tagsUPDATEAddCategoryIf(
-                                            newTagName: _model
-                                                .newTagFieldTextController.text,
+                                            newTagName: valueOrDefault<String>(
+                                              _model.newTagFieldTextController
+                                                  .text,
+                                              'newTagField UPDATE default',
+                                            ),
                                             category: '\"flashcard\"',
                                           );
-                                          // Update New Tag state
-                                          _model.newTag = _model.newTag;
                                           // Get new tag for the list
                                           _model.allTagsNewUpdate =
                                               await SQLiteManager.instance
@@ -1334,22 +1349,27 @@ class _FlashcardUpdateScreenWidgetState
                                           .asValidator(context),
                                     ),
                                   ),
-                                  Align(
-                                    alignment: const AlignmentDirectional(-1.0, 0.0),
-                                    child: Text(
-                                      'Tag already exists',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            fontFamily: 'Readex Pro',
-                                            color: FlutterFlowTheme.of(context)
-                                                .error,
-                                            fontSize: 18.0,
-                                            letterSpacing: 0.0,
-                                          ),
-                                    ).animateOnActionTrigger(
-                                      animationsMap[
-                                          'textOnActionTriggerAnimation']!,
+                                  Opacity(
+                                    opacity: 0.0,
+                                    child: Align(
+                                      alignment:
+                                          const AlignmentDirectional(-1.0, 0.0),
+                                      child: Text(
+                                        'Tag already exists',
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              fontSize: 18.0,
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ).animateOnActionTrigger(
+                                        animationsMap[
+                                            'textOnActionTriggerAnimation']!,
+                                      ),
                                     ),
                                   ),
                                 ],
