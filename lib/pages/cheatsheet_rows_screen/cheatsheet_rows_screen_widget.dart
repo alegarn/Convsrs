@@ -1,8 +1,6 @@
-import '/auth/supabase_auth/auth_util.dart';
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/ui/list_button/list_button_widget.dart';
-import '/components/ui/list_crud_row/list_crud_row_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -13,30 +11,31 @@ import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:provider/provider.dart';
-import 'flashcards_screen_model.dart';
-export 'flashcards_screen_model.dart';
+import 'cheatsheet_rows_screen_model.dart';
+export 'cheatsheet_rows_screen_model.dart';
 
-class FlashcardsScreenWidget extends StatefulWidget {
-  const FlashcardsScreenWidget({
+class CheatsheetRowsScreenWidget extends StatefulWidget {
+  const CheatsheetRowsScreenWidget({
     super.key,
+    this.cheatsheetName,
+    int? cheatsheetId,
     int? deckId,
-    String? deckName,
-  })  : deckId = deckId ?? 1,
-        deckName = deckName ?? 'deckName';
+  })  : cheatsheetId = cheatsheetId ?? 1,
+        deckId = deckId ?? 0;
 
+  final String? cheatsheetName;
+  final int cheatsheetId;
   final int deckId;
-  final String deckName;
 
   @override
-  State<FlashcardsScreenWidget> createState() => _FlashcardsScreenWidgetState();
+  State<CheatsheetRowsScreenWidget> createState() =>
+      _CheatsheetRowsScreenWidgetState();
 }
 
-class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
+class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
     with TickerProviderStateMixin {
-  late FlashcardsScreenModel _model;
+  late CheatsheetRowsScreenModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -45,43 +44,14 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => FlashcardsScreenModel());
+    _model = createModel(context, () => CheatsheetRowsScreenModel());
 
-    // On page load action.
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      // Get deck from Id
-      _model.deckInfos = await SQLiteManager.instance.deckRead1FromId(
-        id: widget.deckId,
-      );
-      // Get All Deck's Flashcards
-      _model.deckFlashcards =
-          await SQLiteManager.instance.flashcardsReadAllFromDeckNameAndId(
-        deckId: valueOrDefault<int>(
-          widget.deckId,
-          1,
-        ),
-        userId: currentUserUid,
-      );
-      // Flashcards to State
-      _model.flashcardsState = functions
-          .addFlashcardsListToDecksFlashcardState(
-              _model.deckFlashcards?.toList(), widget.deckId)!
-          .toList()
-          .cast<DecksFlashcardForListStruct>();
-      safeSetState(() {});
-    });
+    _model.cheatsheetRowConceptFieldTextController ??= TextEditingController();
+    _model.cheatsheetRowConceptFieldFocusNode ??= FocusNode();
 
-    _model.filterTextFieldTextController ??= TextEditingController();
-    _model.filterTextFieldFocusNode ??= FocusNode();
-
-    _model.nameFieldTextController ??= TextEditingController();
-    _model.nameFieldFocusNode ??= FocusNode();
-
-    _model.textRectoFieldTextController ??= TextEditingController();
-    _model.textRectoFieldFocusNode ??= FocusNode();
-
-    _model.textVersoFieldTextController ??= TextEditingController();
-    _model.textVersoFieldFocusNode ??= FocusNode();
+    _model.cheatsheetRowDescriptionFieldTextController ??=
+        TextEditingController();
+    _model.cheatsheetRowDescriptionFieldFocusNode ??= FocusNode();
 
     _model.newTagFieldTextController ??= TextEditingController();
     _model.newTagFieldFocusNode ??= FocusNode();
@@ -101,7 +71,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
           ),
         ],
       ),
-      'buttonOnActionTriggerAnimation': AnimationInfo(
+      'buttonOnActionTriggerAnimation1': AnimationInfo(
         trigger: AnimationTrigger.onActionTrigger,
         applyInitialState: true,
         effectsBuilder: () => [
@@ -111,6 +81,19 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
             duration: 600.0.ms,
             color: const Color(0xFFFFF000),
             angle: 0.524,
+          ),
+        ],
+      ),
+      'buttonOnActionTriggerAnimation2': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: true,
+        effectsBuilder: () => [
+          FadeEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 600.0.ms,
+            begin: 0.0,
+            end: 1.0,
           ),
         ],
       ),
@@ -132,677 +115,497 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
 
   @override
   Widget build(BuildContext context) {
-    context.watch<FFAppState>();
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).primary,
-          automaticallyImplyLeading: false,
-          leading: FlutterFlowIconButton(
-            borderColor: Colors.transparent,
-            borderRadius: 30.0,
-            borderWidth: 1.0,
-            buttonSize: 60.0,
-            icon: const Icon(
-              Icons.arrow_back_rounded,
-              color: Colors.white,
-              size: 30.0,
-            ),
-            onPressed: () async {
-              context.pop();
-            },
-          ),
-          title: Text(
-            'Flashcards',
-            textAlign: TextAlign.start,
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  fontFamily: 'Outfit',
-                  color: FlutterFlowTheme.of(context).accent4,
-                  letterSpacing: 0.0,
-                ),
-          ),
-          actions: const [],
-          centerTitle: false,
-          elevation: 2.0,
-        ),
-        body: SafeArea(
-          top: true,
-          child: Stack(
-            children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width * 1.0,
-                  maxHeight: MediaQuery.sizeOf(context).height * 0.935,
-                ),
-                decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).primary,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 36.0,
-                      constraints: const BoxConstraints(
-                        minHeight: 36.0,
-                        maxHeight: 48.0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).primary,
-                        boxShadow: const [
-                          BoxShadow(
-                            blurRadius: 3.0,
-                            color: Color(0x33000000),
-                            offset: Offset(
-                              0.0,
-                              1.0,
-                            ),
-                          )
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            16.0, 0.0, 16.0, 0.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Deck: ${valueOrDefault<String>(
-                                widget.deckName,
-                                'deckName',
-                              )}',
-                              style: FlutterFlowTheme.of(context)
-                                  .labelMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                            Text(
-                              'Deck cards: ${valueOrDefault<String>(
-                                functions.countTotalCardNumber(
-                                    _model.flashcardsState.toList()),
-                                '0',
-                              )}',
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                    fontSize: 16.0,
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                // Display word filter
-                                _model.isFilterVisible =
-                                    !_model.isFilterVisible;
-                                safeSetState(() {});
-                              },
-                              child: Icon(
-                                Icons.filter_alt_sharp,
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                                size: 36.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+        appBar: PreferredSize(
+          preferredSize:
+              Size.fromHeight(MediaQuery.sizeOf(context).height * 0.07),
+          child: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).primary,
+            automaticallyImplyLeading: false,
+            title: Container(
+              width: MediaQuery.sizeOf(context).width * 1.0,
+              constraints: const BoxConstraints(
+                maxWidth: 600.0,
+                maxHeight: 100.0,
+              ),
+              decoration: const BoxDecoration(),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  FlutterFlowIconButton(
+                    borderColor: Colors.transparent,
+                    borderRadius: 30.0,
+                    borderWidth: 1.0,
+                    buttonSize: 60.0,
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                      size: 30.0,
                     ),
-                    if (_model.isFilterVisible)
-                      Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            15.0, 3.0, 15.0, 3.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 40.0,
-                          constraints: const BoxConstraints(
-                            minHeight: 36.0,
-                            maxHeight: 48.0,
-                          ),
-                          decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context).primary,
-                          ),
-                          child:
-                              // - Update flashcardsState on change
-                              // - Function updateFlashcardsVisibility
-                              // - Requires a list data type using as a parameter "isVisible"
-                              // - Requires some column element displaying your list (FlashcardsListColumn)
-                              // - Each sub-element (created from the column) with some conditionnal visibility
-                              SizedBox(
-                            width: MediaQuery.sizeOf(context).width * 0.8,
-                            child: TextFormField(
-                              controller: _model.filterTextFieldTextController,
-                              focusNode: _model.filterTextFieldFocusNode,
-                              onChanged: (_) => EasyDebounce.debounce(
-                                '_model.filterTextFieldTextController',
-                                const Duration(milliseconds: 1000),
-                                () async {
-                                  // Flascard filtration by name
-                                  _model.flashcardsState = functions
-                                      .updateFlashcardsVisibility(
-                                          _model.flashcardsState.toList(),
-                                          _model.filterTextFieldTextController
-                                              .text)
-                                      .toList()
-                                      .cast<DecksFlashcardForListStruct>();
-                                  safeSetState(() {});
-                                },
-                              ),
-                              autofocus: false,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                isDense: true,
-                                hintText:
-                                    'Word Filters: type to find your word',
-                                hintStyle: FlutterFlowTheme.of(context)
-                                    .labelMedium
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      fontSize: 24.0,
-                                      letterSpacing: 0.0,
-                                      lineHeight: 1.5,
-                                    ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Color(0x00000000),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Color(0x00000000),
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: FlutterFlowTheme.of(context).error,
-                                    width: 1.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                filled: true,
-                                fillColor: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                              ),
+                    onPressed: () async {
+                      context.pop();
+                    },
+                  ),
+                  Text(
+                    valueOrDefault<String>(
+                      widget.cheatsheetName,
+                      'cheatsheet name',
+                    ),
+                    style: FlutterFlowTheme.of(context).headlineMedium.override(
+                          fontFamily: 'Outfit',
+                          color:
+                              FlutterFlowTheme.of(context).secondaryBackground,
+                          letterSpacing: 0.0,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            actions: const [],
+            centerTitle: false,
+            elevation: 0.0,
+          ),
+        ),
+        body: Stack(
+          children: [
+            Container(
+              width: MediaQuery.sizeOf(context).width * 1.0,
+              height: MediaQuery.sizeOf(context).height * 1.0,
+              decoration: BoxDecoration(
+                color: FlutterFlowTheme.of(context).secondaryBackground,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(0.0, 5.0, 0.0, 5.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Text(
+                              'Concept',
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
                                     fontFamily: 'Readex Pro',
                                     fontSize: 24.0,
                                     letterSpacing: 0.0,
-                                    lineHeight: 1.5,
                                   ),
-                              textAlign: TextAlign.start,
-                              cursorColor:
-                                  FlutterFlowTheme.of(context).primaryText,
-                              validator: _model
-                                  .filterTextFieldTextControllerValidator
-                                  .asValidator(context),
                             ),
                           ),
-                        ),
-                      ),
-                    Flexible(
-                      child: SafeArea(
-                        child: ClipRRect(
-                          child: Container(
-                            width: MediaQuery.sizeOf(context).width * 1.0,
-                            constraints: BoxConstraints(
-                              maxHeight:
-                                  MediaQuery.sizeOf(context).height * 0.87,
-                            ),
-                            decoration: const BoxDecoration(),
-                            child: Builder(
-                              builder: (context) {
-                                final deckFlashcardsColumn =
-                                    _model.flashcardsState.toList();
-
-                                return SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: List.generate(
-                                        deckFlashcardsColumn.length,
-                                        (deckFlashcardsColumnIndex) {
-                                      final deckFlashcardsColumnItem =
-                                          deckFlashcardsColumn[
-                                              deckFlashcardsColumnIndex];
-                                      return wrapWithModel(
-                                        model: _model.flashcardListCrudRowModels
-                                            .getModel(
-                                          deckFlashcardsColumnIndex.toString(),
-                                          deckFlashcardsColumnIndex,
-                                        ),
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        updateOnChange: true,
-                                        child: ListCrudRowWidget(
-                                          key: Key(
-                                            'Keybpt_${deckFlashcardsColumnIndex.toString()}',
-                                          ),
-                                          rowName: valueOrDefault<String>(
-                                            deckFlashcardsColumnItem.name,
-                                            'default',
-                                          ),
-                                          elementdId: valueOrDefault<int>(
-                                            deckFlashcardsColumnItem
-                                                .flashcardId,
-                                            0,
-                                          ),
-                                          isVisible: deckFlashcardsColumnItem
-                                              .isVisible,
-                                          navigateAction: () async {
-                                            // Navigate to FlashcardUpdate
-
-                                            context.pushNamed(
-                                              'FlashcardUpdateScreen',
-                                              queryParameters: {
-                                                'flashcardId': serializeParam(
-                                                  valueOrDefault<int>(
-                                                    deckFlashcardsColumnItem
-                                                        .flashcardId,
-                                                    0,
-                                                  ),
-                                                  ParamType.int,
-                                                ),
-                                                'isCreation': serializeParam(
-                                                  false,
-                                                  ParamType.bool,
-                                                ),
-                                                'deckId': serializeParam(
-                                                  valueOrDefault<int>(
-                                                    widget.deckId,
-                                                    0,
-                                                  ),
-                                                  ParamType.int,
-                                                ),
-                                              }.withoutNulls,
-                                            );
-                                          },
-                                          deleteRowQueryAction: () async {
-                                            // Flashcard Remove row query by Id
-                                            await SQLiteManager.instance
-                                                .flashcardDeleteWithId(
-                                              flashcardId: valueOrDefault<int>(
-                                                deckFlashcardsColumnItem
-                                                    .flashcardId,
-                                                0,
-                                              ),
-                                            );
-                                            // Delete row decksFlashcards
-                                            await SQLiteManager.instance
-                                                .decksFlashcardsDELETERowByFlashcardId(
-                                              flashcardId: valueOrDefault<int>(
-                                                deckFlashcardsColumnItem
-                                                    .flashcardId,
-                                                0,
-                                              ),
-                                            );
-                                            // Update component
-
-                                            safeSetState(() {});
-                                          },
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                );
-                              },
+                          SizedBox(
+                            height: 10.0,
+                            child: VerticalDivider(
+                              thickness: 1.0,
+                              color: FlutterFlowTheme.of(context).accent4,
                             ),
                           ),
-                        ),
+                          Flexible(
+                            flex: 1,
+                            child: Text(
+                              'Description',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 24.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                        ]
+                            .divide(const SizedBox(width: 10.0))
+                            .around(const SizedBox(width: 10.0)),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Flexible(
+                    flex: 9,
+                    child:
+                        FutureBuilder<List<CheatsheetRowsREADConceptAnswerRow>>(
+                      future: SQLiteManager.instance
+                          .cheatsheetRowsREADConceptAnswer(
+                        cheatsheetId: widget.cheatsheetId,
+                      ),
+                      builder: (context, snapshot) {
+                        // Customize what your widget looks like when it's loading.
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: SizedBox(
+                              width: 50.0,
+                              height: 50.0,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  FlutterFlowTheme.of(context).primary,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        final cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList =
+                            snapshot.data!;
+
+                        return ReorderableListView.builder(
+                          padding: EdgeInsets.zero,
+                          scrollDirection: Axis.vertical,
+                          itemCount:
+                              cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList
+                                  .length,
+                          itemBuilder: (context, cheatsheetListViewIndex) {
+                            final cheatsheetListViewCheatsheetRowsREADConceptAnswerRow =
+                                cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList[
+                                    cheatsheetListViewIndex];
+                            return Container(
+                              key: ValueKey("ListView_mnfio1s9" '_' +
+                                  cheatsheetListViewIndex.toString()),
+                              child: InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onLongPress: () async {
+                                  // Show/Hide button
+                                  _model.isDeleting = !_model.isDeleting;
+                                  safeSetState(() {});
+                                },
+                                child: Container(
+                                  width: MediaQuery.sizeOf(context).width * 1.0,
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.1,
+                                  decoration: const BoxDecoration(),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        2.0, 5.0, 2.0, 5.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Flexible(
+                                          flex: 4,
+                                          child: SelectionArea(
+                                              child: AutoSizeText(
+                                            cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                .concept,
+                                            minFontSize: 14.0,
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Readex Pro',
+                                                  fontSize: 18.0,
+                                                  letterSpacing: 0.0,
+                                                ),
+                                          )),
+                                        ),
+                                        SizedBox(
+                                          height: 10.0,
+                                          child: VerticalDivider(
+                                            thickness: 1.0,
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryText,
+                                          ),
+                                        ),
+                                        Flexible(
+                                          flex: 4,
+                                          child: SelectionArea(
+                                              child: AutoSizeText(
+                                            cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                .answer,
+                                            minFontSize: 14.0,
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Readex Pro',
+                                                  fontSize: 18.0,
+                                                  letterSpacing: 0.0,
+                                                ),
+                                          )),
+                                        ),
+                                        if (_model.isDeleting)
+                                          FlutterFlowIconButton(
+                                            borderColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .primaryText,
+                                            borderRadius: 20.0,
+                                            borderWidth: 1.0,
+                                            buttonSize: 40.0,
+                                            fillColor:
+                                                FlutterFlowTheme.of(context)
+                                                    .error,
+                                            icon: Icon(
+                                              Icons.close_sharp,
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .secondaryBackground,
+                                              size: 24.0,
+                                            ),
+                                            onPressed: () async {
+                                              // Perform query
+                                              await SQLiteManager.instance
+                                                  .cheatsheetRowsDELETEId(
+                                                id: cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                    .id,
+                                              );
+                                              // Display the updated content
+
+                                              safeSetState(() {});
+                                            },
+                                          ),
+                                      ]
+                                          .divide(const SizedBox(width: 3.0))
+                                          .around(const SizedBox(width: 3.0)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          onReorder: (int reorderableOldIndex,
+                              int reorderableNewIndex) async {},
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-              Align(
-                alignment: const AlignmentDirectional(0.8, 0.9),
+            ),
+            Align(
+              alignment: const AlignmentDirectional(0.8, 0.8),
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 0.15,
+                height: MediaQuery.sizeOf(context).height * 0.07,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).secondaryBackground,
+                  borderRadius: BorderRadius.circular(50.0),
+                ),
                 child: FlutterFlowIconButton(
-                  borderColor: FlutterFlowTheme.of(context).alternate,
+                  borderColor: FlutterFlowTheme.of(context).accent2,
                   borderRadius: 50.0,
-                  borderWidth: 0.0,
+                  borderWidth: 1.0,
                   buttonSize: MediaQuery.sizeOf(context).width * 0.15,
-                  fillColor: FlutterFlowTheme.of(context).secondary,
+                  fillColor: FlutterFlowTheme.of(context).success,
                   icon: Icon(
                     Icons.add,
-                    color: FlutterFlowTheme.of(context).accent4,
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
                     size: 48.0,
                   ),
                   onPressed: () async {
                     // Get tags in State
-                    await _model.getTagsInState(context);
+                    await _model.getTagsInStateCheatsheetRows(context);
                     safeSetState(() {});
-                    // Show modal
-                    _model.isCreatingFlashcard = !_model.isCreatingFlashcard;
+                    // Show isCreatingRow
+                    _model.isCreatingRow = !_model.isCreatingRow;
                     safeSetState(() {});
                   },
                 ),
               ),
-              if (_model.isCreatingFlashcard)
-                Align(
-                  alignment: const AlignmentDirectional(0.0, 0.0),
-                  child: Container(
-                    width: MediaQuery.sizeOf(context).width * 1.0,
-                    height: MediaQuery.sizeOf(context).height * 1.0,
-                    constraints: const BoxConstraints(
-                      maxHeight: 950.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
+            ),
+            if (valueOrDefault<bool>(
+              _model.isCreatingRow,
+              false,
+            ))
+              Align(
+                alignment: const AlignmentDirectional(0.0, 0.0),
+                child: Container(
+                  width: MediaQuery.sizeOf(context).width * 1.0,
+                  height: MediaQuery.sizeOf(context).height * 1.0,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Create your Flashcard',
-                                textAlign: TextAlign.center,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Create your cheatsheet\'s concept/description',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 30.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SizedBox(
+                              width: MediaQuery.sizeOf(context).width * 1.0,
+                              child: TextFormField(
+                                controller: _model
+                                    .cheatsheetRowConceptFieldTextController,
+                                focusNode:
+                                    _model.cheatsheetRowConceptFieldFocusNode,
+                                onChanged: (_) => EasyDebounce.debounce(
+                                  '_model.cheatsheetRowConceptFieldTextController',
+                                  const Duration(milliseconds: 1000),
+                                  () => safeSetState(() {}),
+                                ),
+                                autofocus: true,
+                                textInputAction: TextInputAction.done,
+                                obscureText: false,
+                                decoration: InputDecoration(
+                                  labelText: 'Row concept:',
+                                  labelStyle: FlutterFlowTheme.of(context)
+                                      .labelMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        letterSpacing: 0.0,
+                                      ),
+                                  hintText: 'Type concept here...',
+                                  hintStyle: FlutterFlowTheme.of(context)
+                                      .labelMedium
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        letterSpacing: 0.0,
+                                      ),
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context)
+                                          .alternate,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  errorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context).error,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  focusedErrorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context).error,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
                                 style: FlutterFlowTheme.of(context)
                                     .bodyMedium
                                     .override(
                                       fontFamily: 'Readex Pro',
-                                      fontSize: 30.0,
+                                      fontSize: 24.0,
                                       letterSpacing: 0.0,
                                     ),
+                                validator: _model
+                                    .cheatsheetRowConceptFieldTextControllerValidator
+                                    .asValidator(context),
                               ),
                             ),
                           ),
-                          Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: SizedBox(
-                                width: MediaQuery.sizeOf(context).width * 1.0,
-                                child: TextFormField(
-                                  controller: _model.nameFieldTextController,
-                                  focusNode: _model.nameFieldFocusNode,
-                                  onChanged: (_) => EasyDebounce.debounce(
-                                    '_model.nameFieldTextController',
-                                    const Duration(milliseconds: 2000),
-                                    () => safeSetState(() {}),
-                                  ),
-                                  autofocus: false,
-                                  textInputAction: TextInputAction.done,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    labelText: 'Flashcard name:',
-                                    labelStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          fontSize: 18.0,
-                                          letterSpacing: 0.0,
-                                        ),
-                                    hintText: 'Typeflashcard\'s  name here...',
-                                    hintStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          letterSpacing: 0.0,
-                                        ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .alternate,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    errorBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedErrorBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SizedBox(
+                              width: MediaQuery.sizeOf(context).width * 1.0,
+                              child: TextFormField(
+                                controller: _model
+                                    .cheatsheetRowDescriptionFieldTextController,
+                                focusNode: _model
+                                    .cheatsheetRowDescriptionFieldFocusNode,
+                                onChanged: (_) => EasyDebounce.debounce(
+                                  '_model.cheatsheetRowDescriptionFieldTextController',
+                                  const Duration(milliseconds: 500),
+                                  () => safeSetState(() {}),
+                                ),
+                                autofocus: true,
+                                textInputAction: TextInputAction.done,
+                                obscureText: false,
+                                decoration: InputDecoration(
+                                  labelText: 'Row description:',
+                                  labelStyle: FlutterFlowTheme.of(context)
+                                      .labelMedium
                                       .override(
                                         fontFamily: 'Readex Pro',
-                                        fontSize: 24.0,
                                         letterSpacing: 0.0,
                                       ),
-                                  minLines: 1,
-                                  validator: _model
-                                      .nameFieldTextControllerValidator
-                                      .asValidator(context),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: SizedBox(
-                                width: MediaQuery.sizeOf(context).width * 1.0,
-                                child: TextFormField(
-                                  controller:
-                                      _model.textRectoFieldTextController,
-                                  focusNode: _model.textRectoFieldFocusNode,
-                                  onChanged: (_) => EasyDebounce.debounce(
-                                    '_model.textRectoFieldTextController',
-                                    const Duration(milliseconds: 2000),
-                                    () => safeSetState(() {}),
-                                  ),
-                                  autofocus: false,
-                                  textInputAction: TextInputAction.done,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    labelText: 'Text recto: (known)',
-                                    labelStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          fontSize: 18.0,
-                                          letterSpacing: 0.0,
-                                        ),
-                                    hintText:
-                                        'Type flashcard\'s text recto here...',
-                                    hintStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          letterSpacing: 0.0,
-                                        ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .alternate,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    errorBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedErrorBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
+                                  hintText: 'Type description here...',
+                                  hintStyle: FlutterFlowTheme.of(context)
+                                      .labelMedium
                                       .override(
                                         fontFamily: 'Readex Pro',
-                                        fontSize: 24.0,
                                         letterSpacing: 0.0,
                                       ),
-                                  maxLines: 3,
-                                  minLines: 1,
-                                  validator: _model
-                                      .textRectoFieldTextControllerValidator
-                                      .asValidator(context),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: SizedBox(
-                                width: MediaQuery.sizeOf(context).width * 1.0,
-                                child: TextFormField(
-                                  controller:
-                                      _model.textVersoFieldTextController,
-                                  focusNode: _model.textVersoFieldFocusNode,
-                                  onChanged: (_) => EasyDebounce.debounce(
-                                    '_model.textVersoFieldTextController',
-                                    const Duration(milliseconds: 2000),
-                                    () => safeSetState(() {}),
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context)
+                                          .alternate,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  autofocus: false,
-                                  textInputAction: TextInputAction.done,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    labelText: 'Text verso: (to learn)',
-                                    labelStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          fontSize: 18.0,
-                                          letterSpacing: 0.0,
-                                        ),
-                                    hintText:
-                                        'Type flascard\'s text verso here...',
-                                    hintStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          letterSpacing: 0.0,
-                                        ),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .alternate,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:
+                                          FlutterFlowTheme.of(context).primary,
+                                      width: 2.0,
                                     ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    errorBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedErrorBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Readex Pro',
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryText,
-                                        fontSize: 24.0,
-                                        letterSpacing: 0.0,
-                                      ),
-                                  maxLines: 3,
-                                  minLines: 1,
-                                  validator: _model
-                                      .textVersoFieldTextControllerValidator
-                                      .asValidator(context),
+                                  errorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context).error,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  focusedErrorBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context).error,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
                                 ),
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      fontSize: 24.0,
+                                      letterSpacing: 0.0,
+                                    ),
+                                validator: _model
+                                    .cheatsheetRowDescriptionFieldTextControllerValidator
+                                    .asValidator(context),
                               ),
                             ),
                           ),
 
-                          // Create / Move your tags saved in a column tagIds (Flashcards)
+                          // Create / Move your tags saved in a column tagIds (cheatsheetRows)
                           // TagListContainer all needs list:
-                          // - Page action: getTagsInState on modal display
-                          // - tagIds col in Flashcards
+                          // - getTagsInStateCheatsheetRows()
+                          // - tagIds col in cheatsheetRows (a migration)
                           // - selectedTagsState (List <Tag>)
                           // - allTagsState (List <Tag>)
                           // - from a state to other state transfer 2 functions
-                          // - Tags *CRU*(D) functions including SQL
+                          // - Tags *CR*(UD) functions including SQL
                           // - formatNewTags()
                           // - Reset tags states
                           Padding(
@@ -862,17 +665,14 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                   focusNode: _model
                                                       .newTagFieldFocusNode,
                                                   onFieldSubmitted: (_) async {
-                                                    // Does tag Exist ?
+                                                    // verifyIfTagExist
                                                     _model.tagExistString =
                                                         await actions
                                                             .verifyIfTagExist(
-                                                      valueOrDefault<String>(
-                                                        _model
-                                                            .newTagFieldTextController
-                                                            .text,
-                                                        'newTagDefault',
-                                                      ),
-                                                      'flashcard',
+                                                      _model
+                                                          .newTagFieldTextController
+                                                          .text,
+                                                      'cheatsheetRow',
                                                     );
                                                     if (_model.tagExistString ==
                                                         'true') {
@@ -893,32 +693,35 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                     } else if (_model
                                                             .tagExistString ==
                                                         'false') {
-                                                      // Create new tag (need to verify existance)
+                                                      // Create new tag
                                                       await SQLiteManager
                                                           .instance
                                                           .tagsINSERTNew(
-                                                        name: _model
-                                                            .newTagFieldTextController
-                                                            .text,
+                                                        name: valueOrDefault<
+                                                            String>(
+                                                          _model
+                                                              .newTagFieldTextController
+                                                              .text,
+                                                          'newTagFieldDefault CREATE',
+                                                        ),
                                                         categoriesList:
-                                                            '[\"flashcard\"]',
+                                                            '[\"cheatsheetRow\"]',
                                                       );
-                                                      // Get new tag for the list
+                                                      // Get new tag for the list (being tested)
                                                       _model.allTagsNewFalse =
                                                           await SQLiteManager
                                                               .instance
                                                               .tagsGETAllFromCtg(
-                                                        category: 'flashcard',
+                                                        category:
+                                                            'cheatsheetRow',
                                                       );
                                                       // Format and save the newly updated allTags
-                                                      _model.allTagsPageState =
-                                                          functions
-                                                              .formatNewTags(_model
-                                                                  .allTagsNewFalse
-                                                                  ?.toList())
-                                                              .toList()
-                                                              .cast<
-                                                                  TagStruct>();
+                                                      _model.allTagsState = functions
+                                                          .formatNewTags(_model
+                                                              .allTagsNewFalse
+                                                              ?.toList())
+                                                          .toList()
+                                                          .cast<TagStruct>();
                                                       // Reset field
                                                       safeSetState(() {
                                                         _model
@@ -936,27 +739,26 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                           _model
                                                               .newTagFieldTextController
                                                               .text,
-                                                          'newTagUpdateDefault',
+                                                          'newTagFieldDefault UPDATE',
                                                         ),
                                                         category:
-                                                            '\"flashcard\"',
+                                                            '\"cheatsheetRow\"',
                                                       );
                                                       // Get new tag for the list
                                                       _model.allTagsNewUpdate =
                                                           await SQLiteManager
                                                               .instance
                                                               .tagsGETAllFromCtg(
-                                                        category: 'flashcard',
+                                                        category:
+                                                            'cheatsheetRow',
                                                       );
                                                       // Format and save the newly updated allTags
-                                                      _model.allTagsPageState =
-                                                          functions
-                                                              .formatNewTags(_model
-                                                                  .allTagsNewUpdate
-                                                                  ?.toList())
-                                                              .toList()
-                                                              .cast<
-                                                                  TagStruct>();
+                                                      _model.allTagsState = functions
+                                                          .formatNewTags(_model
+                                                              .allTagsNewUpdate
+                                                              ?.toList())
+                                                          .toList()
+                                                          .cast<TagStruct>();
                                                       // Reset field
                                                       safeSetState(() {
                                                         _model
@@ -1145,8 +947,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                 child: Builder(
                                                   builder: (context) {
                                                     final selectedTagsItemsRow =
-                                                        _model
-                                                            .selectedTagsPageState
+                                                        _model.selectedTagsState
                                                             .toList();
                                                     if (selectedTagsItemsRow
                                                         .isEmpty) {
@@ -1178,15 +979,15 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                                     .transparent,
                                                             onTap: () async {
                                                               if (!_model
-                                                                  .allTagsPageState
+                                                                  .allTagsState
                                                                   .contains(
                                                                       selectedTagsItemsRowItem)) {
                                                                 // Add item to allTags
-                                                                _model.addToAllTagsPageState(
+                                                                _model.addToAllTagsState(
                                                                     selectedTagsItemsRowItem);
                                                               }
                                                               // Remove item from selectedTags
-                                                              _model.removeFromSelectedTagsPageState(
+                                                              _model.removeFromSelectedTagsState(
                                                                   selectedTagsItemsRowItem);
                                                               safeSetState(
                                                                   () {});
@@ -1317,7 +1118,7 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                 child: Builder(
                                                   builder: (context) {
                                                     final allTagsItemList =
-                                                        _model.allTagsPageState
+                                                        _model.allTagsState
                                                             .toList();
                                                     if (allTagsItemList
                                                         .isEmpty) {
@@ -1349,15 +1150,15 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                                     .transparent,
                                                             onTap: () async {
                                                               if (!_model
-                                                                  .selectedTagsPageState
+                                                                  .selectedTagsState
                                                                   .contains(
                                                                       allTagsItemListItem)) {
                                                                 // Put tag item in selectedTags
-                                                                _model.addToSelectedTagsPageState(
+                                                                _model.addToSelectedTagsState(
                                                                     allTagsItemListItem);
                                                               }
                                                               // Remove from allTags
-                                                              _model.removeFromAllTagsPageState(
+                                                              _model.removeFromAllTagsState(
                                                                   allTagsItemListItem);
                                                               safeSetState(
                                                                   () {});
@@ -1449,136 +1250,150 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                               ),
                             ),
                           ),
-                          Flexible(
-                            flex: 1,
-                            child: FFButtonWidget(
-                              onPressed: () async {
-                                // Create Flashcard
-                                await SQLiteManager.instance.flashcardCreate(
-                                  userId: valueOrDefault<String>(
-                                    FFAppState().userUuid,
-                                    'CreateFlashcardUserUUID',
-                                  ),
-                                  textRecto:
-                                      _model.textRectoFieldTextController.text,
-                                  textVerso:
-                                      _model.textVersoFieldTextController.text,
-                                  name: _model.nameFieldTextController.text,
-                                  audioRectoUrl: 'none',
-                                  audioVersoUrl: 'none',
-                                  imageRectoUrl: 'none',
-                                  imageVersoUrl: 'none',
-                                  currentRetrievalStep: 0,
-                                  currentSpeakingStep: 0,
-                                  toRecall: 0,
-                                  currentRecallDate: 'none',
-                                  nextRecallDate: 'none',
-                                  successCount: 0,
-                                  totalReviewCount: 0,
-                                  mentalImageBool: 0,
-                                  currentSpeakingDate: 'none',
-                                  nextSpeakingDate: 'none',
-                                  tagIds: valueOrDefault<String>(
-                                    functions.formatSelectedTagsToIds(
-                                        _model.selectedTagsPageState.toList()),
-                                    '\"[1]\"',
-                                  ),
-                                );
-                                // Return last Flashcard Id
-                                _model.lastFlashcardId = await SQLiteManager
-                                    .instance
-                                    .flashcardsSELECTLastId();
-                                // Link FlashcardsDeck
-                                await SQLiteManager.instance
-                                    .decksFlashcardsCREATERow(
-                                  deckId: widget.deckId,
-                                  flashcardId:
-                                      _model.lastFlashcardId!.first.id!,
-                                );
-                                // totalCards Deck Update
-                                await SQLiteManager.instance
-                                    .decksIncrementTotalCards(
-                                  deckId: widget.deckId,
-                                );
-                                // Button shines
-                                if (animationsMap[
-                                        'buttonOnActionTriggerAnimation'] !=
-                                    null) {
-                                  await animationsMap[
-                                          'buttonOnActionTriggerAnimation']!
-                                      .controller
-                                      .forward(from: 0.0);
-                                }
-                                // Reset tags states
-                                _model.selectedTagsPageState = [];
-                                _model.allTagsPageState = [];
-                                // Reset fields
-                                safeSetState(() {
-                                  _model.nameFieldTextController?.clear();
-                                  _model.textRectoFieldTextController?.clear();
-                                  _model.textVersoFieldTextController?.clear();
-                                  _model.newTagFieldTextController?.clear();
-                                });
-                                // Get All Deck's Flashcards
-                                _model.deckFlashcardsOncreation =
-                                    await SQLiteManager.instance
-                                        .flashcardsReadAllFromDeckNameAndId(
-                                  deckId: valueOrDefault<int>(
-                                    widget.deckId,
-                                    1,
-                                  ),
-                                  userId: currentUserUid,
-                                );
-                                // Flashcards to State
-                                _model.flashcardsState = functions
-                                    .addFlashcardsListToDecksFlashcardState(
-                                        _model.deckFlashcardsOncreation
-                                            ?.toList(),
-                                        widget.deckId)!
-                                    .toList()
-                                    .cast<DecksFlashcardForListStruct>();
-                                // isCreatingFlashacard toggle
-                                _model.isCreatingFlashcard =
-                                    !_model.isCreatingFlashcard;
-                                safeSetState(() {});
-
-                                safeSetState(() {});
-                              },
-                              text: 'Validate',
-                              options: FFButtonOptions(
-                                width: MediaQuery.sizeOf(context).width * 0.5,
-                                height: MediaQuery.sizeOf(context).height * 0.1,
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
-                                color: FlutterFlowTheme.of(context).success,
-                                textStyle: FlutterFlowTheme.of(context)
-                                    .titleSmall
-                                    .override(
-                                      fontFamily: 'Readex Pro',
-                                      color: Colors.white,
-                                      fontSize: 48.0,
-                                      letterSpacing: 0.0,
-                                    ),
-                                elevation: 3.0,
-                                borderSide: const BorderSide(
-                                  color: Colors.transparent,
-                                  width: 1.0,
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ).animateOnActionTrigger(
-                              animationsMap['buttonOnActionTriggerAnimation']!,
-                            ),
-                          ),
                         ],
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Flexible(
+                              child: FFButtonWidget(
+                                onPressed: () async {
+                                  // Create Cheatsheet Row
+                                  await SQLiteManager.instance
+                                      .cheatsheetRowCREATE(
+                                    concept: valueOrDefault<String>(
+                                      _model
+                                          .cheatsheetRowConceptFieldTextController
+                                          .text,
+                                      'concept',
+                                    ),
+                                    answer: valueOrDefault<String>(
+                                      _model
+                                          .cheatsheetRowDescriptionFieldTextController
+                                          .text,
+                                      'none',
+                                    ),
+                                    conceptAudioUrl: 'none',
+                                    answerAudioUrl: 'none',
+                                    cheatsheetId: valueOrDefault<int>(
+                                      widget.cheatsheetId,
+                                      0,
+                                    ),
+                                    tagIds: valueOrDefault<String>(
+                                      functions.formatSelectedTagsToIds(
+                                          _model.selectedTagsState.toList()),
+                                      '[1]',
+                                    ),
+                                  );
+                                  // Created cheatsheet row animation
+                                  if (animationsMap[
+                                          'buttonOnActionTriggerAnimation1'] !=
+                                      null) {
+                                    animationsMap[
+                                            'buttonOnActionTriggerAnimation1']!
+                                        .controller
+                                      ..reset()
+                                      ..repeat();
+                                  }
+                                  // End creating UI
+                                  _model.isCreatingRow = !_model.isCreatingRow;
+                                  safeSetState(() {});
+                                  // Stop animation
+                                  if (animationsMap[
+                                          'buttonOnActionTriggerAnimation1'] !=
+                                      null) {
+                                    animationsMap[
+                                            'buttonOnActionTriggerAnimation1']!
+                                        .controller
+                                        .stop();
+                                  }
+                                },
+                                text: 'Validate',
+                                options: FFButtonOptions(
+                                  width: MediaQuery.sizeOf(context).width * 0.4,
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.1,
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      24.0, 0.0, 24.0, 0.0),
+                                  iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 0.0, 0.0),
+                                  color: FlutterFlowTheme.of(context).success,
+                                  textStyle: FlutterFlowTheme.of(context)
+                                      .titleSmall
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        color: Colors.white,
+                                        fontSize: 48.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  elevation: 3.0,
+                                  borderSide: const BorderSide(
+                                    color: Colors.transparent,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ).animateOnActionTrigger(
+                                animationsMap[
+                                    'buttonOnActionTriggerAnimation1']!,
+                              ),
+                            ),
+                            Flexible(
+                              child: FFButtonWidget(
+                                onPressed: () async {
+                                  // Close Modal
+                                  _model.isCreatingRow = !_model.isCreatingRow;
+                                  safeSetState(() {});
+                                  if (animationsMap[
+                                          'buttonOnActionTriggerAnimation2'] !=
+                                      null) {
+                                    await animationsMap[
+                                            'buttonOnActionTriggerAnimation2']!
+                                        .controller
+                                        .forward(from: 0.0);
+                                  }
+                                },
+                                text: 'Cancel',
+                                options: FFButtonOptions(
+                                  width: MediaQuery.sizeOf(context).width * 0.4,
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.1,
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      24.0, 0.0, 24.0, 0.0),
+                                  iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 0.0, 0.0, 0.0),
+                                  color: FlutterFlowTheme.of(context).error,
+                                  textStyle: FlutterFlowTheme.of(context)
+                                      .titleSmall
+                                      .override(
+                                        fontFamily: 'Readex Pro',
+                                        color: Colors.white,
+                                        fontSize: 48.0,
+                                        letterSpacing: 0.0,
+                                      ),
+                                  elevation: 3.0,
+                                  borderSide: const BorderSide(
+                                    color: Colors.transparent,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ).animateOnActionTrigger(
+                                animationsMap[
+                                    'buttonOnActionTriggerAnimation2']!,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
