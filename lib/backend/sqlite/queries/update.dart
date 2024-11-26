@@ -557,15 +557,17 @@ Future performCheatsheetRowCREATE(
   String? conceptAudioUrl,
   String? answerAudioUrl,
   int? cheatsheetId,
+  String? tagIds,
 }) {
   final query = '''
-INSERT INTO cheatsheetRows ( cheatsheetId,  concept, answer, conceptAudioUrl, answerAudioUrl) 
+INSERT INTO cheatsheetRows ( cheatsheetId,  concept, answer, conceptAudioUrl, answerAudioUrl,tagIds) 
 VALUES (
   $cheatsheetId,
   '$concept', 
   '$answer', 
   '$conceptAudioUrl', 
-  '$answerAudioUrl'
+  '$answerAudioUrl',
+  '$tagIds'
 );
 ''';
   return database.rawQuery(query);

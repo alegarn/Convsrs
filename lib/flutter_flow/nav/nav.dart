@@ -294,9 +294,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           ),
         ),
         FFRoute(
-          name: 'CheatsheetScreen',
-          path: '/cheatsheetScreen',
-          builder: (context, params) => CheatsheetScreenWidget(
+          name: 'CheatsheetRowsScreen',
+          path: '/cheatsheetRowsScreen',
+          builder: (context, params) => CheatsheetRowsScreenWidget(
             cheatsheetName: params.getParam(
               'cheatsheetName',
               ParamType.String,

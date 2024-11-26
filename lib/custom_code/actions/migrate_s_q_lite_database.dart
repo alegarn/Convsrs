@@ -42,7 +42,7 @@ final List<Migration> _migrations = [
 
     // Update the categories for the 'no_tag' entry in the tags table
     await db.execute(
-        "UPDATE tags SET categories = '[\"flashcard\",\"cheatsheetRows\"]' WHERE name = 'no_tag';");
+        "UPDATE tags SET categories = '[\"flashcard\",\"cheatsheetRow\"]' WHERE name = 'no_tag';");
 
     // Add an index on the categories column (tag filter for categories with db)
     await db.execute("CREATE INDEX idx_tags_categories ON tags(categories);");
@@ -57,7 +57,7 @@ final List<Migration> _migrations = [
 ];
 
 // Update this constant as your schema evolves
-const expectedVersion = 1;
+const expectedVersion = 2;
 
 Future<void> migrateSQLiteDatabase() async {
   // Obtain the database instance

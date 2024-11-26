@@ -753,6 +753,7 @@ class SQLiteManager {
     String? conceptAudioUrl,
     String? answerAudioUrl,
     int? cheatsheetId,
+    String? tagIds,
   }) =>
       performCheatsheetRowCREATE(
         _database,
@@ -761,6 +762,7 @@ class SQLiteManager {
         conceptAudioUrl: conceptAudioUrl,
         answerAudioUrl: answerAudioUrl,
         cheatsheetId: cheatsheetId,
+        tagIds: tagIds,
       );
 
   Future cheatsheetRowsUPDATERow({
