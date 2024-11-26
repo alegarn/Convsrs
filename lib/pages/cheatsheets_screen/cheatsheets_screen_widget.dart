@@ -216,7 +216,7 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                                         // Path to update CheatSheet
 
                                         context.pushNamed(
-                                          'CheatsheetScreen',
+                                          'CheatsheetRowsScreen',
                                           queryParameters: {
                                             'cheatsheetId': serializeParam(
                                               listViewCheatsheetsREADListIdNameRow
