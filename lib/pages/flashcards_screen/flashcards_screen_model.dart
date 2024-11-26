@@ -86,10 +86,16 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   FocusNode? newTagFieldFocusNode;
   TextEditingController? newTagFieldTextController;
   String? Function(BuildContext, String?)? newTagFieldTextControllerValidator;
+  // Stores action output result for [Custom Action - verifyIfTagExist] action in NewTagField widget.
+  String? tagExistString;
   // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
-  List<TagsGETAllFromCtgRow>? allTagsNew;
+  List<TagsGETAllFromCtgRow>? allTagsNewFalse;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
+  List<TagsGETAllFromCtgRow>? allTagsNewUpdate;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in CreateFlashcardButton widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
+  // Stores action output result for [Backend Call - SQLite (Flashcards read all from deck name and id)] action in CreateFlashcardButton widget.
+  List<FlashcardsReadAllFromDeckNameAndIdRow>? deckFlashcardsOncreation;
 
   @override
   void initState(BuildContext context) {
