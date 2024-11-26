@@ -72,7 +72,7 @@ class ConversationScreenModel
 
   int bigLoopCounter = 0;
 
-  bool isScreenReversedState = true;
+  bool isScreenReversedState = false;
 
   ///  State fields for stateful widgets in this page.
 
