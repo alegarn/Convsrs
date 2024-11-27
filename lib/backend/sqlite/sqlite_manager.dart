@@ -772,6 +772,7 @@ class SQLiteManager {
     String? conceptAudioUrl,
     String? answerAudioUrl,
     int? rowId,
+    String? tagIds,
   }) =>
       performCheatsheetRowsUPDATERow(
         _database,
@@ -781,6 +782,7 @@ class SQLiteManager {
         conceptAudioUrl: conceptAudioUrl,
         answerAudioUrl: answerAudioUrl,
         rowId: rowId,
+        tagIds: tagIds,
       );
 
   Future cheatsheetRowsDELETEId({

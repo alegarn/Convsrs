@@ -37,3 +37,5 @@ export '/pages/extract_data_screen/extract_data_screen_widget.dart'
     show ExtractDataScreenWidget;
 export '/pages/a_i_chat_screen/a_i_chat_screen_widget.dart'
     show AIChatScreenWidget;
+export '/pages/cheatsheet_rows_update_screen/cheatsheet_rows_update_screen_widget.dart'
+    show CheatsheetRowsUpdateScreenWidget;
