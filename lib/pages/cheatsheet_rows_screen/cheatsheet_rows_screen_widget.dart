@@ -61,17 +61,16 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
         trigger: AnimationTrigger.onActionTrigger,
         applyInitialState: true,
         effectsBuilder: () => [
-          VisibilityEffect(duration: 1.ms),
           FadeEffect(
             curve: Curves.easeInOut,
             delay: 0.0.ms,
-            duration: 100.0.ms,
+            duration: 500.0.ms,
             begin: 0.0,
             end: 1.0,
           ),
         ],
       ),
-      'buttonOnActionTriggerAnimation1': AnimationInfo(
+      'buttonOnActionTriggerAnimation': AnimationInfo(
         trigger: AnimationTrigger.onActionTrigger,
         applyInitialState: true,
         effectsBuilder: () => [
@@ -81,19 +80,6 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
             duration: 600.0.ms,
             color: const Color(0xFFFFF000),
             angle: 0.524,
-          ),
-        ],
-      ),
-      'buttonOnActionTriggerAnimation2': AnimationInfo(
-        trigger: AnimationTrigger.onActionTrigger,
-        applyInitialState: true,
-        effectsBuilder: () => [
-          FadeEffect(
-            curve: Curves.easeInOut,
-            delay: 0.0.ms,
-            duration: 600.0.ms,
-            begin: 0.0,
-            end: 1.0,
           ),
         ],
       ),
@@ -742,7 +728,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                                           'newTagFieldDefault UPDATE',
                                                         ),
                                                         category:
-                                                            '\"cheatsheetRow\"',
+                                                            'cheatsheetRow',
                                                       );
                                                       // Get new tag for the list
                                                       _model.allTagsNewUpdate =
@@ -867,30 +853,27 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                                       .asValidator(context),
                                                 ),
                                               ),
-                                              Opacity(
-                                                opacity: 0.0,
-                                                child: Align(
-                                                  alignment:
-                                                      const AlignmentDirectional(
-                                                          -1.0, 0.0),
-                                                  child: Text(
-                                                    'Tag already exists',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyMedium
-                                                        .override(
-                                                          fontFamily:
-                                                              'Readex Pro',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .error,
-                                                          fontSize: 18.0,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                  ).animateOnActionTrigger(
-                                                    animationsMap[
-                                                        'textOnActionTriggerAnimation']!,
-                                                  ),
+                                              Align(
+                                                alignment: const AlignmentDirectional(
+                                                    -1.0, 0.0),
+                                                child: Text(
+                                                  'Tag already exists',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .error,
+                                                        fontSize: 18.0,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ).animateOnActionTrigger(
+                                                  animationsMap[
+                                                      'textOnActionTriggerAnimation']!,
                                                 ),
                                               ),
                                             ],
@@ -1259,6 +1242,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Flexible(
+                              flex: 1,
                               child: FFButtonWidget(
                                 onPressed: () async {
                                   // Create Cheatsheet Row
@@ -1290,10 +1274,10 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                   );
                                   // Created cheatsheet row animation
                                   if (animationsMap[
-                                          'buttonOnActionTriggerAnimation1'] !=
+                                          'buttonOnActionTriggerAnimation'] !=
                                       null) {
                                     animationsMap[
-                                            'buttonOnActionTriggerAnimation1']!
+                                            'buttonOnActionTriggerAnimation']!
                                         .controller
                                       ..reset()
                                       ..repeat();
@@ -1303,10 +1287,10 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                   safeSetState(() {});
                                   // Stop animation
                                   if (animationsMap[
-                                          'buttonOnActionTriggerAnimation1'] !=
+                                          'buttonOnActionTriggerAnimation'] !=
                                       null) {
                                     animationsMap[
-                                            'buttonOnActionTriggerAnimation1']!
+                                            'buttonOnActionTriggerAnimation']!
                                         .controller
                                         .stop();
                                   }
@@ -1332,29 +1316,22 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                   elevation: 3.0,
                                   borderSide: const BorderSide(
                                     color: Colors.transparent,
-                                    width: 1.0,
+                                    width: 0.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                               ).animateOnActionTrigger(
                                 animationsMap[
-                                    'buttonOnActionTriggerAnimation1']!,
+                                    'buttonOnActionTriggerAnimation']!,
                               ),
                             ),
                             Flexible(
+                              flex: 1,
                               child: FFButtonWidget(
                                 onPressed: () async {
                                   // Close Modal
                                   _model.isCreatingRow = !_model.isCreatingRow;
                                   safeSetState(() {});
-                                  if (animationsMap[
-                                          'buttonOnActionTriggerAnimation2'] !=
-                                      null) {
-                                    await animationsMap[
-                                            'buttonOnActionTriggerAnimation2']!
-                                        .controller
-                                        .forward(from: 0.0);
-                                  }
                                 },
                                 text: 'Cancel',
                                 options: FFButtonOptions(
@@ -1377,13 +1354,10 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                   elevation: 3.0,
                                   borderSide: const BorderSide(
                                     color: Colors.transparent,
-                                    width: 1.0,
+                                    width: 0.0,
                                   ),
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                              ).animateOnActionTrigger(
-                                animationsMap[
-                                    'buttonOnActionTriggerAnimation2']!,
                               ),
                             ),
                           ],

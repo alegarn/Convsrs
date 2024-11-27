@@ -810,7 +810,7 @@ Future performTagsUPDATEAddCategoryIf(
 }) {
   final query = '''
 UPDATE tags
-SET categories = REPLACE(categories, ']', ',\"$category]\"')
+SET categories = REPLACE(categories, ']', ',\"$category\"]')
 WHERE name = '$newTagName' AND categories NOT LIKE '%$category%';
 ''';
   return database.rawQuery(query);
