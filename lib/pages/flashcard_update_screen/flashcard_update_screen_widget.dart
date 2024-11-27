@@ -244,7 +244,7 @@ class _FlashcardUpdateScreenWidgetState
           FadeEffect(
             curve: Curves.easeInOut,
             delay: 0.0.ms,
-            duration: 100.0.ms,
+            duration: 500.0.ms,
             begin: 0.0,
             end: 1.0,
           ),
@@ -1251,7 +1251,7 @@ class _FlashcardUpdateScreenWidgetState
                                                   .text,
                                               'newTagField UPDATE default',
                                             ),
-                                            category: '\"flashcard\"',
+                                            category: 'flashcard',
                                           );
                                           // Get new tag for the list
                                           _model.allTagsNewUpdate =
@@ -1349,27 +1349,22 @@ class _FlashcardUpdateScreenWidgetState
                                           .asValidator(context),
                                     ),
                                   ),
-                                  Opacity(
-                                    opacity: 0.0,
-                                    child: Align(
-                                      alignment:
-                                          const AlignmentDirectional(-1.0, 0.0),
-                                      child: Text(
-                                        'Tag already exists',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Readex Pro',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .error,
-                                              fontSize: 18.0,
-                                              letterSpacing: 0.0,
-                                            ),
-                                      ).animateOnActionTrigger(
-                                        animationsMap[
-                                            'textOnActionTriggerAnimation']!,
-                                      ),
+                                  Align(
+                                    alignment: const AlignmentDirectional(-1.0, 0.0),
+                                    child: Text(
+                                      'Tag already exists',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Readex Pro',
+                                            color: FlutterFlowTheme.of(context)
+                                                .error,
+                                            fontSize: 18.0,
+                                            letterSpacing: 0.0,
+                                          ),
+                                    ).animateOnActionTrigger(
+                                      animationsMap[
+                                          'textOnActionTriggerAnimation']!,
                                     ),
                                   ),
                                 ],
