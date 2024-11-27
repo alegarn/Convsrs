@@ -111,7 +111,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
               Size.fromHeight(MediaQuery.sizeOf(context).height * 0.07),
           child: AppBar(
             backgroundColor: FlutterFlowTheme.of(context).primary,
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: true,
             title: Container(
               width: MediaQuery.sizeOf(context).width * 1.0,
               constraints: const BoxConstraints(
@@ -123,29 +123,14 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  FlutterFlowIconButton(
-                    borderColor: Colors.transparent,
-                    borderRadius: 30.0,
-                    borderWidth: 1.0,
-                    buttonSize: 60.0,
-                    icon: const Icon(
-                      Icons.arrow_back_rounded,
-                      color: Colors.white,
-                      size: 30.0,
-                    ),
-                    onPressed: () async {
-                      context.pop();
-                    },
-                  ),
                   Text(
                     valueOrDefault<String>(
                       widget.cheatsheetName,
-                      'cheatsheet name',
+                      'Cheatsheet name',
                     ),
                     style: FlutterFlowTheme.of(context).headlineMedium.override(
                           fontFamily: 'Outfit',
-                          color:
-                              FlutterFlowTheme.of(context).secondaryBackground,
+                          color: FlutterFlowTheme.of(context).accent4,
                           letterSpacing: 0.0,
                         ),
                   ),
@@ -154,7 +139,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
             ),
             actions: const [],
             centerTitle: false,
-            elevation: 0.0,
+            elevation: 2.0,
           ),
         ),
         body: Stack(
@@ -179,9 +164,10 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Flexible(
-                            flex: 1,
+                            flex: 4,
                             child: Text(
-                              'Concept',
+                              'Concept    ',
+                              textAlign: TextAlign.center,
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -189,19 +175,13 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                     fontSize: 24.0,
                                     letterSpacing: 0.0,
                                   ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                            child: VerticalDivider(
-                              thickness: 1.0,
-                              color: FlutterFlowTheme.of(context).accent4,
                             ),
                           ),
                           Flexible(
-                            flex: 1,
+                            flex: 4,
                             child: Text(
                               'Description',
+                              textAlign: TextAlign.center,
                               style: FlutterFlowTheme.of(context)
                                   .bodyMedium
                                   .override(
@@ -211,9 +191,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                   ),
                             ),
                           ),
-                        ]
-                            .divide(const SizedBox(width: 10.0))
-                            .around(const SizedBox(width: 10.0)),
+                        ],
                       ),
                     ),
                   ),
@@ -245,6 +223,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
 
                         return ReorderableListView.builder(
                           padding: EdgeInsets.zero,
+                          shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           itemCount:
                               cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList
@@ -270,10 +249,12 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                   width: MediaQuery.sizeOf(context).width * 1.0,
                                   height:
                                       MediaQuery.sizeOf(context).height * 0.1,
-                                  decoration: const BoxDecoration(),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.transparent,
+                                  ),
                                   child: Padding(
                                     padding: const EdgeInsetsDirectional.fromSTEB(
-                                        2.0, 5.0, 2.0, 5.0),
+                                        5.0, 5.0, 5.0, 5.0),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
                                       mainAxisAlignment:
@@ -296,8 +277,9 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                           )),
                                         ),
                                         SizedBox(
-                                          height: 10.0,
+                                          height: 15.0,
                                           child: VerticalDivider(
+                                            width: 1.0,
                                             thickness: 1.0,
                                             color: FlutterFlowTheme.of(context)
                                                 .secondaryText,
@@ -309,6 +291,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                               child: AutoSizeText(
                                             cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
                                                 .answer,
+                                            textAlign: TextAlign.center,
                                             minFontSize: 14.0,
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
@@ -320,34 +303,94 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                           )),
                                         ),
                                         if (_model.isDeleting)
-                                          FlutterFlowIconButton(
-                                            borderColor:
-                                                FlutterFlowTheme.of(context)
-                                                    .primaryText,
-                                            borderRadius: 20.0,
-                                            borderWidth: 1.0,
-                                            buttonSize: 40.0,
-                                            fillColor:
-                                                FlutterFlowTheme.of(context)
-                                                    .error,
-                                            icon: Icon(
-                                              Icons.close_sharp,
-                                              color:
+                                          Flexible(
+                                            flex: 1,
+                                            child: FlutterFlowIconButton(
+                                              borderColor:
                                                   FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                              size: 24.0,
-                                            ),
-                                            onPressed: () async {
-                                              // Perform query
-                                              await SQLiteManager.instance
-                                                  .cheatsheetRowsDELETEId(
-                                                id: cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                    .id,
-                                              );
-                                              // Display the updated content
+                                                      .primaryText,
+                                              borderRadius: 20.0,
+                                              borderWidth: 1.0,
+                                              buttonSize: 40.0,
+                                              fillColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primary,
+                                              icon: Icon(
+                                                Icons.text_fields,
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                size: 24.0,
+                                              ),
+                                              onPressed: () async {
+                                                // Navigate to Update Page
 
-                                              safeSetState(() {});
-                                            },
+                                                context.pushNamed(
+                                                  'CheatsheetRowsUpdateScreen',
+                                                  queryParameters: {
+                                                    'concept': serializeParam(
+                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                          .concept,
+                                                      ParamType.String,
+                                                    ),
+                                                    'description':
+                                                        serializeParam(
+                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                          .answer,
+                                                      ParamType.String,
+                                                    ),
+                                                    'tagIds': serializeParam(
+                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                          .tagIds,
+                                                      ParamType.String,
+                                                    ),
+                                                    'cheatsheetId':
+                                                        serializeParam(
+                                                      widget.cheatsheetId,
+                                                      ParamType.int,
+                                                    ),
+                                                    'id': serializeParam(
+                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                          .id,
+                                                      ParamType.int,
+                                                    ),
+                                                  }.withoutNulls,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        if (_model.isDeleting)
+                                          Flexible(
+                                            flex: 1,
+                                            child: FlutterFlowIconButton(
+                                              borderColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryText,
+                                              borderRadius: 20.0,
+                                              borderWidth: 1.0,
+                                              buttonSize: 40.0,
+                                              fillColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              icon: Icon(
+                                                Icons.close_sharp,
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryBackground,
+                                                size: 24.0,
+                                              ),
+                                              onPressed: () async {
+                                                // Perform query
+                                                await SQLiteManager.instance
+                                                    .cheatsheetRowsDELETEId(
+                                                  id: cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
+                                                      .id,
+                                                );
+                                                // Display the updated content
+
+                                                safeSetState(() {});
+                                              },
+                                            ),
                                           ),
                                       ]
                                           .divide(const SizedBox(width: 3.0))
@@ -377,16 +420,17 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                   borderRadius: BorderRadius.circular(50.0),
                 ),
                 child: FlutterFlowIconButton(
-                  borderColor: FlutterFlowTheme.of(context).accent2,
+                  borderColor: FlutterFlowTheme.of(context).success,
                   borderRadius: 50.0,
                   borderWidth: 1.0,
                   buttonSize: MediaQuery.sizeOf(context).width * 0.15,
-                  fillColor: FlutterFlowTheme.of(context).success,
+                  fillColor: FlutterFlowTheme.of(context).secondary,
                   icon: Icon(
                     Icons.add,
                     color: FlutterFlowTheme.of(context).secondaryBackground,
-                    size: 48.0,
+                    size: 34.0,
                   ),
+                  showLoadingIndicator: true,
                   onPressed: () async {
                     // Get tags in State
                     await _model.getTagsInStateCheatsheetRows(context);
