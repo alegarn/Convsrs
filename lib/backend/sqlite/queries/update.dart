@@ -584,16 +584,18 @@ Future performCheatsheetRowsUPDATERow(
   String? conceptAudioUrl,
   String? answerAudioUrl,
   int? rowId,
+  String? tagIds,
 }) {
   final query = '''
 UPDATE cheatsheetRows
 SET 
-  "cheatsheetId" = $cheatsheetId,
-  "concept" = CASE WHEN $concept IS NOT NULL THEN '$concept' ELSE "concept" END,
-  "answer" = CASE WHEN $answer IS NOT NULL THEN '$answer' ELSE "answer" END,
-  "conceptAudioUrl" = CASE WHEN $conceptAudioUrl IS NOT NULL THEN '$conceptAudioUrl' ELSE "conceptAudioUrl" END,
-  "answerAudioUrl" = CASE WHEN $answerAudioUrl IS NOT NULL THEN '$answerAudioUrl' ELSE "answerAudioUrl" END
-WHERE id = $rowId;
+  "concept" = COALESCE('$concept', concept),
+  "answer" = COALESCE('$answer', answer),
+  "conceptAudioUrl" = COALESCE('$conceptAudioUrl', conceptAudioUrl),
+  "answerAudioUrl" = COALESCE('$answerAudioUrl', answerAudioUrl),
+  tagIds = COALESCE('$tagIds', tagIds)
+WHERE 
+  cheatsheetId = $cheatsheetId AND id = $rowId;
 ''';
   return database.rawQuery(query);
 }

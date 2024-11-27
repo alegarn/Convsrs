@@ -333,7 +333,7 @@ Future<List<CheatsheetRowsREADConceptAnswerRow>>
   int? cheatsheetId,
 }) {
   final query = '''
-SELECT id, concept, answer 
+SELECT id, concept, answer, tagIds
 FROM cheatsheetRows 
 WHERE cheatsheetId = $cheatsheetId;
 ''';
@@ -347,6 +347,7 @@ class CheatsheetRowsREADConceptAnswerRow extends SqliteRow {
   int get id => data['id'] as int;
   String get concept => data['concept'] as String;
   String get answer => data['answer'] as String;
+  String get tagIds => data['tagIds'] as String;
 }
 
 /// END CHEATSHEET ROWS READ CONCEPT ANSWER
