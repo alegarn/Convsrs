@@ -386,6 +386,32 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               structBuilder: ConversationsFlashcardStruct.fromSerializableMap,
             ),
           ),
+        ),
+        FFRoute(
+          name: 'CheatsheetRowsUpdateScreen',
+          path: '/cheatsheetRowsUpdateScreen',
+          builder: (context, params) => CheatsheetRowsUpdateScreenWidget(
+            concept: params.getParam(
+              'concept',
+              ParamType.String,
+            ),
+            description: params.getParam(
+              'description',
+              ParamType.String,
+            ),
+            tagIds: params.getParam(
+              'tagIds',
+              ParamType.String,
+            ),
+            cheatsheetId: params.getParam(
+              'cheatsheetId',
+              ParamType.int,
+            ),
+            id: params.getParam(
+              'id',
+              ParamType.int,
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
