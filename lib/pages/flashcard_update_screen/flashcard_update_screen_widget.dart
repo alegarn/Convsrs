@@ -164,6 +164,7 @@ class _FlashcardUpdateScreenWidgetState
           _model.listSQLite1flashcard?.first.tagIds,
           'ListFlashcard',
         );
+        // Manage tags
         await _model.manageGetTags(
           context,
           tagIds: valueOrDefault<String>(
