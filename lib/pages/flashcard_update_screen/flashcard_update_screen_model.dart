@@ -61,6 +61,8 @@ class FlashcardUpdateScreenModel
 
   String? newTag = 'newTag';
 
+  bool displayTagOptions = false;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in FlashcardUpdateScreen widget.

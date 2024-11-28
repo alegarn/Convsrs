@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/actions/actions.dart' as action_blocks;
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
@@ -1151,6 +1152,7 @@ class _FlashcardUpdateScreenWidgetState
               // - Tags *CRU*(D) functions including SQL
               // - formatNewTags()
               // - Reset tags states
+              // - Needs a DisplayTagOptions state (and delete tags)
               Flexible(
                 flex: 6,
                 child: Container(
@@ -1443,6 +1445,12 @@ class _FlashcardUpdateScreenWidgetState
                                                       selectedTagsItemsRowItem);
                                                   safeSetState(() {});
                                                 },
+                                                onLongPress: () async {
+                                                  // Toggle tag options
+                                                  _model.displayTagOptions =
+                                                      !_model.displayTagOptions;
+                                                  safeSetState(() {});
+                                                },
                                                 child: Container(
                                                   height: 32.0,
                                                   constraints: const BoxConstraints(
@@ -1463,27 +1471,31 @@ class _FlashcardUpdateScreenWidgetState
                                                               .primary,
                                                     ),
                                                   ),
-                                                  child: Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            0.0, 0.0),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  8.0,
-                                                                  0.0,
-                                                                  8.0,
-                                                                  0.0),
-                                                      child: Text(
-                                                        valueOrDefault<String>(
-                                                          selectedTagsItemsRowItem
-                                                              .name,
-                                                          'no_tag',
-                                                        ),
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
+                                                      Align(
+                                                        alignment:
+                                                            const AlignmentDirectional(
+                                                                0.0, 0.0),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsetsDirectional
+                                                                  .fromSTEB(
+                                                                      8.0,
+                                                                      0.0,
+                                                                      8.0,
+                                                                      0.0),
+                                                          child: Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              selectedTagsItemsRowItem
+                                                                  .name,
+                                                              'no_tag',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
                                                                 .bodyMedium
                                                                 .override(
                                                                   fontFamily:
@@ -1491,8 +1503,44 @@ class _FlashcardUpdateScreenWidgetState
                                                                   letterSpacing:
                                                                       0.0,
                                                                 ),
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
+                                                      if (_model
+                                                          .displayTagOptions)
+                                                        InkWell(
+                                                          splashColor: Colors
+                                                              .transparent,
+                                                          focusColor: Colors
+                                                              .transparent,
+                                                          hoverColor: Colors
+                                                              .transparent,
+                                                          highlightColor: Colors
+                                                              .transparent,
+                                                          onTap: () async {
+                                                            // Delete or Update Tag in db
+                                                            await action_blocks
+                                                                .deleteOrUpdateTagInDatabase(
+                                                              context,
+                                                              category:
+                                                                  'flashcard',
+                                                              tagItem:
+                                                                  selectedTagsItemsRowItem,
+                                                            );
+                                                            // Remove tag from list
+                                                            _model.removeFromSelectedTags(
+                                                                selectedTagsItemsRowItem);
+                                                            safeSetState(() {});
+                                                          },
+                                                          child: Icon(
+                                                            Icons.close,
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .error,
+                                                            size: 24.0,
+                                                          ),
+                                                        ),
+                                                    ],
                                                   ),
                                                 ),
                                               );
@@ -1589,6 +1637,13 @@ class _FlashcardUpdateScreenWidgetState
                                                           allTagsItemListItem);
                                                       safeSetState(() {});
                                                     },
+                                                    onLongPress: () async {
+                                                      // Toggle tag options
+                                                      _model.displayTagOptions =
+                                                          !_model
+                                                              .displayTagOptions;
+                                                      safeSetState(() {});
+                                                    },
                                                     child: Container(
                                                       height: 32.0,
                                                       constraints:
@@ -1610,36 +1665,78 @@ class _FlashcardUpdateScreenWidgetState
                                                               .primary,
                                                         ),
                                                       ),
-                                                      child: Align(
-                                                        alignment:
-                                                            const AlignmentDirectional(
-                                                                0.0, 0.0),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      8.0,
-                                                                      0.0,
-                                                                      8.0,
-                                                                      0.0),
-                                                          child: Text(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              allTagsItemListItem
-                                                                  .name,
-                                                              'no_tag',
-                                                            ),
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  letterSpacing:
-                                                                      0.0,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: [
+                                                          Align(
+                                                            alignment:
+                                                                const AlignmentDirectional(
+                                                                    0.0, 0.0),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          8.0,
+                                                                          0.0,
+                                                                          8.0,
+                                                                          0.0),
+                                                              child: Text(
+                                                                valueOrDefault<
+                                                                    String>(
+                                                                  allTagsItemListItem
+                                                                      .name,
+                                                                  'no_tag',
                                                                 ),
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .bodyMedium
+                                                                    .override(
+                                                                      fontFamily:
+                                                                          'Readex Pro',
+                                                                      letterSpacing:
+                                                                          0.0,
+                                                                    ),
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
+                                                          if (_model
+                                                              .displayTagOptions)
+                                                            InkWell(
+                                                              splashColor: Colors
+                                                                  .transparent,
+                                                              focusColor: Colors
+                                                                  .transparent,
+                                                              hoverColor: Colors
+                                                                  .transparent,
+                                                              highlightColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              onTap: () async {
+                                                                // Delete or Update Tag in db
+                                                                await action_blocks
+                                                                    .deleteOrUpdateTagInDatabase(
+                                                                  context,
+                                                                  category:
+                                                                      'flashcard',
+                                                                  tagItem:
+                                                                      allTagsItemListItem,
+                                                                );
+                                                                // Remove tag from list
+                                                                _model.removeFromAllTags(
+                                                                    allTagsItemListItem);
+                                                                safeSetState(
+                                                                    () {});
+                                                              },
+                                                              child: Icon(
+                                                                Icons.close,
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .error,
+                                                                size: 24.0,
+                                                              ),
+                                                            ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),
