@@ -1201,26 +1201,23 @@ class TagsGETAllFromCtgRow extends SqliteRow {
 
 /// END TAGS GET ALL FROM CTG
 
-/// BEGIN TAGS GET CTG BY NAME AND CTG
-Future<List<TagsGETCtgByNameAndCtgRow>> performTagsGETCtgByNameAndCtg(
+/// BEGIN TAGS GET CTGS BY ID
+Future<List<TagsGETCtgsByIdRow>> performTagsGETCtgsById(
   Database database, {
-  String? name,
-  String? category,
+  int? id,
 }) {
   final query = '''
-SELECT id,categories
+SELECT categories
 FROM tags
-WHERE name = '$name' 
-AND categories LIKE '%$category%';
+WHERE id = $id;
 ''';
-  return _readQuery(database, query, (d) => TagsGETCtgByNameAndCtgRow(d));
+  return _readQuery(database, query, (d) => TagsGETCtgsByIdRow(d));
 }
 
-class TagsGETCtgByNameAndCtgRow extends SqliteRow {
-  TagsGETCtgByNameAndCtgRow(super.data);
+class TagsGETCtgsByIdRow extends SqliteRow {
+  TagsGETCtgsByIdRow(super.data);
 
   String get categories => data['categories'] as String;
-  int get id => data['id'] as int;
 }
 
-/// END TAGS GET CTG BY NAME AND CTG
+/// END TAGS GET CTGS BY ID

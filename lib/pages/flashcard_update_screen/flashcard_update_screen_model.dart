@@ -2,6 +2,7 @@ import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:async';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'flashcard_update_screen_widget.dart' show FlashcardUpdateScreenWidget;

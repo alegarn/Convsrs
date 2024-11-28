@@ -45,22 +45,21 @@ Future deleteOrUpdateTagInDatabase(
   required String? category,
   required TagStruct? tagItem,
 }) async {
-  List<TagsGETCtgByNameAndCtgRow>? tagGetOutput;
+  List<TagsGETCtgsByIdRow>? tagGetOutput;
 
   // Get Tag
-  tagGetOutput = await SQLiteManager.instance.tagsGETCtgByNameAndCtg(
-    name: valueOrDefault<String>(
-      tagItem?.name,
-      'tagName',
+  tagGetOutput = await SQLiteManager.instance.tagsGETCtgsById(
+    id: valueOrDefault<int>(
+      tagItem?.id,
+      1,
     ),
-    category: category!,
   );
   if (functions.verifyIfOnlyOneCategoryIsLeft(
           valueOrDefault<String>(
             tagGetOutput.first.categories,
             '[]',
           ),
-          category) ==
+          category!) ==
       'true') {
     // Delete selected tag
     await SQLiteManager.instance.tagsDELETEById(

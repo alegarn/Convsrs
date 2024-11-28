@@ -363,14 +363,12 @@ class SQLiteManager {
         category: category,
       );
 
-  Future<List<TagsGETCtgByNameAndCtgRow>> tagsGETCtgByNameAndCtg({
-    String? name,
-    String? category,
+  Future<List<TagsGETCtgsByIdRow>> tagsGETCtgsById({
+    int? id,
   }) =>
-      performTagsGETCtgByNameAndCtg(
+      performTagsGETCtgsById(
         _database,
-        name: name,
-        category: category,
+        id: id,
       );
 
   /// END READ QUERY CALLS
@@ -933,6 +931,14 @@ class SQLiteManager {
         _database,
         category: category,
         id: id,
+      );
+
+  Future flashcardsUPDATETagIdsInAllFlashcards({
+    String? tagId,
+  }) =>
+      performFlashcardsUPDATETagIdsInAllFlashcards(
+        _database,
+        tagId: tagId,
       );
 
   /// END UPDATE QUERY CALLS
