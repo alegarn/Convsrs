@@ -363,6 +363,16 @@ class SQLiteManager {
         category: category,
       );
 
+  Future<List<TagsGETCtgByNameAndCtgRow>> tagsGETCtgByNameAndCtg({
+    String? name,
+    String? category,
+  }) =>
+      performTagsGETCtgByNameAndCtg(
+        _database,
+        name: name,
+        category: category,
+      );
+
   /// END READ QUERY CALLS
 
   /// START UPDATE QUERY CALLS
@@ -905,6 +915,24 @@ class SQLiteManager {
         _database,
         newTagName: newTagName,
         category: category,
+      );
+
+  Future tagsDELETEById({
+    int? id,
+  }) =>
+      performTagsDELETEById(
+        _database,
+        id: id,
+      );
+
+  Future tagsUPDATERemoveCategory({
+    String? category,
+    int? id,
+  }) =>
+      performTagsUPDATERemoveCategory(
+        _database,
+        category: category,
+        id: id,
       );
 
   /// END UPDATE QUERY CALLS

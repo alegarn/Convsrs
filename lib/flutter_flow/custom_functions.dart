@@ -834,3 +834,24 @@ String? countTotalCardNumber(
   // Return the count as a string
   return flashcardsList.length.toString();
 }
+
+String verifyIfOnlyOneCategoryIsLeft(
+  String categories,
+  String category,
+) {
+  // Remove the square brackets and whitespace, then split by comma
+  String cleanedCategories = categories.replaceAll(RegExp(r'[\[\]\s]'), '');
+
+  // Split the cleaned string by commas to get individual categories
+  List<String> categoryList = cleanedCategories.split(',');
+
+  // Check the length of the category list
+  if (categoryList.length == 1) {
+    return "true"; // Only one category left
+  } else {
+    // cat new string, but no category in it's string
+    String newCategories =
+        [categoryList.map((cat) => '"$cat"').join(',')].toString();
+    return newCategories; // More than one category left
+  }
+}
