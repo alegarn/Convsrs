@@ -861,3 +861,24 @@ AND categories LIKE '%"$category"%';
 }
 
 /// END TAGS UPDATE REMOVE CATEGORY
+
+/// BEGIN FLASHCARDS UPDATE TAGIDS IN ALL FLASHCARDS
+Future performFlashcardsUPDATETagIdsInAllFlashcards(
+  Database database, {
+  String? tagId,
+}) {
+  final query = '''
+UPDATE flashcards
+SET tagIds = TRIM(REPLACE(REPLACE(REPLACE(tagIds, 
+                   '[' || '$tagId' || ']', '[]'), 
+                   ',' || '$tagId' || ',', ','), 
+                   ',' || '$tagId', ''))
+WHERE tagIds LIKE '%[' || '$tagId' || ']%' 
+   OR tagIds LIKE '%,' || '$tagId' || ']%' 
+   OR tagIds LIKE '%[' || '$tagId' || ',%' 
+   OR tagIds LIKE '%,' || '$tagId' || ',%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END FLASHCARDS UPDATE TAGIDS IN ALL FLASHCARDS

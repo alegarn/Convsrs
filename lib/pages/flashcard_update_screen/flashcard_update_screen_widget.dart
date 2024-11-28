@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:async';
 import '/actions/actions.dart' as action_blocks;
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
@@ -1527,6 +1528,23 @@ class _FlashcardUpdateScreenWidgetState
                                                               tagItem:
                                                                   selectedTagsItemsRowItem,
                                                             );
+                                                            // Update tag id in flashcards
+                                                            unawaited(
+                                                              () async {
+                                                                await SQLiteManager
+                                                                    .instance
+                                                                    .flashcardsUPDATETagIdsInAllFlashcards(
+                                                                  tagId:
+                                                                      valueOrDefault<
+                                                                          String>(
+                                                                    selectedTagsItemsRowItem
+                                                                        .id
+                                                                        .toString(),
+                                                                    '1',
+                                                                  ),
+                                                                );
+                                                              }(),
+                                                            );
                                                             // Remove tag from list
                                                             _model.removeFromSelectedTags(
                                                                 selectedTagsItemsRowItem);
@@ -1721,6 +1739,22 @@ class _FlashcardUpdateScreenWidgetState
                                                                       'flashcard',
                                                                   tagItem:
                                                                       allTagsItemListItem,
+                                                                );
+                                                                // Update tag id in flashcards
+                                                                unawaited(
+                                                                  () async {
+                                                                    await SQLiteManager
+                                                                        .instance
+                                                                        .flashcardsUPDATETagIdsInAllFlashcards(
+                                                                      tagId: valueOrDefault<
+                                                                          String>(
+                                                                        allTagsItemListItem
+                                                                            .id
+                                                                            .toString(),
+                                                                        '1',
+                                                                      ),
+                                                                    );
+                                                                  }(),
                                                                 );
                                                                 // Remove tag from list
                                                                 _model.removeFromAllTags(
