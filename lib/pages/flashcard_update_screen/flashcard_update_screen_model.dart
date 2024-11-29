@@ -1,6 +1,7 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
+import '/components/selected_tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:async';
 import '/custom_code/actions/index.dart' as actions;
@@ -88,6 +89,8 @@ class FlashcardUpdateScreenModel
       textVersoFieldTextControllerValidator;
   // Model for InsertAudioFlashcard component.
   late InsertAudioFlashcardModel insertAudioFlashcardModel2;
+  // Model for SelectedTagsList component.
+  late SelectedTagsListModel selectedTagsListModel;
   // State field(s) for NewTagField widget.
   FocusNode? newTagFieldFocusNode;
   TextEditingController? newTagFieldTextController;
@@ -107,6 +110,7 @@ class FlashcardUpdateScreenModel
         createModel(context, () => InsertAudioFlashcardModel());
     insertAudioFlashcardModel2 =
         createModel(context, () => InsertAudioFlashcardModel());
+    selectedTagsListModel = createModel(context, () => SelectedTagsListModel());
   }
 
   @override
@@ -122,6 +126,7 @@ class FlashcardUpdateScreenModel
     textVersoFieldTextController?.dispose();
 
     insertAudioFlashcardModel2.dispose();
+    selectedTagsListModel.dispose();
     newTagFieldFocusNode?.dispose();
     newTagFieldTextController?.dispose();
   }

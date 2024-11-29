@@ -1,6 +1,7 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
+import '/components/selected_tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -1164,6 +1165,33 @@ class _FlashcardUpdateScreenWidgetState
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
+                      Flexible(
+                        flex: 3,
+                        child: wrapWithModel(
+                          model: _model.selectedTagsListModel,
+                          updateCallback: () => safeSetState(() {}),
+                          child: SelectedTagsListWidget(
+                            tagOptionsVisible: false,
+                            selectedTagState: _model.selectedTags,
+                            allTagsState: _model.allTags,
+                            category: 'flashcard',
+                            tagTransfert: (item) async {
+                              if (!_model.allTags.contains(item)) {
+                                // Add to allTags
+                                _model.addToAllTags(item);
+                              }
+                              // Remove from selectedTags
+                              _model.removeFromSelectedTags(item);
+                              safeSetState(() {});
+                            },
+                            removeTagFromState: (tag) async {
+                              // Remove tag from selectedTags
+                              _model.removeFromSelectedTags(tag);
+                              safeSetState(() {});
+                            },
+                          ),
+                        ),
+                      ),
                       Flexible(
                         flex: 2,
                         child: Align(
