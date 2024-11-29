@@ -819,3 +819,66 @@ WHERE name = '$newTagName' AND categories NOT LIKE '%$category%';
 }
 
 /// END TAGS UPDATE ADD CATEGORY IF
+
+/// BEGIN TAGS DELETE BY ID
+Future performTagsDELETEById(
+  Database database, {
+  int? id,
+}) {
+  final query = '''
+DELETE FROM tags
+WHERE id = $id;
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS DELETE BY ID
+
+/// BEGIN TAGS UPDATE REMOVE CATEGORY
+Future performTagsUPDATERemoveCategory(
+  Database database, {
+  String? category,
+  int? id,
+}) {
+  final query = '''
+UPDATE tags
+SET categories = TRIM(
+    REPLACE(
+        REPLACE(
+            REPLACE(
+                REPLACE(
+                    REPLACE(categories, ', ' || '"$category"', ''),  -- Remove the category with preceding comma
+                    '"$category"', ''),  -- Remove the category without preceding comma
+                ',,', ','),  -- Replace double commas with a single comma
+            '[,', '['),  -- Remove a comma at the start of the list
+        ',]', ']')  -- Remove a comma at the end of the list
+    )
+)
+WHERE id = $id 
+AND categories LIKE '%"$category"%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS UPDATE REMOVE CATEGORY
+
+/// BEGIN FLASHCARDS UPDATE TAGIDS IN ALL FLASHCARDS
+Future performFlashcardsUPDATETagIdsInAllFlashcards(
+  Database database, {
+  String? tagId,
+}) {
+  final query = '''
+UPDATE flashcards
+SET tagIds = TRIM(REPLACE(REPLACE(REPLACE(tagIds, 
+                   '[' || '$tagId' || ']', '[]'), 
+                   ',' || '$tagId' || ',', ','), 
+                   ',' || '$tagId', ''))
+WHERE tagIds LIKE '%[' || '$tagId' || ']%' 
+   OR tagIds LIKE '%,' || '$tagId' || ']%' 
+   OR tagIds LIKE '%[' || '$tagId' || ',%' 
+   OR tagIds LIKE '%,' || '$tagId' || ',%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END FLASHCARDS UPDATE TAGIDS IN ALL FLASHCARDS

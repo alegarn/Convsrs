@@ -333,6 +333,8 @@ dynamic deserializeParam<T>(
             return FlashcardsREADLastIdRow(data);
           case TagsGETAllFromCtgRow:
             return TagsGETAllFromCtgRow(data);
+          case TagsGETCtgsByIdRow:
+            return TagsGETCtgsByIdRow(data);
           default:
             return null;
         }

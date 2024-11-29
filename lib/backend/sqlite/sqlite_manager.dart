@@ -363,6 +363,14 @@ class SQLiteManager {
         category: category,
       );
 
+  Future<List<TagsGETCtgsByIdRow>> tagsGETCtgsById({
+    int? id,
+  }) =>
+      performTagsGETCtgsById(
+        _database,
+        id: id,
+      );
+
   /// END READ QUERY CALLS
 
   /// START UPDATE QUERY CALLS
@@ -905,6 +913,32 @@ class SQLiteManager {
         _database,
         newTagName: newTagName,
         category: category,
+      );
+
+  Future tagsDELETEById({
+    int? id,
+  }) =>
+      performTagsDELETEById(
+        _database,
+        id: id,
+      );
+
+  Future tagsUPDATERemoveCategory({
+    String? category,
+    int? id,
+  }) =>
+      performTagsUPDATERemoveCategory(
+        _database,
+        category: category,
+        id: id,
+      );
+
+  Future flashcardsUPDATETagIdsInAllFlashcards({
+    String? tagId,
+  }) =>
+      performFlashcardsUPDATETagIdsInAllFlashcards(
+        _database,
+        tagId: tagId,
       );
 
   /// END UPDATE QUERY CALLS

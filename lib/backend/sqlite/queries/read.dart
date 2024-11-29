@@ -1200,3 +1200,24 @@ class TagsGETAllFromCtgRow extends SqliteRow {
 }
 
 /// END TAGS GET ALL FROM CTG
+
+/// BEGIN TAGS GET CTGS BY ID
+Future<List<TagsGETCtgsByIdRow>> performTagsGETCtgsById(
+  Database database, {
+  int? id,
+}) {
+  final query = '''
+SELECT categories
+FROM tags
+WHERE id = $id;
+''';
+  return _readQuery(database, query, (d) => TagsGETCtgsByIdRow(d));
+}
+
+class TagsGETCtgsByIdRow extends SqliteRow {
+  TagsGETCtgsByIdRow(super.data);
+
+  String get categories => data['categories'] as String;
+}
+
+/// END TAGS GET CTGS BY ID
