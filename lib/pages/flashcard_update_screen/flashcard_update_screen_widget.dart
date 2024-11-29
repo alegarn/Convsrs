@@ -1166,6 +1166,7 @@ class _FlashcardUpdateScreenWidgetState
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Flexible(
+                        flex: 3,
                         child: wrapWithModel(
                           model: _model.selectedTagsListModel,
                           updateCallback: () => safeSetState(() {}),
