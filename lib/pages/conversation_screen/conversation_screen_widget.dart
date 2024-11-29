@@ -209,6 +209,13 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                       PageController(initialPage: 0),
                               scrollDirection: Axis.horizontal,
                               children: [
+                                // - needs getConversationTagsList with updateFlashcardConversationStatus
+                                // - FlashcardsInfosList (?)
+                                //
+                                // States:
+                                // - conversationTagsList
+                                // - bigLoopCurrentItem
+                                // - loopCounter / BigLoopCounter
                                 Stack(
                                   children: [
                                     SafeArea(
