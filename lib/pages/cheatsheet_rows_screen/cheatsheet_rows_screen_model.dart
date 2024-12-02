@@ -1,5 +1,6 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
+import '/components/tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
@@ -57,9 +58,16 @@ class CheatsheetRowsScreenModel
   List<TagsGETAllFromCtgRow>? allTagsNewFalse;
   // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
   List<TagsGETAllFromCtgRow>? allTagsNewUpdate;
+  // Model for SelectedTagsList.
+  late TagsListModel selectedTagsListModel;
+  // Model for AllTagsList.
+  late TagsListModel allTagsListModel;
 
   @override
-  void initState(BuildContext context) {}
+  void initState(BuildContext context) {
+    selectedTagsListModel = createModel(context, () => TagsListModel());
+    allTagsListModel = createModel(context, () => TagsListModel());
+  }
 
   @override
   void dispose() {
@@ -71,6 +79,9 @@ class CheatsheetRowsScreenModel
 
     newTagFieldFocusNode?.dispose();
     newTagFieldTextController?.dispose();
+
+    selectedTagsListModel.dispose();
+    allTagsListModel.dispose();
   }
 
   /// Action blocks.

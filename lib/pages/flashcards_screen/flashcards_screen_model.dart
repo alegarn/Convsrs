@@ -1,5 +1,6 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
+import '/components/tags_list_widget.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
@@ -92,6 +93,10 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   List<TagsGETAllFromCtgRow>? allTagsNewFalse;
   // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
   List<TagsGETAllFromCtgRow>? allTagsNewUpdate;
+  // Model for SelectedTagsList.
+  late TagsListModel selectedTagsListModel;
+  // Model for AllTagsList.
+  late TagsListModel allTagsListModel;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in CreateFlashcardButton widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
   // Stores action output result for [Backend Call - SQLite (Flashcards read all from deck name and id)] action in CreateFlashcardButton widget.
@@ -101,6 +106,8 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
   void initState(BuildContext context) {
     flashcardListCrudRowModels =
         FlutterFlowDynamicModels(() => ListCrudRowModel());
+    selectedTagsListModel = createModel(context, () => TagsListModel());
+    allTagsListModel = createModel(context, () => TagsListModel());
   }
 
   @override
@@ -120,6 +127,9 @@ class FlashcardsScreenModel extends FlutterFlowModel<FlashcardsScreenWidget> {
 
     newTagFieldFocusNode?.dispose();
     newTagFieldTextController?.dispose();
+
+    selectedTagsListModel.dispose();
+    allTagsListModel.dispose();
   }
 
   /// Action blocks.

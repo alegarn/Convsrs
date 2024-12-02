@@ -1,6 +1,7 @@
 import '/auth/supabase_auth/auth_util.dart';
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
+import '/components/tags_list_widget.dart';
 import '/components/ui/list_button/list_button_widget.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
@@ -1219,37 +1220,40 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                                                         .primary,
                                                                   ),
                                                                 ),
-                                                                child: Align(
-                                                                  alignment:
-                                                                      const AlignmentDirectional(
-                                                                          0.0,
-                                                                          0.0),
-                                                                  child:
-                                                                      Padding(
-                                                                    padding: const EdgeInsetsDirectional
-                                                                        .fromSTEB(
+                                                                child: Row(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .max,
+                                                                  children: [
+                                                                    Align(
+                                                                      alignment:
+                                                                          const AlignmentDirectional(
+                                                                              0.0,
+                                                                              0.0),
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                                                             8.0,
                                                                             0.0,
                                                                             8.0,
                                                                             0.0),
-                                                                    child: Text(
-                                                                      valueOrDefault<
-                                                                          String>(
-                                                                        selectedTagsItemsRowItem
-                                                                            .name,
-                                                                        'no_tag',
-                                                                      ),
-                                                                      style: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .bodyMedium
-                                                                          .override(
-                                                                            fontFamily:
-                                                                                'Readex Pro',
-                                                                            letterSpacing:
-                                                                                0.0,
+                                                                        child:
+                                                                            Text(
+                                                                          valueOrDefault<
+                                                                              String>(
+                                                                            selectedTagsItemsRowItem.name,
+                                                                            'no_tag',
                                                                           ),
+                                                                          style: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .override(
+                                                                                fontFamily: 'Readex Pro',
+                                                                                letterSpacing: 0.0,
+                                                                              ),
+                                                                        ),
+                                                                      ),
                                                                     ),
-                                                                  ),
+                                                                  ],
                                                                 ),
                                                               ),
                                                             ),
@@ -1438,6 +1442,74 @@ class _FlashcardsScreenWidgetState extends State<FlashcardsScreenWidget>
                                             ),
                                           ],
                                         ),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: wrapWithModel(
+                                      model: _model.selectedTagsListModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: TagsListWidget(
+                                        category: 'flashcard',
+                                        selectedTagType: true,
+                                        displayedListTagsState:
+                                            _model.selectedTagsPageState,
+                                        otherListTagsState:
+                                            _model.allTagsPageState,
+                                        tagTransfert: (tagItem) async {
+                                          if (!_model.allTagsPageState
+                                              .contains(tagItem)) {
+                                            // Add item to allTags
+                                            _model
+                                                .addToAllTagsPageState(tagItem);
+                                          }
+                                          // Remove item from selectedTags
+                                          _model
+                                              .removeFromSelectedTagsPageState(
+                                                  tagItem);
+                                          safeSetState(() {});
+                                        },
+                                        removeTagFromState: (tagItem) async {
+                                          // Remove tag from selectedTags
+                                          _model
+                                              .removeFromSelectedTagsPageState(
+                                                  tagItem);
+                                          safeSetState(() {});
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 2,
+                                    child: wrapWithModel(
+                                      model: _model.allTagsListModel,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: TagsListWidget(
+                                        category: 'flashcard',
+                                        selectedTagType: false,
+                                        displayedListTagsState:
+                                            _model.allTagsPageState,
+                                        otherListTagsState:
+                                            _model.selectedTagsPageState,
+                                        tagTransfert: (tagItem) async {
+                                          if (!_model.selectedTagsPageState
+                                              .contains(tagItem)) {
+                                            // Put tag item in selectedTags
+                                            _model.addToSelectedTagsPageState(
+                                                tagItem);
+                                          }
+                                          // Remove from allTags
+                                          _model.removeFromAllTagsPageState(
+                                              tagItem);
+                                          safeSetState(() {});
+                                        },
+                                        removeTagFromState: (tagItem) async {
+                                          // Remove tag from allTags
+                                          _model.removeFromAllTagsPageState(
+                                              tagItem);
+                                          safeSetState(() {});
+                                        },
                                       ),
                                     ),
                                   ),
