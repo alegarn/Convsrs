@@ -40,7 +40,7 @@ Future moveTagToSelectedTags(
   if (!selectedTags!.contains(tagItem)) {}
 }
 
-Future deleteOrUpdateTagInDatabase(
+Future<bool> deleteOrUpdateTagInDatabase(
   BuildContext context, {
   required String? category,
   required TagStruct? tagItem,
@@ -54,28 +54,50 @@ Future deleteOrUpdateTagInDatabase(
       1,
     ),
   );
-  if (functions.verifyIfOnlyOneCategoryIsLeft(
-          valueOrDefault<String>(
-            tagGetOutput.first.categories,
-            '[]',
-          ),
-          category!) ==
-      'true') {
-    // Delete selected tag
-    await SQLiteManager.instance.tagsDELETEById(
-      id: valueOrDefault<int>(
-        tagItem?.id,
-        1,
-      ),
+  if (tagItem?.name == 'no_tag') {
+    // Alert
+    await showDialog(
+      context: context,
+      builder: (alertDialogContext) {
+        return AlertDialog(
+          title: const Text('No_Tag Deletion'),
+          content: const Text('You canno\'t delete it, no_tag is a default '),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(alertDialogContext),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
     );
+    return false;
   } else {
-    // Modify Tag category
-    await SQLiteManager.instance.tagsUPDATERemoveCategory(
-      id: valueOrDefault<int>(
-        tagItem?.id,
-        1,
-      ),
-      category: category,
-    );
+    if (functions.verifyIfOnlyOneCategoryIsLeft(
+            valueOrDefault<String>(
+              tagGetOutput.first.categories,
+              '[]',
+            ),
+            category!) ==
+        'true') {
+      // Delete selected tag
+      await SQLiteManager.instance.tagsDELETEById(
+        id: valueOrDefault<int>(
+          tagItem?.id,
+          1,
+        ),
+      );
+    } else {
+      // Modify Tag category
+      await SQLiteManager.instance.tagsUPDATERemoveCategory(
+        id: valueOrDefault<int>(
+          tagItem?.id,
+          1,
+        ),
+        category: category,
+      );
+    }
+
+    return true;
   }
 }
