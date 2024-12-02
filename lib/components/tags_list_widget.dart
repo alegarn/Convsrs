@@ -180,30 +180,44 @@ class _TagsListWidgetState extends State<TagsListWidget> {
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
+                                        var shouldSetState = false;
                                         // Delete or Update Tag in db
-                                        await action_blocks
-                                            .deleteOrUpdateTagInDatabase(
+                                        _model.isTagToBeDeleted =
+                                            await action_blocks
+                                                .deleteOrUpdateTagInDatabase(
                                           context,
                                           category: widget.category,
                                           tagItem: selectedTagsItemsRowItem,
                                         );
-                                        // Update tag id in flashcards
-                                        unawaited(
-                                          () async {
-                                            await SQLiteManager.instance
-                                                .flashcardsUPDATETagIdsInAllFlashcards(
-                                              tagId: valueOrDefault<String>(
-                                                selectedTagsItemsRowItem.id
-                                                    .toString(),
-                                                '1',
-                                              ),
-                                            );
-                                          }(),
-                                        );
-                                        // Remove tag from list
-                                        await widget.removeTagFromState?.call(
-                                          selectedTagsItemsRowItem,
-                                        );
+                                        shouldSetState = true;
+                                        if (_model.isTagToBeDeleted!) {
+                                          // Update tag id in flashcards
+                                          unawaited(
+                                            () async {
+                                              await SQLiteManager.instance
+                                                  .flashcardsUPDATETagIdsInAllFlashcards(
+                                                tagId: valueOrDefault<String>(
+                                                  selectedTagsItemsRowItem.id
+                                                      .toString(),
+                                                  '1',
+                                                ),
+                                              );
+                                            }(),
+                                          );
+                                          // Remove tag from list
+                                          await widget.removeTagFromState?.call(
+                                            selectedTagsItemsRowItem,
+                                          );
+                                        } else {
+                                          if (shouldSetState) {
+                                            safeSetState(() {});
+                                          }
+                                          return;
+                                        }
+
+                                        if (shouldSetState) {
+                                          safeSetState(() {});
+                                        }
                                       },
                                       child: Icon(
                                         Icons.close,

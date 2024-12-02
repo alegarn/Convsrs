@@ -7,6 +7,11 @@ class TagsListModel extends FlutterFlowModel<TagsListWidget> {
 
   bool displayTagOption = false;
 
+  ///  State fields for stateful widgets in this component.
+
+  // Stores action output result for [Action Block - DeleteOrUpdateTagInDatabase] action in DeleteTagIcon widget.
+  bool? isTagToBeDeleted;
+
   @override
   void initState(BuildContext context) {}
 
