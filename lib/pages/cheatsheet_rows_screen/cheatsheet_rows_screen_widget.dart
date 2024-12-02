@@ -648,12 +648,12 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                 maxHeight: 350.0,
                               ),
                               decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
+                                color: FlutterFlowTheme.of(context).alternate,
+                                borderRadius: BorderRadius.circular(10.0),
                               ),
                               child: Padding(
                                 padding: const EdgeInsetsDirectional.fromSTEB(
-                                    5.0, 0.0, 5.0, 0.0),
+                                    5.0, 5.0, 5.0, 5.0),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
@@ -1000,7 +1000,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                         ),
                                       ),
                                     ),
-                                  ],
+                                  ].divide(const SizedBox(height: 5.0)),
                                 ),
                               ),
                             ),
