@@ -11,6 +11,7 @@ import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'cheatsheet_rows_screen_model.dart';
 export 'cheatsheet_rows_screen_model.dart';
@@ -45,6 +46,25 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => CheatsheetRowsScreenModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Query cheatsheet rows
+      _model.cheatsheetRowsOutput =
+          await SQLiteManager.instance.cheatsheetRowsREADConceptAnswer(
+        cheatsheetId: widget.cheatsheetId,
+      );
+      // Add data to state
+      _model.cheatsheetRowsList = functions
+          .formatCheatsheetRowOutput(
+              _model.cheatsheetRowsOutput!.toList(), widget.cheatsheetId)
+          .toList()
+          .cast<CheatsheetRowStruct>();
+      safeSetState(() {});
+    });
+
+    _model.filterTextFieldTextController ??= TextEditingController();
+    _model.filterTextFieldFocusNode ??= FocusNode();
 
     _model.cheatsheetRowConceptFieldTextController ??= TextEditingController();
     _model.cheatsheetRowConceptFieldFocusNode ??= FocusNode();
@@ -153,6 +173,105 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
+                  Container(
+                    width: double.infinity,
+                    height: 40.0,
+                    constraints: const BoxConstraints(
+                      minHeight: 36.0,
+                      maxHeight: 48.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).primary,
+                    ),
+                    child:
+                        // - Update cheatshRowsState on change
+                        // - Function updateCheatshRowsVisibility in each list containers
+                        // - Requires a list data type (CheatsheetRow) using as a parameter "isVisible"
+                        // - Requires some column element displaying your list (cheatsheetRowsColumn)
+                        // - Each sub-element (created from the column) with some conditionnal visibility
+                        Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(15.0, 3.0, 15.0, 3.0),
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.8,
+                        child: TextFormField(
+                          controller: _model.filterTextFieldTextController,
+                          focusNode: _model.filterTextFieldFocusNode,
+                          onChanged: (_) => EasyDebounce.debounce(
+                            '_model.filterTextFieldTextController',
+                            const Duration(milliseconds: 1000),
+                            () async {
+                              // CheatssheetRows filtration by name, on isVisible
+                              _model.cheatsheetRowsList = functions
+                                  .updateCheatsheetRowsVisibility(
+                                      _model.cheatsheetRowsList.toList(),
+                                      _model.filterTextFieldTextController.text)
+                                  .toList()
+                                  .cast<CheatsheetRowStruct>();
+                              safeSetState(() {});
+                            },
+                          ),
+                          autofocus: false,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: 'Word Filters: type to find your word',
+                            hintStyle: FlutterFlowTheme.of(context)
+                                .labelMedium
+                                .override(
+                                  fontFamily: 'Readex Pro',
+                                  fontSize: 24.0,
+                                  letterSpacing: 0.0,
+                                  lineHeight: 1.5,
+                                ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0x00000000),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0x00000000),
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: FlutterFlowTheme.of(context).error,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: FlutterFlowTheme.of(context).error,
+                                width: 1.0,
+                              ),
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            filled: true,
+                            fillColor: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                          ),
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 24.0,
+                                    letterSpacing: 0.0,
+                                    lineHeight: 1.5,
+                                  ),
+                          textAlign: TextAlign.start,
+                          cursorColor: FlutterFlowTheme.of(context).primaryText,
+                          validator: _model
+                              .filterTextFieldTextControllerValidator
+                              .asValidator(context),
+                        ),
+                      ),
+                    ),
+                  ),
                   Flexible(
                     flex: 1,
                     child: Padding(
@@ -197,44 +316,22 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                   ),
                   Flexible(
                     flex: 9,
-                    child:
-                        FutureBuilder<List<CheatsheetRowsREADConceptAnswerRow>>(
-                      future: SQLiteManager.instance
-                          .cheatsheetRowsREADConceptAnswer(
-                        cheatsheetId: widget.cheatsheetId,
-                      ),
-                      builder: (context, snapshot) {
-                        // Customize what your widget looks like when it's loading.
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: SizedBox(
-                              width: 50.0,
-                              height: 50.0,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  FlutterFlowTheme.of(context).primary,
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                        final cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList =
-                            snapshot.data!;
+                    child: Builder(
+                      builder: (context) {
+                        final cheatsheetRowsColumn =
+                            _model.cheatsheetRowsList.toList();
 
-                        return ReorderableListView.builder(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount:
-                              cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList
-                                  .length,
-                          itemBuilder: (context, cheatsheetListViewIndex) {
-                            final cheatsheetListViewCheatsheetRowsREADConceptAnswerRow =
-                                cheatsheetListViewCheatsheetRowsREADConceptAnswerRowList[
-                                    cheatsheetListViewIndex];
-                            return Container(
-                              key: ValueKey("ListView_mnfio1s9" '_' +
-                                  cheatsheetListViewIndex.toString()),
+                        return Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: List.generate(cheatsheetRowsColumn.length,
+                              (cheatsheetRowsColumnIndex) {
+                            final cheatsheetRowsColumnItem =
+                                cheatsheetRowsColumn[cheatsheetRowsColumnIndex];
+                            return Visibility(
+                              visible: valueOrDefault<bool>(
+                                cheatsheetRowsColumnItem.isVisible,
+                                true,
+                              ),
                               child: InkWell(
                                 splashColor: Colors.transparent,
                                 focusColor: Colors.transparent,
@@ -264,8 +361,10 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                           flex: 4,
                                           child: SelectionArea(
                                               child: AutoSizeText(
-                                            cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                .concept,
+                                            valueOrDefault<String>(
+                                              cheatsheetRowsColumnItem.concept,
+                                              'concept a bit long',
+                                            ),
                                             minFontSize: 14.0,
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
@@ -289,8 +388,10 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                           flex: 4,
                                           child: SelectionArea(
                                               child: AutoSizeText(
-                                            cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                .answer,
+                                            valueOrDefault<String>(
+                                              cheatsheetRowsColumnItem.answer,
+                                              'answer a bit long ',
+                                            ),
                                             textAlign: TextAlign.center,
                                             minFontSize: 14.0,
                                             style: FlutterFlowTheme.of(context)
@@ -329,19 +430,28 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                                   'CheatsheetRowsUpdateScreen',
                                                   queryParameters: {
                                                     'concept': serializeParam(
-                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                          .concept,
+                                                      valueOrDefault<String>(
+                                                        cheatsheetRowsColumnItem
+                                                            .concept,
+                                                        'concept',
+                                                      ),
                                                       ParamType.String,
                                                     ),
                                                     'description':
                                                         serializeParam(
-                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                          .answer,
+                                                      valueOrDefault<String>(
+                                                        cheatsheetRowsColumnItem
+                                                            .answer,
+                                                        'answer',
+                                                      ),
                                                       ParamType.String,
                                                     ),
                                                     'tagIds': serializeParam(
-                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                          .tagIds,
+                                                      valueOrDefault<String>(
+                                                        cheatsheetRowsColumnItem
+                                                            .tagIds,
+                                                        '[1]',
+                                                      ),
                                                       ParamType.String,
                                                     ),
                                                     'cheatsheetId':
@@ -350,8 +460,11 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                                       ParamType.int,
                                                     ),
                                                     'id': serializeParam(
-                                                      cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                          .id,
+                                                      valueOrDefault<int>(
+                                                        cheatsheetRowsColumnItem
+                                                            .id,
+                                                        0,
+                                                      ),
                                                       ParamType.int,
                                                     ),
                                                   }.withoutNulls,
@@ -383,11 +496,14 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                                 // Perform query
                                                 await SQLiteManager.instance
                                                     .cheatsheetRowsDELETEId(
-                                                  id: cheatsheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                      .id,
+                                                  id: valueOrDefault<int>(
+                                                    cheatsheetRowsColumnItem.id,
+                                                    0,
+                                                  ),
                                                 );
                                                 // Display the updated content
-
+                                                _model.removeFromCheatsheetRowsList(
+                                                    cheatsheetRowsColumnItem);
                                                 safeSetState(() {});
                                               },
                                             ),
@@ -400,9 +516,7 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                 ),
                               ),
                             );
-                          },
-                          onReorder: (int reorderableOldIndex,
-                              int reorderableNewIndex) async {},
+                          }),
                         );
                       },
                     ),

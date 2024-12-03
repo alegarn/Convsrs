@@ -855,3 +855,49 @@ String verifyIfOnlyOneCategoryIsLeft(
     return newCategories; // More than one category left
   }
 }
+
+List<CheatsheetRowStruct> formatCheatsheetRowOutput(
+  List<CheatsheetRowsREADConceptAnswerRow> cheatsheetRowsListOutput,
+  int? cheatsheetId,
+) {
+  return cheatsheetRowsListOutput.map((row) {
+    return CheatsheetRowStruct(
+        id: row?.id,
+        cheatsheetId: cheatsheetId.toString(),
+        concept: row?.concept,
+        answer: row?.answer,
+        tagIds: row?.tagIds,
+        conceptAudioUrl: "",
+        answerAudioUrl: "",
+        isVisible: true);
+  }).toList();
+}
+
+List<CheatsheetRowStruct> updateCheatsheetRowsVisibility(
+  List<CheatsheetRowStruct> cheatsheetRowsList,
+  String? filterText,
+) {
+  if (filterText == null || filterText.isEmpty) {
+    for (var cheatsheetRow in cheatsheetRowsList) {
+      cheatsheetRow.isVisible = true;
+    }
+    return cheatsheetRowsList;
+  }
+
+  for (var cheatsheetRow in cheatsheetRowsList) {
+    cheatsheetRow.isVisible =
+        cheatsheetRow.concept.toLowerCase().contains(filterText.toLowerCase());
+  }
+
+  return cheatsheetRowsList;
+}
+
+List<CheatsheetRowStruct> sortCheatsheetRowsByConcept(
+  List<CheatsheetRowStruct> cheatsheetRowsList,
+  String? filterText,
+) {
+  // Sort the list by the concept field first
+  cheatsheetRowsList.sort((a, b) => a.concept.compareTo(b.concept));
+
+  return cheatsheetRowsList;
+}

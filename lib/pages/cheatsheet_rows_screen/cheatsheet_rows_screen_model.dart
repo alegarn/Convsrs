@@ -36,8 +36,28 @@ class CheatsheetRowsScreenModel
   void updateAllTagsStateAtIndex(int index, Function(TagStruct) updateFn) =>
       allTagsState[index] = updateFn(allTagsState[index]);
 
+  List<CheatsheetRowStruct> cheatsheetRowsList = [];
+  void addToCheatsheetRowsList(CheatsheetRowStruct item) =>
+      cheatsheetRowsList.add(item);
+  void removeFromCheatsheetRowsList(CheatsheetRowStruct item) =>
+      cheatsheetRowsList.remove(item);
+  void removeAtIndexFromCheatsheetRowsList(int index) =>
+      cheatsheetRowsList.removeAt(index);
+  void insertAtIndexInCheatsheetRowsList(int index, CheatsheetRowStruct item) =>
+      cheatsheetRowsList.insert(index, item);
+  void updateCheatsheetRowsListAtIndex(
+          int index, Function(CheatsheetRowStruct) updateFn) =>
+      cheatsheetRowsList[index] = updateFn(cheatsheetRowsList[index]);
+
   ///  State fields for stateful widgets in this page.
 
+  // Stores action output result for [Backend Call - SQLite (Cheatsheet Rows READ concept answer)] action in CheatsheetRowsScreen widget.
+  List<CheatsheetRowsREADConceptAnswerRow>? cheatsheetRowsOutput;
+  // State field(s) for FilterTextField widget.
+  FocusNode? filterTextFieldFocusNode;
+  TextEditingController? filterTextFieldTextController;
+  String? Function(BuildContext, String?)?
+      filterTextFieldTextControllerValidator;
   // State field(s) for CheatsheetRowConceptField widget.
   FocusNode? cheatsheetRowConceptFieldFocusNode;
   TextEditingController? cheatsheetRowConceptFieldTextController;
@@ -71,6 +91,9 @@ class CheatsheetRowsScreenModel
 
   @override
   void dispose() {
+    filterTextFieldFocusNode?.dispose();
+    filterTextFieldTextController?.dispose();
+
     cheatsheetRowConceptFieldFocusNode?.dispose();
     cheatsheetRowConceptFieldTextController?.dispose();
 

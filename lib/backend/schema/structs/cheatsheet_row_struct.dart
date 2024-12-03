@@ -13,12 +13,16 @@ class CheatsheetRowStruct extends BaseStruct {
     String? answer,
     String? conceptAudioUrl,
     String? answerAudioUrl,
+    String? tagIds,
+    bool? isVisible,
   })  : _id = id,
         _cheatsheetId = cheatsheetId,
         _concept = concept,
         _answer = answer,
         _conceptAudioUrl = conceptAudioUrl,
-        _answerAudioUrl = answerAudioUrl;
+        _answerAudioUrl = answerAudioUrl,
+        _tagIds = tagIds,
+        _isVisible = isVisible;
 
   // "id" field.
   int? _id;
@@ -31,38 +35,52 @@ class CheatsheetRowStruct extends BaseStruct {
 
   // "cheatsheetId" field.
   String? _cheatsheetId;
-  String get cheatsheetId => _cheatsheetId ?? '';
+  String get cheatsheetId => _cheatsheetId ?? '0';
   set cheatsheetId(String? val) => _cheatsheetId = val;
 
   bool hasCheatsheetId() => _cheatsheetId != null;
 
   // "concept" field.
   String? _concept;
-  String get concept => _concept ?? '';
+  String get concept => _concept ?? 'concept';
   set concept(String? val) => _concept = val;
 
   bool hasConcept() => _concept != null;
 
   // "answer" field.
   String? _answer;
-  String get answer => _answer ?? '';
+  String get answer => _answer ?? 'answer';
   set answer(String? val) => _answer = val;
 
   bool hasAnswer() => _answer != null;
 
   // "conceptAudioUrl" field.
   String? _conceptAudioUrl;
-  String get conceptAudioUrl => _conceptAudioUrl ?? '';
+  String get conceptAudioUrl => _conceptAudioUrl ?? ' ';
   set conceptAudioUrl(String? val) => _conceptAudioUrl = val;
 
   bool hasConceptAudioUrl() => _conceptAudioUrl != null;
 
   // "answerAudioUrl" field.
   String? _answerAudioUrl;
-  String get answerAudioUrl => _answerAudioUrl ?? '';
+  String get answerAudioUrl => _answerAudioUrl ?? ' ';
   set answerAudioUrl(String? val) => _answerAudioUrl = val;
 
   bool hasAnswerAudioUrl() => _answerAudioUrl != null;
+
+  // "tagIds" field.
+  String? _tagIds;
+  String get tagIds => _tagIds ?? '[1]';
+  set tagIds(String? val) => _tagIds = val;
+
+  bool hasTagIds() => _tagIds != null;
+
+  // "isVisible" field.
+  bool? _isVisible;
+  bool get isVisible => _isVisible ?? true;
+  set isVisible(bool? val) => _isVisible = val;
+
+  bool hasIsVisible() => _isVisible != null;
 
   static CheatsheetRowStruct fromMap(Map<String, dynamic> data) =>
       CheatsheetRowStruct(
@@ -72,6 +90,8 @@ class CheatsheetRowStruct extends BaseStruct {
         answer: data['answer'] as String?,
         conceptAudioUrl: data['conceptAudioUrl'] as String?,
         answerAudioUrl: data['answerAudioUrl'] as String?,
+        tagIds: data['tagIds'] as String?,
+        isVisible: data['isVisible'] as bool?,
       );
 
   static CheatsheetRowStruct? maybeFromMap(dynamic data) => data is Map
@@ -85,6 +105,8 @@ class CheatsheetRowStruct extends BaseStruct {
         'answer': _answer,
         'conceptAudioUrl': _conceptAudioUrl,
         'answerAudioUrl': _answerAudioUrl,
+        'tagIds': _tagIds,
+        'isVisible': _isVisible,
       }.withoutNulls;
 
   @override
@@ -112,6 +134,14 @@ class CheatsheetRowStruct extends BaseStruct {
         'answerAudioUrl': serializeParam(
           _answerAudioUrl,
           ParamType.String,
+        ),
+        'tagIds': serializeParam(
+          _tagIds,
+          ParamType.String,
+        ),
+        'isVisible': serializeParam(
+          _isVisible,
+          ParamType.bool,
         ),
       }.withoutNulls;
 
@@ -147,6 +177,16 @@ class CheatsheetRowStruct extends BaseStruct {
           ParamType.String,
           false,
         ),
+        tagIds: deserializeParam(
+          data['tagIds'],
+          ParamType.String,
+          false,
+        ),
+        isVisible: deserializeParam(
+          data['isVisible'],
+          ParamType.bool,
+          false,
+        ),
       );
 
   @override
@@ -160,12 +200,22 @@ class CheatsheetRowStruct extends BaseStruct {
         concept == other.concept &&
         answer == other.answer &&
         conceptAudioUrl == other.conceptAudioUrl &&
-        answerAudioUrl == other.answerAudioUrl;
+        answerAudioUrl == other.answerAudioUrl &&
+        tagIds == other.tagIds &&
+        isVisible == other.isVisible;
   }
 
   @override
-  int get hashCode => const ListEquality().hash(
-      [id, cheatsheetId, concept, answer, conceptAudioUrl, answerAudioUrl]);
+  int get hashCode => const ListEquality().hash([
+        id,
+        cheatsheetId,
+        concept,
+        answer,
+        conceptAudioUrl,
+        answerAudioUrl,
+        tagIds,
+        isVisible
+      ]);
 }
 
 CheatsheetRowStruct createCheatsheetRowStruct({
@@ -175,6 +225,8 @@ CheatsheetRowStruct createCheatsheetRowStruct({
   String? answer,
   String? conceptAudioUrl,
   String? answerAudioUrl,
+  String? tagIds,
+  bool? isVisible,
 }) =>
     CheatsheetRowStruct(
       id: id,
@@ -183,4 +235,6 @@ CheatsheetRowStruct createCheatsheetRowStruct({
       answer: answer,
       conceptAudioUrl: conceptAudioUrl,
       answerAudioUrl: answerAudioUrl,
+      tagIds: tagIds,
+      isVisible: isVisible,
     );
