@@ -12,6 +12,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -72,26 +73,48 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
       _model.conversationTagsLists = _model.conversationTagsList!
           .toList()
           .cast<ConversationTagsListsStruct>();
-      // totalCardNumber state
-      _model.totalCardNumber = valueOrDefault<int>(
-        _model.flashcardsConvOutput?.length,
-        0,
-      );
-      // Update the timeToValidateWord
-      _model.timeToValidateWord = FFAppState().timeCountToValidateConversation;
       await Future.wait([
         Future(() async {
-          // Set timer
-          _model.timerController.onResetTimer();
+          // totalCardNumber state
+          _model.totalCardNumber = valueOrDefault<int>(
+            _model.flashcardsConvOutput?.length,
+            0,
+          );
+          // Update the timeToValidateWord
+          _model.timeToValidateWord =
+              FFAppState().timeCountToValidateConversation;
+          await Future.wait([
+            Future(() async {
+              // Set timer
+              _model.timerController.onResetTimer();
+            }),
+            Future(() async {
+              // Put to 0 timer
+              _model.totalTimerController.onResetTimer();
+            }),
+          ]);
+          // Conversation Timer starts
+          _model.totalTimerController.onStartTimer();
         }),
         Future(() async {
-          // Put to 0 timer
-          _model.totalTimerController.onResetTimer();
+          // Query cheatsheet rows
+          _model.cheatsheetRowsOutput =
+              await SQLiteManager.instance.cheatsheetRowsREADConceptAnswer(
+            cheatsheetId: widget.cheatsheetId,
+          );
+          // Add cheatsheet rows to state
+          _model.cheatsheetRows = functions
+              .formatCheatsheetRowOutput(
+                  _model.cheatsheetRowsOutput!.toList(), widget.cheatsheetId)
+              .toList()
+              .cast<CheatsheetRowStruct>();
+          safeSetState(() {});
         }),
       ]);
-      // Conversation Timer starts
-      _model.totalTimerController.onStartTimer();
     });
+
+    _model.filterTextFieldTextController ??= TextEditingController();
+    _model.filterTextFieldFocusNode ??= FocusNode();
 
     animationsMap.addAll({
       'pageViewOnPageLoadAnimation': AnimationInfo(
@@ -126,7 +149,7 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
           ),
         ],
       ),
-      'listViewOnActionTriggerAnimation': AnimationInfo(
+      'columnOnActionTriggerAnimation': AnimationInfo(
         trigger: AnimationTrigger.onActionTrigger,
         applyInitialState: true,
         effectsBuilder: () => [
@@ -629,140 +652,277 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                 ),
                                 Stack(
                                   children: [
-                                    FutureBuilder<
-                                        List<
-                                            CheatsheetRowsREADConceptAnswerRow>>(
-                                      future: SQLiteManager.instance
-                                          .cheatsheetRowsREADConceptAnswer(
-                                        cheatsheetId: widget.cheatsheetId,
-                                      ),
-                                      builder: (context, snapshot) {
-                                        // Customize what your widget looks like when it's loading.
-                                        if (!snapshot.hasData) {
-                                          return Center(
+                                    Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          height: 40.0,
+                                          constraints: const BoxConstraints(
+                                            minHeight: 36.0,
+                                            maxHeight: 48.0,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                          ),
+                                          child:
+                                              // - Update cheatshRowsState on change
+                                              // - Function updateCheatshRowsVisibility in each list containers
+                                              // - Requires a list data type (CheatsheetRow) using as a parameter "isVisible"
+                                              // - Requires some column element displaying your list (cheatsheetRowsColumn)
+                                              // - Each sub-element (created from the column) with some conditionnal visibility
+                                              Padding(
+                                            padding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    15.0, 3.0, 15.0, 3.0),
                                             child: SizedBox(
-                                              width: 50.0,
-                                              height: 50.0,
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                        Color>(
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.8,
+                                              child: TextFormField(
+                                                controller: _model
+                                                    .filterTextFieldTextController,
+                                                focusNode: _model
+                                                    .filterTextFieldFocusNode,
+                                                onChanged: (_) =>
+                                                    EasyDebounce.debounce(
+                                                  '_model.filterTextFieldTextController',
+                                                  const Duration(milliseconds: 1000),
+                                                  () async {
+                                                    // CheatsheetRows filtration by name, on isVisible
+                                                    _model.cheatsheetRows = functions
+                                                        .sortCheatsheetRowsByConcept(
+                                                            _model
+                                                                .cheatsheetRows
+                                                                .toList(),
+                                                            _model
+                                                                .filterTextFieldTextController
+                                                                .text)
+                                                        .toList()
+                                                        .cast<
+                                                            CheatsheetRowStruct>();
+                                                    safeSetState(() {});
+                                                  },
                                                 ),
+                                                autofocus: false,
+                                                obscureText: false,
+                                                decoration: InputDecoration(
+                                                  isDense: true,
+                                                  hintText:
+                                                      'Word Filters: type to find your word',
+                                                  hintStyle:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .labelMedium
+                                                          .override(
+                                                            fontFamily:
+                                                                'Readex Pro',
+                                                            fontSize: 24.0,
+                                                            letterSpacing: 0.0,
+                                                            lineHeight: 1.5,
+                                                          ),
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: const BorderSide(
+                                                      color: Color(0x00000000),
+                                                      width: 1.0,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: const BorderSide(
+                                                      color: Color(0x00000000),
+                                                      width: 1.0,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                  ),
+                                                  errorBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .error,
+                                                      width: 1.0,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                  ),
+                                                  focusedErrorBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .error,
+                                                      width: 1.0,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                  ),
+                                                  filled: true,
+                                                  fillColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .secondaryBackground,
+                                                ),
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyMedium
+                                                        .override(
+                                                          fontFamily:
+                                                              'Readex Pro',
+                                                          fontSize: 24.0,
+                                                          letterSpacing: 0.0,
+                                                          lineHeight: 1.5,
+                                                        ),
+                                                textAlign: TextAlign.start,
+                                                cursorColor:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryText,
+                                                validator: _model
+                                                    .filterTextFieldTextControllerValidator
+                                                    .asValidator(context),
                                               ),
                                             ),
-                                          );
-                                        }
-                                        final cheatSheetListViewCheatsheetRowsREADConceptAnswerRowList =
-                                            snapshot.data!;
+                                          ),
+                                        ),
+                                        Builder(
+                                          builder: (context) {
+                                            final cheatsheetRowsColumn =
+                                                _model.cheatsheetRows.toList();
 
-                                        return ListView.builder(
-                                          padding: EdgeInsets.zero,
-                                          scrollDirection: Axis.vertical,
-                                          itemCount:
-                                              cheatSheetListViewCheatsheetRowsREADConceptAnswerRowList
-                                                  .length,
-                                          itemBuilder: (context,
-                                              cheatSheetListViewIndex) {
-                                            final cheatSheetListViewCheatsheetRowsREADConceptAnswerRow =
-                                                cheatSheetListViewCheatsheetRowsREADConceptAnswerRowList[
-                                                    cheatSheetListViewIndex];
-                                            return Container(
-                                              height: MediaQuery.sizeOf(context)
-                                                      .height *
-                                                  0.08,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .accent1,
-                                                  width: 1.0,
-                                                ),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceAround,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Align(
-                                                      alignment:
-                                                          const AlignmentDirectional(
-                                                              0.0, 0.0),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                                    3.0,
-                                                                    0.0,
-                                                                    3.0,
-                                                                    0.0),
-                                                        child: SelectionArea(
-                                                            child: Text(
-                                                          cheatSheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                              .concept,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Readex Pro',
-                                                                fontSize: 18.0,
-                                                                letterSpacing:
-                                                                    0.0,
-                                                              ),
-                                                        )),
-                                                      ),
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: List.generate(
+                                                  cheatsheetRowsColumn.length,
+                                                  (cheatsheetRowsColumnIndex) {
+                                                final cheatsheetRowsColumnItem =
+                                                    cheatsheetRowsColumn[
+                                                        cheatsheetRowsColumnIndex];
+                                                return Container(
+                                                  height:
+                                                      MediaQuery.sizeOf(context)
+                                                              .height *
+                                                          0.08,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .accent1,
+                                                      width: 1.0,
                                                     ),
                                                   ),
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Align(
-                                                      alignment:
-                                                          const AlignmentDirectional(
-                                                              0.0, 0.0),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                                    3.0,
-                                                                    0.0,
-                                                                    3.0,
-                                                                    0.0),
-                                                        child: SelectionArea(
-                                                            child: Text(
-                                                          cheatSheetListViewCheatsheetRowsREADConceptAnswerRow
-                                                              .answer,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Readex Pro',
-                                                                fontSize: 18.0,
-                                                                letterSpacing:
-                                                                    0.0,
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Align(
+                                                          alignment:
+                                                              const AlignmentDirectional(
+                                                                  0.0, 0.0),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsetsDirectional
+                                                                    .fromSTEB(
+                                                                        3.0,
+                                                                        0.0,
+                                                                        3.0,
+                                                                        0.0),
+                                                            child:
+                                                                SelectionArea(
+                                                                    child: Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                cheatsheetRowsColumnItem
+                                                                    .concept,
+                                                                'concept',
                                                               ),
-                                                        )),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Readex Pro',
+                                                                    fontSize:
+                                                                        18.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                  ),
+                                                            )),
+                                                          ),
+                                                        ),
                                                       ),
-                                                    ),
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Align(
+                                                          alignment:
+                                                              const AlignmentDirectional(
+                                                                  0.0, 0.0),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsetsDirectional
+                                                                    .fromSTEB(
+                                                                        3.0,
+                                                                        0.0,
+                                                                        3.0,
+                                                                        0.0),
+                                                            child:
+                                                                SelectionArea(
+                                                                    child: Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                cheatsheetRowsColumnItem
+                                                                    .answer,
+                                                                'description',
+                                                              ),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Readex Pro',
+                                                                    fontSize:
+                                                                        18.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                  ),
+                                                            )),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ].divide(
+                                                        const SizedBox(width: 3.0)),
                                                   ),
-                                                ],
-                                              ),
+                                                );
+                                              }),
+                                            ).animateOnActionTrigger(
+                                              animationsMap[
+                                                  'columnOnActionTriggerAnimation']!,
                                             );
                                           },
-                                        ).animateOnActionTrigger(
-                                          animationsMap[
-                                              'listViewOnActionTriggerAnimation']!,
-                                        );
-                                      },
+                                        ),
+                                      ],
                                     ),
                                     Align(
                                       alignment: const AlignmentDirectional(0.0, 0.0),
@@ -788,24 +948,24 @@ class _ConversationScreenWidgetState extends State<ConversationScreenWidget>
                                                     .isScreenReversedState) {
                                                   // Card face swap
                                                   if (animationsMap[
-                                                          'listViewOnActionTriggerAnimation'] !=
+                                                          'columnOnActionTriggerAnimation'] !=
                                                       null) {
                                                     animationsMap[
-                                                            'listViewOnActionTriggerAnimation']!
+                                                            'columnOnActionTriggerAnimation']!
                                                         .controller
                                                         .forward(from: 0.0);
                                                   }
                                                 } else {
                                                   // Card face swap-back
                                                   if (animationsMap[
-                                                          'listViewOnActionTriggerAnimation'] !=
+                                                          'columnOnActionTriggerAnimation'] !=
                                                       null) {
                                                     animationsMap[
-                                                            'listViewOnActionTriggerAnimation']!
+                                                            'columnOnActionTriggerAnimation']!
                                                         .controller
                                                         .forward(from: 0.0)
                                                         .whenComplete(animationsMap[
-                                                                'listViewOnActionTriggerAnimation']!
+                                                                'columnOnActionTriggerAnimation']!
                                                             .controller
                                                             .reverse);
                                                   }

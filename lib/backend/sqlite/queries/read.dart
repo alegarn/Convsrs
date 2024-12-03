@@ -996,7 +996,8 @@ SELECT
   concept,
   answer,
   conceptAudioUrl,
-  answerAudioUrl
+  answerAudioUrl,
+  tagIds
 FROM cheatsheetRows;
 ''';
   return _readQuery(database, query, (d) => CheatsheetRowsREADAllRow(d));
@@ -1011,6 +1012,7 @@ class CheatsheetRowsREADAllRow extends SqliteRow {
   String get conceptAudioUrl => data['conceptAudioUrl'] as String;
   String get answerAudioUrl => data['answerAudioUrl'] as String;
   int get id => data['id'] as int;
+  String get tagIds => data['tagIds'] as String;
 }
 
 /// END CHEATSHEET ROWS READ ALL
