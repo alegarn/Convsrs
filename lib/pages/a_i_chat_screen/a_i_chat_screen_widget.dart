@@ -1,8 +1,10 @@
+import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'a_i_chat_screen_model.dart';
 export 'a_i_chat_screen_model.dart';
 
@@ -36,6 +38,33 @@ class _AIChatScreenWidgetState extends State<AIChatScreenWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => AIChatScreenModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.apiResultd74 = await OpenAIRetrievalChatContextCall.call(
+        prompt: 'Say hello to the user',
+        model: 'gpt-4o-mini',
+        context: 'You are a polite thing',
+        apiKey: FFAppConstants.OpenAiApiKey,
+      );
+
+      if (!(_model.apiResultd74?.succeeded ?? true)) {
+        await showDialog(
+          context: context,
+          builder: (alertDialogContext) {
+            return AlertDialog(
+              content: const Text('Hey'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(alertDialogContext),
+                  child: const Text('Ok'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
 
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
