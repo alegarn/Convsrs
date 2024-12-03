@@ -1,3 +1,4 @@
+import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/structs/index.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'a_i_chat_screen_widget.dart' show AIChatScreenWidget;
@@ -22,18 +23,22 @@ class AIChatScreenModel extends FlutterFlowModel<AIChatScreenWidget> {
 
   String chatContext = 'exemple context';
 
-  List<String> conversationData = [];
-  void addToConversationData(String item) => conversationData.add(item);
-  void removeFromConversationData(String item) => conversationData.remove(item);
-  void removeAtIndexFromConversationData(int index) =>
-      conversationData.removeAt(index);
-  void insertAtIndexInConversationData(int index, String item) =>
-      conversationData.insert(index, item);
-  void updateConversationDataAtIndex(int index, Function(String) updateFn) =>
-      conversationData[index] = updateFn(conversationData[index]);
+  List<dynamic> conversationHistory = [];
+  void addToConversationHistory(dynamic item) => conversationHistory.add(item);
+  void removeFromConversationHistory(dynamic item) =>
+      conversationHistory.remove(item);
+  void removeAtIndexFromConversationHistory(int index) =>
+      conversationHistory.removeAt(index);
+  void insertAtIndexInConversationHistory(int index, dynamic item) =>
+      conversationHistory.insert(index, item);
+  void updateConversationHistoryAtIndex(
+          int index, Function(dynamic) updateFn) =>
+      conversationHistory[index] = updateFn(conversationHistory[index]);
 
   ///  State fields for stateful widgets in this page.
 
+  // Stores action output result for [Backend Call - API (OpenAI Retrieval Chat Context)] action in AIChatScreen widget.
+  ApiCallResponse? apiResultd74;
   // State field(s) for TextField widget.
   FocusNode? textFieldFocusNode;
   TextEditingController? textController;
