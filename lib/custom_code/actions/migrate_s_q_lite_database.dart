@@ -28,6 +28,24 @@ final List<Migration> _migrations = [
         "ALTER TABLE flashcards ADD COLUMN tagIds TEXT NOT NULL DEFAULT '[1]';");
     await db.execute(
         "UPDATE flashcards SET tagIds = '[1]' WHERE tagIds IS NULL OR tagIds = '';");
+  }),
+
+  Migration(2, (Database db) async {
+    // Perform migration for version 2
+    // Add the tagIds column to cheatsheetRows
+    await db.execute(
+        "ALTER TABLE 'cheatsheetRows' ADD COLUMN 'tagIds' TEXT NOT NULL DEFAULT '[1]';");
+
+    // Update existing rows in cheatsheetRows to set default tagIds
+    await db.execute(
+        "UPDATE 'cheatsheetRows' SET tagIds = '[1]' WHERE tagIds IS NULL OR tagIds = '';");
+
+    // Update the categories for the 'no_tag' entry in the tags table
+    await db.execute(
+        "UPDATE tags SET categories = '[\"flashcard\",\"cheatsheetRow\"]' WHERE name = 'no_tag';");
+
+    // Add an index on the categories column (tag filter for categories with db)
+    await db.execute("CREATE INDEX idx_tags_categories ON tags(categories);");
   })
   // Migration for version 3: Adding a new column to an existing table
   //Migration(3, (Database db) async {
@@ -39,7 +57,7 @@ final List<Migration> _migrations = [
 ];
 
 // Update this constant as your schema evolves
-const expectedVersion = 1;
+const expectedVersion = 2;
 
 Future<void> migrateSQLiteDatabase() async {
   // Obtain the database instance

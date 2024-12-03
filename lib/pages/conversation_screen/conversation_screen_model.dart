@@ -15,19 +15,17 @@ class ConversationScreenModel
 
   int? timeSpoken = 0;
 
-  List<CheatsheetRowsReadAllFromCheatsheetIdRow> cheatsheetRows = [];
-  void addToCheatsheetRows(CheatsheetRowsReadAllFromCheatsheetIdRow item) =>
+  List<CheatsheetRowStruct> cheatsheetRows = [];
+  void addToCheatsheetRows(CheatsheetRowStruct item) =>
       cheatsheetRows.add(item);
-  void removeFromCheatsheetRows(
-          CheatsheetRowsReadAllFromCheatsheetIdRow item) =>
+  void removeFromCheatsheetRows(CheatsheetRowStruct item) =>
       cheatsheetRows.remove(item);
   void removeAtIndexFromCheatsheetRows(int index) =>
       cheatsheetRows.removeAt(index);
-  void insertAtIndexInCheatsheetRows(
-          int index, CheatsheetRowsReadAllFromCheatsheetIdRow item) =>
+  void insertAtIndexInCheatsheetRows(int index, CheatsheetRowStruct item) =>
       cheatsheetRows.insert(index, item);
-  void updateCheatsheetRowsAtIndex(int index,
-          Function(CheatsheetRowsReadAllFromCheatsheetIdRow) updateFn) =>
+  void updateCheatsheetRowsAtIndex(
+          int index, Function(CheatsheetRowStruct) updateFn) =>
       cheatsheetRows[index] = updateFn(cheatsheetRows[index]);
 
   int? conversationDuration = 0;
@@ -72,7 +70,7 @@ class ConversationScreenModel
 
   int bigLoopCounter = 0;
 
-  bool isScreenReversedState = true;
+  bool isScreenReversedState = false;
 
   ///  State fields for stateful widgets in this page.
 
@@ -80,6 +78,8 @@ class ConversationScreenModel
   List<FlashcardsForConversationWithDeckIdRow>? flashcardsConvOutput;
   // Stores action output result for [Custom Action - getConversationTagsLists] action in ConversationScreen widget.
   List<ConversationTagsListsStruct>? conversationTagsList;
+  // Stores action output result for [Backend Call - SQLite (Cheatsheet Rows READ concept answer)] action in ConversationScreen widget.
+  List<CheatsheetRowsREADConceptAnswerRow>? cheatsheetRowsOutput;
   // State field(s) for ConversationPagesViews widget.
   PageController? conversationPagesViewsController;
 
@@ -89,6 +89,11 @@ class ConversationScreenModel
               conversationPagesViewsController!.page != null
           ? conversationPagesViewsController!.page!.round()
           : 0;
+  // State field(s) for FilterTextField widget.
+  FocusNode? filterTextFieldFocusNode;
+  TextEditingController? filterTextFieldTextController;
+  String? Function(BuildContext, String?)?
+      filterTextFieldTextControllerValidator;
   // Model for FlipCardComponent component.
   late FlipCardComponentModel flipCardComponentModel;
   // Stores action output result for [Backend Call - SQLite (conversations READ last conversationID)] action in StopConversationButton widget.
@@ -128,6 +133,9 @@ class ConversationScreenModel
 
   @override
   void dispose() {
+    filterTextFieldFocusNode?.dispose();
+    filterTextFieldTextController?.dispose();
+
     flipCardComponentModel.dispose();
     timerController.dispose();
     totalTimerController.dispose();

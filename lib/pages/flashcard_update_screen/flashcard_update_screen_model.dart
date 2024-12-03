@@ -1,6 +1,7 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
+import '/components/tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
@@ -61,6 +62,8 @@ class FlashcardUpdateScreenModel
 
   String? newTag = 'newTag';
 
+  bool displayTagOptions = false;
+
   ///  State fields for stateful widgets in this page.
 
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in FlashcardUpdateScreen widget.
@@ -89,8 +92,16 @@ class FlashcardUpdateScreenModel
   FocusNode? newTagFieldFocusNode;
   TextEditingController? newTagFieldTextController;
   String? Function(BuildContext, String?)? newTagFieldTextControllerValidator;
-  // Stores action output result for [Backend Call - SQLite (Tags GET all)] action in NewTagField widget.
-  List<TagsGETAllRow>? allTagsNew;
+  // Stores action output result for [Custom Action - verifyIfTagExist] action in NewTagField widget.
+  String? tagExistString;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
+  List<TagsGETAllFromCtgRow>? allTagsNewFalse;
+  // Stores action output result for [Backend Call - SQLite (Tags GET all from ctg)] action in NewTagField widget.
+  List<TagsGETAllFromCtgRow>? allTagsNewUpdate;
+  // Model for TagsList component.
+  late TagsListModel tagsListModel1;
+  // Model for TagsList component.
+  late TagsListModel tagsListModel2;
   // Stores action output result for [Backend Call - SQLite (flashcards SELECT Last id)] action in finishCard widget.
   List<FlashcardsSELECTLastIdRow>? lastFlashcardId;
 
@@ -100,6 +111,8 @@ class FlashcardUpdateScreenModel
         createModel(context, () => InsertAudioFlashcardModel());
     insertAudioFlashcardModel2 =
         createModel(context, () => InsertAudioFlashcardModel());
+    tagsListModel1 = createModel(context, () => TagsListModel());
+    tagsListModel2 = createModel(context, () => TagsListModel());
   }
 
   @override
@@ -117,6 +130,9 @@ class FlashcardUpdateScreenModel
     insertAudioFlashcardModel2.dispose();
     newTagFieldFocusNode?.dispose();
     newTagFieldTextController?.dispose();
+
+    tagsListModel1.dispose();
+    tagsListModel2.dispose();
   }
 
   /// Action blocks.
@@ -124,11 +140,13 @@ class FlashcardUpdateScreenModel
     BuildContext context, {
     String? tagIds,
   }) async {
-    List<TagsGETAllRow>? allTagsParameter;
+    List<TagsGETAllFromCtgRow>? allTagsParameter;
     List<TagStruct>? selectedTagsParameter;
 
     // Get all tags
-    allTagsParameter = await SQLiteManager.instance.tagsGETAll();
+    allTagsParameter = await SQLiteManager.instance.tagsGETAllFromCtg(
+      category: 'flashcard',
+    );
     // Get selected tags from Ids
     selectedTagsParameter = await actions.getSelectedTagsFromTagIds(
       valueOrDefault<String>(

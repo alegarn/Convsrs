@@ -234,21 +234,21 @@ List<FlashcardStruct>? updateCardToReviewListState(
           DateFormat('yyyy-MM-ddTHH:mm:ss').format(row.nextRecallDate);
  */
       FlashcardStruct flashcard = FlashcardStruct(
-        id: row.id,
-        name: row.name,
-        textRecto: row.textRecto,
-        textVerso: row.textVerso,
-        currentRetrievalStep: row.currentRetrievalStep,
-        currentSpeakingStep: row.currentSpeakingStep,
-        toRecall: row.toRecall,
-        currentRecallDate: row.currentRecallDate, //currentRecallDateString,
-        nextRecallDate: row.nextRecallDate, //nextRecallDateString,
-        currentSpeakingDate: row.currentSpeakingDate,
-        nextSpeakingDate: row.nextSpeakingDate,
-        successCount: row.successCount,
-        totalReviewCount: row.totalReviewCount,
-        mentalImageBool: row.mentalImageBool,
-      );
+          id: row.id,
+          name: row.name,
+          textRecto: row.textRecto,
+          textVerso: row.textVerso,
+          currentRetrievalStep: row.currentRetrievalStep,
+          currentSpeakingStep: row.currentSpeakingStep,
+          toRecall: row.toRecall,
+          currentRecallDate: row.currentRecallDate, //currentRecallDateString,
+          nextRecallDate: row.nextRecallDate, //nextRecallDateString,
+          currentSpeakingDate: row.currentSpeakingDate,
+          nextSpeakingDate: row.nextSpeakingDate,
+          successCount: row.successCount,
+          totalReviewCount: row.totalReviewCount,
+          mentalImageBool: row.mentalImageBool,
+          tagIds: row.tagIds);
       flashcardList.add(flashcard);
     }
   }
@@ -683,7 +683,7 @@ String? extractFlashcards(
   return flashcardData.isNotEmpty ? flashcardData.trim() : null;
 }
 
-List<TagStruct> formatNewTags(List<TagsGETAllRow>? allTagsList) {
+List<TagStruct> formatNewTags(List<TagsGETAllFromCtgRow>? allTagsList) {
   // Check if the input list is null or empty
   if (allTagsList == null || allTagsList.isEmpty) {
     // Return a list with a default TagStruct
@@ -833,4 +833,71 @@ String? countTotalCardNumber(
 
   // Return the count as a string
   return flashcardsList.length.toString();
+}
+
+String verifyIfOnlyOneCategoryIsLeft(
+  String categories,
+  String category,
+) {
+  // Remove the square brackets and whitespace, then split by comma
+  String cleanedCategories = categories.replaceAll(RegExp(r'[\[\]\s]'), '');
+
+  // Split the cleaned string by commas to get individual categories
+  List<String> categoryList = cleanedCategories.split(',');
+
+  // Check the length of the category list
+  if (categoryList.length == 1) {
+    return "true"; // Only one category left
+  } else {
+    // cat new string, but no category in it's string
+    String newCategories =
+        [categoryList.map((cat) => '"$cat"').join(',')].toString();
+    return newCategories; // More than one category left
+  }
+}
+
+List<CheatsheetRowStruct> formatCheatsheetRowOutput(
+  List<CheatsheetRowsREADConceptAnswerRow> cheatsheetRowsListOutput,
+  int? cheatsheetId,
+) {
+  return cheatsheetRowsListOutput.map((row) {
+    return CheatsheetRowStruct(
+        id: row?.id,
+        cheatsheetId: cheatsheetId.toString(),
+        concept: row?.concept,
+        answer: row?.answer,
+        tagIds: row?.tagIds,
+        conceptAudioUrl: "",
+        answerAudioUrl: "",
+        isVisible: true);
+  }).toList();
+}
+
+List<CheatsheetRowStruct> updateCheatsheetRowsVisibility(
+  List<CheatsheetRowStruct> cheatsheetRowsList,
+  String? filterText,
+) {
+  if (filterText == null || filterText.isEmpty) {
+    for (var cheatsheetRow in cheatsheetRowsList) {
+      cheatsheetRow.isVisible = true;
+    }
+    return cheatsheetRowsList;
+  }
+
+  for (var cheatsheetRow in cheatsheetRowsList) {
+    cheatsheetRow.isVisible =
+        cheatsheetRow.concept.toLowerCase().contains(filterText.toLowerCase());
+  }
+
+  return cheatsheetRowsList;
+}
+
+List<CheatsheetRowStruct> sortCheatsheetRowsByConcept(
+  List<CheatsheetRowStruct> cheatsheetRowsList,
+  String? filterText,
+) {
+  // Sort the list by the concept field first
+  cheatsheetRowsList.sort((a, b) => a.concept.compareTo(b.concept));
+
+  return cheatsheetRowsList;
 }

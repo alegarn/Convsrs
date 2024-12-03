@@ -1,13 +1,14 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
 import '/components/flashcard_component/insert_audio_flashcard/insert_audio_flashcard_widget.dart';
+import '/components/tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -163,6 +164,7 @@ class _FlashcardUpdateScreenWidgetState
           _model.listSQLite1flashcard?.first.tagIds,
           'ListFlashcard',
         );
+        // Manage tags
         await _model.manageGetTags(
           context,
           tagIds: valueOrDefault<String>(
@@ -235,6 +237,20 @@ class _FlashcardUpdateScreenWidgetState
     _model.newTagFieldFocusNode ??= FocusNode();
 
     animationsMap.addAll({
+      'textOnActionTriggerAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: true,
+        effectsBuilder: () => [
+          VisibilityEffect(duration: 1.ms),
+          FadeEffect(
+            curve: Curves.easeInOut,
+            delay: 0.0.ms,
+            duration: 500.0.ms,
+            begin: 0.0,
+            end: 1.0,
+          ),
+        ],
+      ),
       'iconButtonOnActionTriggerAnimation': AnimationInfo(
         trigger: AnimationTrigger.onActionTrigger,
         applyInitialState: true,
@@ -1124,6 +1140,18 @@ class _FlashcardUpdateScreenWidgetState
                   ),
                 ),
               ),
+
+              // Create / Move your tags saved in a column tagIds (Flashcards)
+              // TagListContainer all needs list:
+              // - Page action: ManageGetTags on page loading
+              // - tagIds col in Flashcards
+              // - selectedTagsState (List <Tag>)
+              // - allTagsState (List <Tag>)
+              // - from a state to other state transfer 2 functions
+              // - Tags *CRU*(D) functions including SQL
+              // - formatNewTags()
+              // - Reset tags states
+              // - Needs a DisplayTagOptions state (and delete tags)
               Flexible(
                 flex: 6,
                 child: Container(
@@ -1131,419 +1159,291 @@ class _FlashcardUpdateScreenWidgetState
                     maxHeight: 350.0,
                   ),
                   decoration: const BoxDecoration(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Flexible(
-                        flex: 2,
-                        child: Align(
-                          alignment: const AlignmentDirectional(0.0, 0.0),
-                          child: Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                5.0, 0.0, 5.0, 0.0),
-                            child: Container(
-                              width: MediaQuery.sizeOf(context).width * 1.0,
-                              height: double.infinity,
-                              constraints: BoxConstraints(
-                                minHeight: 50.0,
-                                maxHeight:
-                                    MediaQuery.sizeOf(context).height * 0.3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                              ),
-                              alignment: const AlignmentDirectional(0.0, 0.0),
-                              child: SizedBox(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(5.0, 0.0, 5.0, 0.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: Align(
+                            alignment: const AlignmentDirectional(0.0, 0.0),
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  5.0, 0.0, 5.0, 0.0),
+                              child: Container(
                                 width: MediaQuery.sizeOf(context).width * 1.0,
-                                child: TextFormField(
-                                  controller: _model.newTagFieldTextController,
-                                  focusNode: _model.newTagFieldFocusNode,
-                                  onFieldSubmitted: (_) async {
-                                    // Create new tag (need to verify existance)
-                                    await SQLiteManager.instance.tagsINSERTNew(
-                                      name: _model.newTag!,
-                                      categoriesList: '[\"flashcard\"]',
-                                    );
-                                    // Update New Tag state
-                                    _model.newTag = _model.newTag;
-                                    // Get new tag for the list
-                                    _model.allTagsNew = await SQLiteManager
-                                        .instance
-                                        .tagsGETAll();
-                                    // Format the tags
-                                    _model.allTags = functions
-                                        .formatNewTags(
-                                            _model.allTagsNew?.toList())
-                                        .toList()
-                                        .cast<TagStruct>();
-                                    // Reset field
-                                    safeSetState(() {
-                                      _model.newTagFieldTextController?.clear();
-                                    });
+                                height: double.infinity,
+                                constraints: BoxConstraints(
+                                  minHeight: 50.0,
+                                  maxHeight:
+                                      MediaQuery.sizeOf(context).height * 0.3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryBackground,
+                                ),
+                                alignment: const AlignmentDirectional(0.0, 0.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.sizeOf(context).width *
+                                          1.0,
+                                      child: TextFormField(
+                                        controller:
+                                            _model.newTagFieldTextController,
+                                        focusNode: _model.newTagFieldFocusNode,
+                                        onFieldSubmitted: (_) async {
+                                          // Does tag Exist ?
+                                          _model.tagExistString =
+                                              await actions.verifyIfTagExist(
+                                            _model
+                                                .newTagFieldTextController.text,
+                                            'flashcard',
+                                          );
+                                          if (_model.tagExistString == 'true') {
+                                            // Shows tag exists
+                                            if (animationsMap[
+                                                    'textOnActionTriggerAnimation'] !=
+                                                null) {
+                                              await animationsMap[
+                                                      'textOnActionTriggerAnimation']!
+                                                  .controller
+                                                  .forward(from: 0.0)
+                                                  .whenComplete(animationsMap[
+                                                          'textOnActionTriggerAnimation']!
+                                                      .controller
+                                                      .reverse);
+                                            }
+                                          } else if (_model.tagExistString ==
+                                              'false') {
+                                            // Create new tag (need to verify existance)
+                                            await SQLiteManager.instance
+                                                .tagsINSERTNew(
+                                              name: valueOrDefault<String>(
+                                                _model.newTagFieldTextController
+                                                    .text,
+                                                'newTagField INSERT default',
+                                              ),
+                                              categoriesList: '[\"flashcard\"]',
+                                            );
+                                            // Get new tag for the list
+                                            _model.allTagsNewFalse =
+                                                await SQLiteManager.instance
+                                                    .tagsGETAllFromCtg(
+                                              category: 'flashcard',
+                                            );
+                                            // Format the tags
+                                            _model.allTags = functions
+                                                .formatNewTags(_model
+                                                    .allTagsNewFalse
+                                                    ?.toList())
+                                                .toList()
+                                                .cast<TagStruct>();
+                                            // Reset field
+                                            safeSetState(() {
+                                              _model.newTagFieldTextController
+                                                  ?.clear();
+                                            });
+                                          } else {
+                                            // Update tag with new category
+                                            await SQLiteManager.instance
+                                                .tagsUPDATEAddCategoryIf(
+                                              newTagName:
+                                                  valueOrDefault<String>(
+                                                _model.newTagFieldTextController
+                                                    .text,
+                                                'newTagField UPDATE default',
+                                              ),
+                                              category: 'flashcard',
+                                            );
+                                            // Get new tag for the list
+                                            _model.allTagsNewUpdate =
+                                                await SQLiteManager.instance
+                                                    .tagsGETAllFromCtg(
+                                              category: 'flashcard',
+                                            );
+                                            // Format the tags
+                                            _model.allTags = functions
+                                                .formatNewTags(_model
+                                                    .allTagsNewUpdate
+                                                    ?.toList())
+                                                .toList()
+                                                .cast<TagStruct>();
+                                            // Reset field
+                                            safeSetState(() {
+                                              _model.newTagFieldTextController
+                                                  ?.clear();
+                                            });
+                                          }
 
-                                    safeSetState(() {});
-                                  },
-                                  autofocus: false,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    isDense: true,
-                                    labelText: 'New tag',
-                                    labelStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          fontSize: 14.0,
-                                          letterSpacing: 0.0,
+                                          safeSetState(() {});
+                                        },
+                                        autofocus: false,
+                                        obscureText: false,
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          labelText: 'New tag',
+                                          labelStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .labelMedium
+                                                  .override(
+                                                    fontFamily: 'Readex Pro',
+                                                    fontSize: 14.0,
+                                                    letterSpacing: 0.0,
+                                                  ),
+                                          alignLabelWithHint: false,
+                                          hintText: 'Enter your new Tag',
+                                          hintStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .labelMedium
+                                                  .override(
+                                                    fontFamily: 'Readex Pro',
+                                                    fontSize: 18.0,
+                                                    letterSpacing: 0.0,
+                                                    lineHeight: 2.0,
+                                                  ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                              color: Color(0x00000000),
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                              color: Color(0x00000000),
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          errorBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              width: 1.0,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          filled: true,
+                                          fillColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .secondaryBackground,
                                         ),
-                                    alignLabelWithHint: false,
-                                    hintText: 'Enter your new Tag',
-                                    hintStyle: FlutterFlowTheme.of(context)
-                                        .labelMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          fontSize: 18.0,
-                                          letterSpacing: 0.0,
-                                          lineHeight: 2.0,
-                                        ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Color(0x00000000),
-                                        width: 1.0,
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              fontSize: 18.0,
+                                              letterSpacing: 0.0,
+                                            ),
+                                        cursorColor:
+                                            FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                        validator: _model
+                                            .newTagFieldTextControllerValidator
+                                            .asValidator(context),
                                       ),
-                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Color(0x00000000),
-                                        width: 1.0,
+                                    Align(
+                                      alignment:
+                                          const AlignmentDirectional(-1.0, 0.0),
+                                      child: Text(
+                                        'Tag already exists',
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Readex Pro',
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .error,
+                                              fontSize: 18.0,
+                                              letterSpacing: 0.0,
+                                            ),
+                                      ).animateOnActionTrigger(
+                                        animationsMap[
+                                            'textOnActionTriggerAnimation']!,
                                       ),
-                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 1.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            FlutterFlowTheme.of(context).error,
-                                        width: 1.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    filled: true,
-                                    fillColor: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                  ),
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Readex Pro',
-                                        fontSize: 18.0,
-                                        letterSpacing: 0.0,
-                                      ),
-                                  cursorColor:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  validator: _model
-                                      .newTagFieldTextControllerValidator
-                                      .asValidator(context),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Flexible(
-                        flex: 3,
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              5.0, 0.0, 5.0, 0.0),
-                          child: Container(
-                            decoration: const BoxDecoration(),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: AutoSizeText(
-                                    'Selected Tags',
-                                    style: FlutterFlowTheme.of(context)
-                                        .titleMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          letterSpacing: 0.0,
-                                        ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 2,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 1.0,
-                                    height:
-                                        MediaQuery.sizeOf(context).height * 0.9,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                    ),
-                                    child: Builder(
-                                      builder: (context) {
-                                        final selectedTagsItemsRow =
-                                            _model.selectedTags.toList();
-
-                                        return SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: List.generate(
-                                                selectedTagsItemsRow.length,
-                                                (selectedTagsItemsRowIndex) {
-                                              final selectedTagsItemsRowItem =
-                                                  selectedTagsItemsRow[
-                                                      selectedTagsItemsRowIndex];
-                                              return InkWell(
-                                                splashColor: Colors.transparent,
-                                                focusColor: Colors.transparent,
-                                                hoverColor: Colors.transparent,
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onTap: () async {
-                                                  if (!_model.allTags.contains(
-                                                      selectedTagsItemsRowItem)) {
-                                                    // Add to allTags
-                                                    _model.addToAllTags(
-                                                        selectedTagsItemsRowItem);
-                                                  }
-                                                  // Remove from selectedTags
-                                                  _model.removeFromSelectedTags(
-                                                      selectedTagsItemsRowItem);
-                                                  safeSetState(() {});
-                                                },
-                                                child: Container(
-                                                  height: 32.0,
-                                                  constraints: const BoxConstraints(
-                                                    minWidth: 48.0,
-                                                    minHeight: 48.0,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .accent1,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                    border: Border.all(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .primary,
-                                                    ),
-                                                  ),
-                                                  child: Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            0.0, 0.0),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  8.0,
-                                                                  0.0,
-                                                                  8.0,
-                                                                  0.0),
-                                                      child: Text(
-                                                        valueOrDefault<String>(
-                                                          selectedTagsItemsRowItem
-                                                              .name,
-                                                          'no_tag',
-                                                        ),
-                                                        style:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }).divide(const SizedBox(width: 3.0)),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
+                        Flexible(
+                          flex: 3,
+                          child: wrapWithModel(
+                            model: _model.tagsListModel1,
+                            updateCallback: () => safeSetState(() {}),
+                            child: TagsListWidget(
+                              displayedListTagsState: _model.selectedTags,
+                              otherListTagsState: _model.allTags,
+                              category: 'flashcard',
+                              selectedTagType: true,
+                              tagTransfert: (tagItem) async {
+                                if (!_model.allTags.contains(tagItem)) {
+                                  // Add to allTags
+                                  _model.addToAllTags(tagItem);
+                                }
+                                // Remove from selectedTags
+                                _model.removeFromSelectedTags(tagItem);
+                                safeSetState(() {});
+                              },
+                              removeTagFromState: (tagItem) async {
+                                // Remove tag from selectedTags
+                                _model.removeFromSelectedTags(tagItem);
+                                safeSetState(() {});
+                              },
                             ),
                           ),
                         ),
-                      ),
-                      Flexible(
-                        flex: 3,
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              5.0, 0.0, 5.0, 0.0),
-                          child: Container(
-                            decoration: const BoxDecoration(),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: AutoSizeText(
-                                    'All Tags',
-                                    style: FlutterFlowTheme.of(context)
-                                        .titleMedium
-                                        .override(
-                                          fontFamily: 'Readex Pro',
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryText,
-                                          letterSpacing: 0.0,
-                                        ),
-                                  ),
-                                ),
-                                Flexible(
-                                  flex: 2,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.sizeOf(context).width * 1.0,
-                                    height:
-                                        MediaQuery.sizeOf(context).height * 0.9,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Builder(
-                                        builder: (context) {
-                                          final allTagsItemList =
-                                              _model.allTags.toList();
-
-                                          return SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Flex(
-                                              direction: Axis.horizontal,
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: List.generate(
-                                                  allTagsItemList.length,
-                                                  (allTagsItemListIndex) {
-                                                final allTagsItemListItem =
-                                                    allTagsItemList[
-                                                        allTagsItemListIndex];
-                                                return Padding(
-                                                  padding: const EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 3.0),
-                                                  child: InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    focusColor:
-                                                        Colors.transparent,
-                                                    hoverColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () async {
-                                                      if (!_model.selectedTags
-                                                          .contains(
-                                                              allTagsItemListItem)) {
-                                                        // Put in selectedTags
-                                                        _model.addToSelectedTags(
-                                                            allTagsItemListItem);
-                                                      }
-                                                      // Remove from allTags
-                                                      _model.removeFromAllTags(
-                                                          allTagsItemListItem);
-                                                      safeSetState(() {});
-                                                    },
-                                                    child: Container(
-                                                      height: 32.0,
-                                                      constraints:
-                                                          const BoxConstraints(
-                                                        minWidth: 48.0,
-                                                        minHeight: 48.0,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .accent1,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                        border: Border.all(
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .primary,
-                                                        ),
-                                                      ),
-                                                      child: Align(
-                                                        alignment:
-                                                            const AlignmentDirectional(
-                                                                0.0, 0.0),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      8.0,
-                                                                      0.0,
-                                                                      8.0,
-                                                                      0.0),
-                                                          child: Text(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              allTagsItemListItem
-                                                                  .name,
-                                                              'no_tag',
-                                                            ),
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Readex Pro',
-                                                                  letterSpacing:
-                                                                      0.0,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }).divide(true
-                                                  ? const SizedBox(width: 3.0)
-                                                  : const SizedBox(height: 3.0)),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                        Flexible(
+                          flex: 3,
+                          child: wrapWithModel(
+                            model: _model.tagsListModel2,
+                            updateCallback: () => safeSetState(() {}),
+                            child: TagsListWidget(
+                              displayedListTagsState: _model.allTags,
+                              otherListTagsState: _model.selectedTags,
+                              category: 'flashcard',
+                              selectedTagType: false,
+                              tagTransfert: (tagItem) async {
+                                if (!_model.selectedTags.contains(tagItem)) {
+                                  // Put in selectedTags
+                                  _model.addToSelectedTags(tagItem);
+                                }
+                                // Remove from allTags
+                                _model.removeFromAllTags(tagItem);
+                                safeSetState(() {});
+                              },
+                              removeTagFromState: (tagItem) async {
+                                // Remove tag from allTags
+                                _model.removeFromAllTags(tagItem);
+                                safeSetState(() {});
+                              },
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

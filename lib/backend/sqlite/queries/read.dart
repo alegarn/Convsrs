@@ -333,7 +333,7 @@ Future<List<CheatsheetRowsREADConceptAnswerRow>>
   int? cheatsheetId,
 }) {
   final query = '''
-SELECT id, concept, answer 
+SELECT id, concept, answer, tagIds
 FROM cheatsheetRows 
 WHERE cheatsheetId = $cheatsheetId;
 ''';
@@ -347,6 +347,7 @@ class CheatsheetRowsREADConceptAnswerRow extends SqliteRow {
   int get id => data['id'] as int;
   String get concept => data['concept'] as String;
   String get answer => data['answer'] as String;
+  String get tagIds => data['tagIds'] as String;
 }
 
 /// END CHEATSHEET ROWS READ CONCEPT ANSWER
@@ -995,7 +996,8 @@ SELECT
   concept,
   answer,
   conceptAudioUrl,
-  answerAudioUrl
+  answerAudioUrl,
+  tagIds
 FROM cheatsheetRows;
 ''';
   return _readQuery(database, query, (d) => CheatsheetRowsREADAllRow(d));
@@ -1010,6 +1012,7 @@ class CheatsheetRowsREADAllRow extends SqliteRow {
   String get conceptAudioUrl => data['conceptAudioUrl'] as String;
   String get answerAudioUrl => data['answerAudioUrl'] as String;
   int get id => data['id'] as int;
+  String get tagIds => data['tagIds'] as String;
 }
 
 /// END CHEATSHEET ROWS READ ALL
@@ -1178,21 +1181,45 @@ class FlashcardsREADLastIdRow extends SqliteRow {
 
 /// END FLASHCARDS READ LAST ID
 
-/// BEGIN TAGS GET ALL
-Future<List<TagsGETAllRow>> performTagsGETAll(
-  Database database,
-) {
-  const query = '''
-SELECT id, name FROM tags;
+/// BEGIN TAGS GET ALL FROM CTG
+Future<List<TagsGETAllFromCtgRow>> performTagsGETAllFromCtg(
+  Database database, {
+  String? category,
+}) {
+  final query = '''
+SELECT id, name 
+FROM tags
+WHERE categories LIKE '%$category%';
 ''';
-  return _readQuery(database, query, (d) => TagsGETAllRow(d));
+  return _readQuery(database, query, (d) => TagsGETAllFromCtgRow(d));
 }
 
-class TagsGETAllRow extends SqliteRow {
-  TagsGETAllRow(super.data);
+class TagsGETAllFromCtgRow extends SqliteRow {
+  TagsGETAllFromCtgRow(super.data);
 
   int? get id => data['id'] as int?;
   String? get name => data['name'] as String?;
 }
 
-/// END TAGS GET ALL
+/// END TAGS GET ALL FROM CTG
+
+/// BEGIN TAGS GET CTGS BY ID
+Future<List<TagsGETCtgsByIdRow>> performTagsGETCtgsById(
+  Database database, {
+  int? id,
+}) {
+  final query = '''
+SELECT categories
+FROM tags
+WHERE id = $id;
+''';
+  return _readQuery(database, query, (d) => TagsGETCtgsByIdRow(d));
+}
+
+class TagsGETCtgsByIdRow extends SqliteRow {
+  TagsGETCtgsByIdRow(super.data);
+
+  String get categories => data['categories'] as String;
+}
+
+/// END TAGS GET CTGS BY ID

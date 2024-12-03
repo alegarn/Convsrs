@@ -355,8 +355,20 @@ class SQLiteManager {
         _database,
       );
 
-  Future<List<TagsGETAllRow>> tagsGETAll() => performTagsGETAll(
+  Future<List<TagsGETAllFromCtgRow>> tagsGETAllFromCtg({
+    String? category,
+  }) =>
+      performTagsGETAllFromCtg(
         _database,
+        category: category,
+      );
+
+  Future<List<TagsGETCtgsByIdRow>> tagsGETCtgsById({
+    int? id,
+  }) =>
+      performTagsGETCtgsById(
+        _database,
+        id: id,
       );
 
   /// END READ QUERY CALLS
@@ -749,6 +761,7 @@ class SQLiteManager {
     String? conceptAudioUrl,
     String? answerAudioUrl,
     int? cheatsheetId,
+    String? tagIds,
   }) =>
       performCheatsheetRowCREATE(
         _database,
@@ -757,6 +770,7 @@ class SQLiteManager {
         conceptAudioUrl: conceptAudioUrl,
         answerAudioUrl: answerAudioUrl,
         cheatsheetId: cheatsheetId,
+        tagIds: tagIds,
       );
 
   Future cheatsheetRowsUPDATERow({
@@ -766,6 +780,7 @@ class SQLiteManager {
     String? conceptAudioUrl,
     String? answerAudioUrl,
     int? rowId,
+    String? tagIds,
   }) =>
       performCheatsheetRowsUPDATERow(
         _database,
@@ -775,6 +790,7 @@ class SQLiteManager {
         conceptAudioUrl: conceptAudioUrl,
         answerAudioUrl: answerAudioUrl,
         rowId: rowId,
+        tagIds: tagIds,
       );
 
   Future cheatsheetRowsDELETEId({
@@ -887,6 +903,42 @@ class SQLiteManager {
         _database,
         name: name,
         categoriesList: categoriesList,
+      );
+
+  Future tagsUPDATEAddCategoryIf({
+    String? newTagName,
+    String? category,
+  }) =>
+      performTagsUPDATEAddCategoryIf(
+        _database,
+        newTagName: newTagName,
+        category: category,
+      );
+
+  Future tagsDELETEById({
+    int? id,
+  }) =>
+      performTagsDELETEById(
+        _database,
+        id: id,
+      );
+
+  Future tagsUPDATERemoveCategory({
+    String? category,
+    int? id,
+  }) =>
+      performTagsUPDATERemoveCategory(
+        _database,
+        category: category,
+        id: id,
+      );
+
+  Future flashcardsUPDATETagIdsInAllFlashcards({
+    String? tagId,
+  }) =>
+      performFlashcardsUPDATETagIdsInAllFlashcards(
+        _database,
+        tagId: tagId,
       );
 
   /// END UPDATE QUERY CALLS

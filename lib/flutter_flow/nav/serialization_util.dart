@@ -331,8 +331,10 @@ dynamic deserializeParam<T>(
             return ConversationsREADLastConversationIDRow(data);
           case FlashcardsREADLastIdRow:
             return FlashcardsREADLastIdRow(data);
-          case TagsGETAllRow:
-            return TagsGETAllRow(data);
+          case TagsGETAllFromCtgRow:
+            return TagsGETAllFromCtgRow(data);
+          case TagsGETCtgsByIdRow:
+            return TagsGETCtgsByIdRow(data);
           default:
             return null;
         }

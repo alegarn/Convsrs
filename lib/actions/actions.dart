@@ -1,12 +1,14 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
 
 Future newTagInsert(
   BuildContext context, {
   String? name,
 }) async {
-  List<TagsGETAllRow>? allTagsNew;
+  List<TagsGETAllFromCtgRow>? allTagsNew;
 
   // Create new tag (need to verify existance)
   await SQLiteManager.instance.tagsINSERTNew(
@@ -14,7 +16,9 @@ Future newTagInsert(
     categoriesList: '[\"flashcard\"]',
   );
   // Get new tag for the list
-  allTagsNew = await SQLiteManager.instance.tagsGETAll();
+  allTagsNew = await SQLiteManager.instance.tagsGETAllFromCtg(
+    category: 'flashcard',
+  );
 }
 
 Future moveSelectedTagToAllTags(
@@ -34,4 +38,66 @@ Future moveTagToSelectedTags(
   required TagStruct? tagItem,
 }) async {
   if (!selectedTags!.contains(tagItem)) {}
+}
+
+Future<bool> deleteOrUpdateTagInDatabase(
+  BuildContext context, {
+  required String? category,
+  required TagStruct? tagItem,
+}) async {
+  List<TagsGETCtgsByIdRow>? tagGetOutput;
+
+  // Get Tag
+  tagGetOutput = await SQLiteManager.instance.tagsGETCtgsById(
+    id: valueOrDefault<int>(
+      tagItem?.id,
+      1,
+    ),
+  );
+  if (tagItem?.name == 'no_tag') {
+    // Alert
+    await showDialog(
+      context: context,
+      builder: (alertDialogContext) {
+        return AlertDialog(
+          title: const Text('No_Tag Deletion'),
+          content: const Text('You canno\'t delete it, no_tag is a default '),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(alertDialogContext),
+              child: const Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+    return false;
+  } else {
+    if (functions.verifyIfOnlyOneCategoryIsLeft(
+            valueOrDefault<String>(
+              tagGetOutput.first.categories,
+              '[]',
+            ),
+            category!) ==
+        'true') {
+      // Delete selected tag
+      await SQLiteManager.instance.tagsDELETEById(
+        id: valueOrDefault<int>(
+          tagItem?.id,
+          1,
+        ),
+      );
+    } else {
+      // Modify Tag category
+      await SQLiteManager.instance.tagsUPDATERemoveCategory(
+        id: valueOrDefault<int>(
+          tagItem?.id,
+          1,
+        ),
+        category: category,
+      );
+    }
+
+    return true;
+  }
 }

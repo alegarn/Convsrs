@@ -22,8 +22,8 @@ export '/pages/settings_screen/settings_screen_widget.dart'
     show SettingsScreenWidget;
 export '/pages/cheatsheets_screen/cheatsheets_screen_widget.dart'
     show CheatsheetsScreenWidget;
-export '/pages/cheatsheet_screen/cheatsheet_screen_widget.dart'
-    show CheatsheetScreenWidget;
+export '/pages/cheatsheet_rows_screen/cheatsheet_rows_screen_widget.dart'
+    show CheatsheetRowsScreenWidget;
 export '/pages/stats_screen/stats_screen_widget.dart' show StatsScreenWidget;
 export '/pages/conversation_settings_screen/conversation_settings_screen_widget.dart'
     show ConversationSettingsScreenWidget;
@@ -37,3 +37,5 @@ export '/pages/extract_data_screen/extract_data_screen_widget.dart'
     show ExtractDataScreenWidget;
 export '/pages/a_i_chat_screen/a_i_chat_screen_widget.dart'
     show AIChatScreenWidget;
+export '/pages/cheatsheet_rows_update_screen/cheatsheet_rows_update_screen_widget.dart'
+    show CheatsheetRowsUpdateScreenWidget;

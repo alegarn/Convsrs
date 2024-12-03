@@ -557,15 +557,17 @@ Future performCheatsheetRowCREATE(
   String? conceptAudioUrl,
   String? answerAudioUrl,
   int? cheatsheetId,
+  String? tagIds,
 }) {
   final query = '''
-INSERT INTO cheatsheetRows ( cheatsheetId,  concept, answer, conceptAudioUrl, answerAudioUrl) 
+INSERT INTO cheatsheetRows ( cheatsheetId,  concept, answer, conceptAudioUrl, answerAudioUrl,tagIds) 
 VALUES (
   $cheatsheetId,
   '$concept', 
   '$answer', 
   '$conceptAudioUrl', 
-  '$answerAudioUrl'
+  '$answerAudioUrl',
+  '$tagIds'
 );
 ''';
   return database.rawQuery(query);
@@ -582,16 +584,18 @@ Future performCheatsheetRowsUPDATERow(
   String? conceptAudioUrl,
   String? answerAudioUrl,
   int? rowId,
+  String? tagIds,
 }) {
   final query = '''
 UPDATE cheatsheetRows
 SET 
-  "cheatsheetId" = $cheatsheetId,
-  "concept" = CASE WHEN $concept IS NOT NULL THEN '$concept' ELSE "concept" END,
-  "answer" = CASE WHEN $answer IS NOT NULL THEN '$answer' ELSE "answer" END,
-  "conceptAudioUrl" = CASE WHEN $conceptAudioUrl IS NOT NULL THEN '$conceptAudioUrl' ELSE "conceptAudioUrl" END,
-  "answerAudioUrl" = CASE WHEN $answerAudioUrl IS NOT NULL THEN '$answerAudioUrl' ELSE "answerAudioUrl" END
-WHERE id = $rowId;
+  "concept" = COALESCE('$concept', concept),
+  "answer" = COALESCE('$answer', answer),
+  "conceptAudioUrl" = COALESCE('$conceptAudioUrl', conceptAudioUrl),
+  "answerAudioUrl" = COALESCE('$answerAudioUrl', answerAudioUrl),
+  tagIds = COALESCE('$tagIds', tagIds)
+WHERE 
+  cheatsheetId = $cheatsheetId AND id = $rowId;
 ''';
   return database.rawQuery(query);
 }
@@ -799,3 +803,82 @@ VALUES
 }
 
 /// END TAGS INSERT NEW
+
+/// BEGIN TAGS UPDATE ADD CATEGORY IF
+Future performTagsUPDATEAddCategoryIf(
+  Database database, {
+  String? newTagName,
+  String? category,
+}) {
+  final query = '''
+UPDATE tags
+SET categories = REPLACE(categories, ']', ',\"$category\"]')
+WHERE name = '$newTagName' AND categories NOT LIKE '%$category%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS UPDATE ADD CATEGORY IF
+
+/// BEGIN TAGS DELETE BY ID
+Future performTagsDELETEById(
+  Database database, {
+  int? id,
+}) {
+  final query = '''
+DELETE FROM tags
+WHERE id = $id;
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS DELETE BY ID
+
+/// BEGIN TAGS UPDATE REMOVE CATEGORY
+Future performTagsUPDATERemoveCategory(
+  Database database, {
+  String? category,
+  int? id,
+}) {
+  final query = '''
+UPDATE tags
+SET categories = TRIM(
+    REPLACE(
+        REPLACE(
+            REPLACE(
+                REPLACE(
+                    REPLACE(categories, ', ' || '"$category"', ''),  -- Remove the category with preceding comma
+                    '"$category"', ''),  -- Remove the category without preceding comma
+                ',,', ','),  -- Replace double commas with a single comma
+            '[,', '['),  -- Remove a comma at the start of the list
+        ',]', ']')  -- Remove a comma at the end of the list
+    )
+)
+WHERE id = $id 
+AND categories LIKE '%"$category"%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END TAGS UPDATE REMOVE CATEGORY
+
+/// BEGIN FLASHCARDS UPDATE TAGIDS IN ALL FLASHCARDS
+Future performFlashcardsUPDATETagIdsInAllFlashcards(
+  Database database, {
+  String? tagId,
+}) {
+  final query = '''
+UPDATE flashcards
+SET tagIds = TRIM(REPLACE(REPLACE(REPLACE(tagIds, 
+                   '[' || '$tagId' || ']', '[]'), 
+                   ',' || '$tagId' || ',', ','), 
+                   ',' || '$tagId', ''))
+WHERE tagIds LIKE '%[' || '$tagId' || ']%' 
+   OR tagIds LIKE '%,' || '$tagId' || ']%' 
+   OR tagIds LIKE '%[' || '$tagId' || ',%' 
+   OR tagIds LIKE '%,' || '$tagId' || ',%';
+''';
+  return database.rawQuery(query);
+}
+
+/// END FLASHCARDS UPDATE TAGIDS IN ALL FLASHCARDS

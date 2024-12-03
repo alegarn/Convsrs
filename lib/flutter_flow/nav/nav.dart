@@ -294,9 +294,9 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           ),
         ),
         FFRoute(
-          name: 'CheatsheetScreen',
-          path: '/cheatsheetScreen',
-          builder: (context, params) => CheatsheetScreenWidget(
+          name: 'CheatsheetRowsScreen',
+          path: '/cheatsheetRowsScreen',
+          builder: (context, params) => CheatsheetRowsScreenWidget(
             cheatsheetName: params.getParam(
               'cheatsheetName',
               ParamType.String,
@@ -384,6 +384,32 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               ParamType.DataStruct,
               isList: false,
               structBuilder: ConversationsFlashcardStruct.fromSerializableMap,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: 'CheatsheetRowsUpdateScreen',
+          path: '/cheatsheetRowsUpdateScreen',
+          builder: (context, params) => CheatsheetRowsUpdateScreenWidget(
+            concept: params.getParam(
+              'concept',
+              ParamType.String,
+            ),
+            description: params.getParam(
+              'description',
+              ParamType.String,
+            ),
+            tagIds: params.getParam(
+              'tagIds',
+              ParamType.String,
+            ),
+            cheatsheetId: params.getParam(
+              'cheatsheetId',
+              ParamType.int,
+            ),
+            id: params.getParam(
+              'id',
+              ParamType.int,
             ),
           ),
         )
