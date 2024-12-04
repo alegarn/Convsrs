@@ -371,6 +371,11 @@ class SQLiteManager {
         id: id,
       );
 
+  Future<List<CheatsheetRowsGETLastRow>> cheatsheetRowsGETLast() =>
+      performCheatsheetRowsGETLast(
+        _database,
+      );
+
   /// END READ QUERY CALLS
 
   /// START UPDATE QUERY CALLS
