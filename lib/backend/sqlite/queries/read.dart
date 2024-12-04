@@ -1223,3 +1223,29 @@ class TagsGETCtgsByIdRow extends SqliteRow {
 }
 
 /// END TAGS GET CTGS BY ID
+
+/// BEGIN CHEATSHEETROWS GET LAST
+Future<List<CheatsheetRowsGETLastRow>> performCheatsheetRowsGETLast(
+  Database database,
+) {
+  const query = '''
+select *
+from cheatsheetRows
+ORDER BY id DESC LIMIT 1;
+''';
+  return _readQuery(database, query, (d) => CheatsheetRowsGETLastRow(d));
+}
+
+class CheatsheetRowsGETLastRow extends SqliteRow {
+  CheatsheetRowsGETLastRow(super.data);
+
+  int get id => data['id'] as int;
+  int get cheatsheetId => data['cheatsheetId'] as int;
+  String get concept => data['concept'] as String;
+  String get answer => data['answer'] as String;
+  String get conceptAudioUrl => data['conceptAudioUrl'] as String;
+  String get answerAudioUrl => data['answerAudioUrl'] as String;
+  String get tagIds => data['tagIds'] as String;
+}
+
+/// END CHEATSHEETROWS GET LAST

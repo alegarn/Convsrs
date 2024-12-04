@@ -103,6 +103,8 @@ class CheatsheetRowsScreenModel
   late TagsListModel selectedTagsListModel;
   // Model for AllTagsList.
   late TagsListModel allTagsListModel;
+  // Stores action output result for [Backend Call - SQLite (cheatsheetRows GET last)] action in CreateRowButton widget.
+  List<CheatsheetRowsGETLastRow>? lastCheatsheetRow;
   // Stores action output result for [Backend Call - SQLite (flashcards READ last id)] action in IconButton widget.
   List<FlashcardsREADLastIdRow>? lastFlashcardOutput;
 
