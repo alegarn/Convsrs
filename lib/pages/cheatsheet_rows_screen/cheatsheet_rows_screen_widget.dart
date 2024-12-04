@@ -1249,8 +1249,48 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                       ..reset()
                                       ..repeat();
                                   }
+                                  // Get last cheatsheet Row
+                                  _model.lastCheatsheetRow = await SQLiteManager
+                                      .instance
+                                      .cheatsheetRowsGETLast();
                                   // End creating UI
                                   _model.isCreatingRow = !_model.isCreatingRow;
+                                  _model.addToCheatsheetRowsList(
+                                      CheatsheetRowStruct(
+                                    id: valueOrDefault<int>(
+                                      _model.lastCheatsheetRow?.first.id,
+                                      1,
+                                    ),
+                                    cheatsheetId: valueOrDefault<String>(
+                                      _model.lastCheatsheetRow?.first
+                                          .cheatsheetId
+                                          .toString(),
+                                      '1',
+                                    ),
+                                    concept: valueOrDefault<String>(
+                                      _model.lastCheatsheetRow?.first.concept,
+                                      'concept',
+                                    ),
+                                    answer: valueOrDefault<String>(
+                                      _model.lastCheatsheetRow?.first.answer,
+                                      'answer',
+                                    ),
+                                    conceptAudioUrl: valueOrDefault<String>(
+                                      _model.lastCheatsheetRow?.first
+                                          .conceptAudioUrl,
+                                      'none',
+                                    ),
+                                    answerAudioUrl: valueOrDefault<String>(
+                                      _model.lastCheatsheetRow?.first
+                                          .answerAudioUrl,
+                                      'none',
+                                    ),
+                                    tagIds: valueOrDefault<String>(
+                                      _model.lastCheatsheetRow?.first.tagIds,
+                                      '[1]',
+                                    ),
+                                    isVisible: true,
+                                  ));
                                   safeSetState(() {});
                                   // Stop animation
                                   if (animationsMap[
@@ -1261,6 +1301,8 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                         .controller
                                         .stop();
                                   }
+
+                                  safeSetState(() {});
                                 },
                                 text: 'Validate',
                                 options: FFButtonOptions(
