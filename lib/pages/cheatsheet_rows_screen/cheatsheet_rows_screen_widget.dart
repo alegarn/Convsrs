@@ -1,6 +1,7 @@
+import '/auth/supabase_auth/auth_util.dart';
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
-import '/components/tags_list_widget.dart';
+import '/components/ui/tags_list/tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
@@ -13,6 +14,7 @@ import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'cheatsheet_rows_screen_model.dart';
 export 'cheatsheet_rows_screen_model.dart';
 
@@ -21,13 +23,10 @@ class CheatsheetRowsScreenWidget extends StatefulWidget {
     super.key,
     this.cheatsheetName,
     int? cheatsheetId,
-    int? deckId,
-  })  : cheatsheetId = cheatsheetId ?? 1,
-        deckId = deckId ?? 0;
+  }) : cheatsheetId = cheatsheetId ?? 1;
 
   final String? cheatsheetName;
   final int cheatsheetId;
-  final int deckId;
 
   @override
   State<CheatsheetRowsScreenWidget> createState() =>
@@ -272,8 +271,8 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                       ),
                     ),
                   ),
-                  Flexible(
-                    flex: 1,
+                  Align(
+                    alignment: const AlignmentDirectional(0.0, 0.0),
                     child: Padding(
                       padding:
                           const EdgeInsetsDirectional.fromSTEB(0.0, 5.0, 0.0, 5.0),
@@ -284,30 +283,36 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                         children: [
                           Flexible(
                             flex: 4,
-                            child: Text(
-                              'Concept    ',
-                              textAlign: TextAlign.center,
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
+                            child: Align(
+                              alignment: const AlignmentDirectional(0.0, 0.0),
+                              child: Text(
+                                'Concept    ',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      fontSize: 24.0,
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
                             ),
                           ),
                           Flexible(
                             flex: 4,
-                            child: Text(
-                              'Description',
-                              textAlign: TextAlign.center,
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyMedium
-                                  .override(
-                                    fontFamily: 'Readex Pro',
-                                    fontSize: 24.0,
-                                    letterSpacing: 0.0,
-                                  ),
+                            child: Align(
+                              alignment: const AlignmentDirectional(0.0, 0.0),
+                              child: Text(
+                                'Description',
+                                textAlign: TextAlign.center,
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyMedium
+                                    .override(
+                                      fontFamily: 'Readex Pro',
+                                      fontSize: 24.0,
+                                      letterSpacing: 0.0,
+                                    ),
+                              ),
                             ),
                           ),
                         ],
@@ -355,162 +360,238 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Flexible(
                                           flex: 4,
-                                          child: SelectionArea(
-                                              child: AutoSizeText(
-                                            valueOrDefault<String>(
-                                              cheatsheetRowsColumnItem.concept,
-                                              'concept a bit long',
-                                            ),
-                                            minFontSize: 14.0,
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Readex Pro',
-                                                  fontSize: 18.0,
-                                                  letterSpacing: 0.0,
-                                                ),
-                                          )),
+                                          child: Align(
+                                            alignment:
+                                                const AlignmentDirectional(0.0, 0.0),
+                                            child: SelectionArea(
+                                                child: AutoSizeText(
+                                              valueOrDefault<String>(
+                                                cheatsheetRowsColumnItem
+                                                    .concept,
+                                                'concept a bit long',
+                                              ),
+                                              minFontSize: 14.0,
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        fontSize: 18.0,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                            )),
+                                          ),
                                         ),
                                         SizedBox(
-                                          height: 15.0,
+                                          height: 25.0,
                                           child: VerticalDivider(
                                             width: 1.0,
                                             thickness: 1.0,
+                                            indent: 3.0,
+                                            endIndent: 3.0,
                                             color: FlutterFlowTheme.of(context)
                                                 .secondaryText,
                                           ),
                                         ),
                                         Flexible(
                                           flex: 4,
-                                          child: SelectionArea(
-                                              child: AutoSizeText(
-                                            valueOrDefault<String>(
-                                              cheatsheetRowsColumnItem.answer,
-                                              'answer a bit long ',
-                                            ),
-                                            textAlign: TextAlign.center,
-                                            minFontSize: 14.0,
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Readex Pro',
-                                                  fontSize: 18.0,
-                                                  letterSpacing: 0.0,
-                                                ),
-                                          )),
+                                          child: Align(
+                                            alignment:
+                                                const AlignmentDirectional(0.0, 0.0),
+                                            child: SelectionArea(
+                                                child: AutoSizeText(
+                                              valueOrDefault<String>(
+                                                cheatsheetRowsColumnItem.answer,
+                                                'answer a bit long ',
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              minFontSize: 14.0,
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        fontSize: 18.0,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                            )),
+                                          ),
                                         ),
                                         if (_model.isDeleting)
                                           Flexible(
-                                            flex: 1,
-                                            child: FlutterFlowIconButton(
-                                              borderColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              borderRadius: 20.0,
-                                              borderWidth: 1.0,
-                                              buttonSize: 40.0,
-                                              fillColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primary,
-                                              icon: Icon(
-                                                Icons.text_fields,
-                                                color:
-                                                    FlutterFlowTheme.of(context)
+                                            flex: 4,
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                FlutterFlowIconButton(
+                                                  borderColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primaryText,
+                                                  borderRadius: 20.0,
+                                                  borderWidth: 1.0,
+                                                  buttonSize: 40.0,
+                                                  fillColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .secondary,
+                                                  icon: FaIcon(
+                                                    FontAwesomeIcons
+                                                        .exchangeAlt,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
                                                         .secondaryBackground,
-                                                size: 24.0,
-                                              ),
-                                              onPressed: () async {
-                                                // Navigate to Update Page
-
-                                                context.pushNamed(
-                                                  'CheatsheetRowsUpdateScreen',
-                                                  queryParameters: {
-                                                    'concept': serializeParam(
-                                                      valueOrDefault<String>(
-                                                        cheatsheetRowsColumnItem
-                                                            .concept,
-                                                        'concept',
-                                                      ),
-                                                      ParamType.String,
-                                                    ),
-                                                    'description':
-                                                        serializeParam(
-                                                      valueOrDefault<String>(
-                                                        cheatsheetRowsColumnItem
-                                                            .answer,
-                                                        'answer',
-                                                      ),
-                                                      ParamType.String,
-                                                    ),
-                                                    'tagIds': serializeParam(
-                                                      valueOrDefault<String>(
-                                                        cheatsheetRowsColumnItem
-                                                            .tagIds,
-                                                        '[1]',
-                                                      ),
-                                                      ParamType.String,
-                                                    ),
-                                                    'cheatsheetId':
-                                                        serializeParam(
-                                                      widget.cheatsheetId,
-                                                      ParamType.int,
-                                                    ),
-                                                    'id': serializeParam(
-                                                      valueOrDefault<int>(
-                                                        cheatsheetRowsColumnItem
-                                                            .id,
-                                                        0,
-                                                      ),
-                                                      ParamType.int,
-                                                    ),
-                                                  }.withoutNulls,
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        if (_model.isDeleting)
-                                          Flexible(
-                                            flex: 1,
-                                            child: FlutterFlowIconButton(
-                                              borderColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
-                                              borderRadius: 20.0,
-                                              borderWidth: 1.0,
-                                              buttonSize: 40.0,
-                                              fillColor:
-                                                  FlutterFlowTheme.of(context)
-                                                      .error,
-                                              icon: Icon(
-                                                Icons.close_sharp,
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryBackground,
-                                                size: 24.0,
-                                              ),
-                                              onPressed: () async {
-                                                // Perform query
-                                                await SQLiteManager.instance
-                                                    .cheatsheetRowsDELETEId(
-                                                  id: valueOrDefault<int>(
-                                                    cheatsheetRowsColumnItem.id,
-                                                    0,
+                                                    size: 21.0,
                                                   ),
-                                                );
-                                                // Display the updated content
-                                                _model.removeFromCheatsheetRowsList(
-                                                    cheatsheetRowsColumnItem);
-                                                safeSetState(() {});
-                                              },
+                                                  onPressed: () async {
+                                                    // Add decks to deckList State
+                                                    _model.deckListOutput =
+                                                        await SQLiteManager
+                                                            .instance
+                                                            .decksREADFromUserId(
+                                                      userId: currentUserUid,
+                                                    );
+                                                    // Show modal, update currentRowItem and deckList
+                                                    _model.currentCheatsheetRowItem =
+                                                        cheatsheetRowsColumnItem;
+                                                    _model.isTransferingRow =
+                                                        !_model
+                                                            .isTransferingRow;
+                                                    _model.decksList = _model
+                                                        .deckListOutput!
+                                                        .toList()
+                                                        .cast<
+                                                            DecksREADFromUserIdRow>();
+                                                    safeSetState(() {});
+
+                                                    safeSetState(() {});
+                                                  },
+                                                ),
+                                                Flexible(
+                                                  flex: 1,
+                                                  child: FlutterFlowIconButton(
+                                                    borderColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .primaryText,
+                                                    borderRadius: 20.0,
+                                                    borderWidth: 1.0,
+                                                    buttonSize: 40.0,
+                                                    fillColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .primary,
+                                                    icon: Icon(
+                                                      Icons.text_fields,
+                                                      color: FlutterFlowTheme
+                                                              .of(context)
+                                                          .secondaryBackground,
+                                                      size: 24.0,
+                                                    ),
+                                                    onPressed: () async {
+                                                      // Navigate to Update Page
+
+                                                      context.pushNamed(
+                                                        'CheatsheetRowsUpdateScreen',
+                                                        queryParameters: {
+                                                          'concept':
+                                                              serializeParam(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              cheatsheetRowsColumnItem
+                                                                  .concept,
+                                                              'concept',
+                                                            ),
+                                                            ParamType.String,
+                                                          ),
+                                                          'description':
+                                                              serializeParam(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              cheatsheetRowsColumnItem
+                                                                  .answer,
+                                                              'answer',
+                                                            ),
+                                                            ParamType.String,
+                                                          ),
+                                                          'tagIds':
+                                                              serializeParam(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              cheatsheetRowsColumnItem
+                                                                  .tagIds,
+                                                              '[1]',
+                                                            ),
+                                                            ParamType.String,
+                                                          ),
+                                                          'cheatsheetId':
+                                                              serializeParam(
+                                                            widget
+                                                                .cheatsheetId,
+                                                            ParamType.int,
+                                                          ),
+                                                          'id': serializeParam(
+                                                            valueOrDefault<int>(
+                                                              cheatsheetRowsColumnItem
+                                                                  .id,
+                                                              0,
+                                                            ),
+                                                            ParamType.int,
+                                                          ),
+                                                        }.withoutNulls,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  flex: 1,
+                                                  child: FlutterFlowIconButton(
+                                                    borderColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .primaryText,
+                                                    borderRadius: 20.0,
+                                                    borderWidth: 1.0,
+                                                    buttonSize: 40.0,
+                                                    fillColor:
+                                                        FlutterFlowTheme.of(
+                                                                context)
+                                                            .error,
+                                                    icon: Icon(
+                                                      Icons.close_sharp,
+                                                      color: FlutterFlowTheme
+                                                              .of(context)
+                                                          .secondaryBackground,
+                                                      size: 24.0,
+                                                    ),
+                                                    onPressed: () async {
+                                                      // Perform query
+                                                      await SQLiteManager
+                                                          .instance
+                                                          .cheatsheetRowsDELETEId(
+                                                        id: valueOrDefault<int>(
+                                                          cheatsheetRowsColumnItem
+                                                              .id,
+                                                          0,
+                                                        ),
+                                                      );
+                                                      // Display the updated content
+                                                      _model.removeFromCheatsheetRowsList(
+                                                          cheatsheetRowsColumnItem);
+                                                      safeSetState(() {});
+                                                    },
+                                                  ),
+                                                ),
+                                              ].divide(const SizedBox(width: 3.0)),
                                             ),
                                           ),
-                                      ]
-                                          .divide(const SizedBox(width: 3.0))
-                                          .around(const SizedBox(width: 3.0)),
+                                      ].divide(const SizedBox(width: 7.0)),
                                     ),
                                   ),
                                 ),
@@ -1250,6 +1331,295 @@ class _CheatsheetRowsScreenWidgetState extends State<CheatsheetRowsScreenWidget>
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            if (_model.isTransferingRow)
+              Align(
+                alignment: const AlignmentDirectional(0.0, 0.0),
+                child: Material(
+                  color: Colors.transparent,
+                  elevation: 3.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15.0),
+                    child: Container(
+                      width: MediaQuery.sizeOf(context).width * 0.8,
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.sizeOf(context).height * 0.25,
+                        maxWidth: MediaQuery.sizeOf(context).width * 0.8,
+                        maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).primary,
+                        borderRadius: BorderRadius.circular(15.0),
+                        border: Border.all(
+                          color: FlutterFlowTheme.of(context).primary,
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              'In which deck do you want to put it?',
+                              textAlign: TextAlign.center,
+                              style: FlutterFlowTheme.of(context)
+                                  .titleSmall
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    fontSize: 18.0,
+                                    letterSpacing: 0.0,
+                                  ),
+                            ),
+                          ),
+                          Builder(
+                            builder: (context) {
+                              final decksListView = _model.decksList.toList();
+
+                              return SingleChildScrollView(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: List.generate(decksListView.length,
+                                      (decksListViewIndex) {
+                                    final decksListViewItem =
+                                        decksListView[decksListViewIndex];
+                                    return ClipRRect(
+                                      child: Container(
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                                1.0,
+                                        height: 100.0,
+                                        constraints: BoxConstraints(
+                                          minHeight: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.1,
+                                          maxWidth:
+                                              MediaQuery.sizeOf(context).width *
+                                                  1.0,
+                                          maxHeight: MediaQuery.sizeOf(context)
+                                                  .height *
+                                              0.1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryBackground,
+                                        ),
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  5.0, 0.0, 5.0, 0.0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Flexible(
+                                                flex: 5,
+                                                child: Text(
+                                                  valueOrDefault<String>(
+                                                    decksListViewItem.name,
+                                                    'deckName',
+                                                  ),
+                                                  textAlign: TextAlign.start,
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        fontSize: 18.0,
+                                                        letterSpacing: 0.0,
+                                                      ),
+                                                ),
+                                              ),
+                                              Flexible(
+                                                flex: 1,
+                                                child: FlutterFlowIconButton(
+                                                  borderRadius: 8.0,
+                                                  buttonSize: 48.0,
+                                                  fillColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .secondary,
+                                                  icon: const Icon(
+                                                    Icons.done_sharp,
+                                                    color: Colors.white,
+                                                    size: 28.0,
+                                                  ),
+                                                  onPressed: () async {
+                                                    // Create new flashcard
+                                                    await SQLiteManager.instance
+                                                        .flashcardCreate(
+                                                      userId: currentUserUid,
+                                                      textRecto: valueOrDefault<
+                                                          String>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.concept,
+                                                        'concept',
+                                                      ),
+                                                      textVerso: valueOrDefault<
+                                                          String>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.answer,
+                                                        'answer',
+                                                      ),
+                                                      audioRectoUrl:
+                                                          valueOrDefault<
+                                                              String>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.conceptAudioUrl,
+                                                        'none',
+                                                      ),
+                                                      audioVersoUrl:
+                                                          valueOrDefault<
+                                                              String>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.answerAudioUrl,
+                                                        'none',
+                                                      ),
+                                                      imageRectoUrl: 'none',
+                                                      imageVersoUrl: 'none',
+                                                      currentRetrievalStep: 0,
+                                                      currentSpeakingStep: 0,
+                                                      toRecall: 0,
+                                                      currentRecallDate:
+                                                          functions.dateNow()!,
+                                                      nextRecallDate: 'none',
+                                                      successCount: 0,
+                                                      totalReviewCount: 0,
+                                                      mentalImageBool: 0,
+                                                      name: valueOrDefault<
+                                                          String>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.concept,
+                                                        'name',
+                                                      ),
+                                                      currentSpeakingDate:
+                                                          'none',
+                                                      nextSpeakingDate: 'none',
+                                                      tagIds: valueOrDefault<
+                                                          String>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.tagIds,
+                                                        '[1]',
+                                                      ),
+                                                    );
+                                                    // Get created flashcard
+                                                    _model.lastFlashcardOutput =
+                                                        await SQLiteManager
+                                                            .instance
+                                                            .flashcardsREADLastId();
+                                                    // Add a new row in deckFlashcards
+                                                    await SQLiteManager.instance
+                                                        .decksFlashcardsCREATERow(
+                                                      deckId:
+                                                          valueOrDefault<int>(
+                                                        decksListViewItem.id,
+                                                        1,
+                                                      ),
+                                                      flashcardId:
+                                                          valueOrDefault<int>(
+                                                        _model
+                                                            .lastFlashcardOutput
+                                                            ?.first
+                                                            .id,
+                                                        1,
+                                                      ),
+                                                    );
+                                                    // Alert to inform
+                                                    await showDialog(
+                                                      context: context,
+                                                      builder:
+                                                          (alertDialogContext) {
+                                                        return AlertDialog(
+                                                          title: const Text(
+                                                              'Flashcard created!'),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () =>
+                                                                  Navigator.pop(
+                                                                      alertDialogContext),
+                                                              child: const Text('Ok'),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                    // Delete cheatsheetRow item
+                                                    await SQLiteManager.instance
+                                                        .cheatsheetRowsDELETEId(
+                                                      id: valueOrDefault<int>(
+                                                        _model
+                                                            .currentCheatsheetRowItem
+                                                            ?.id,
+                                                        1,
+                                                      ),
+                                                    );
+                                                    // Hide Modal
+                                                    _model.isTransferingRow =
+                                                        !_model
+                                                            .isTransferingRow;
+                                                    _model.removeFromCheatsheetRowsList(
+                                                        _model
+                                                            .currentCheatsheetRowItem!);
+                                                    safeSetState(() {});
+
+                                                    safeSetState(() {});
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              );
+                            },
+                          ),
+                          FFButtonWidget(
+                            onPressed: () async {
+                              // Close Modal
+                              _model.isTransferingRow =
+                                  !_model.isTransferingRow;
+                              safeSetState(() {});
+                            },
+                            text: 'Cancel',
+                            options: FFButtonOptions(
+                              height: 40.0,
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  16.0, 0.0, 16.0, 0.0),
+                              iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 0.0, 0.0, 0.0),
+                              color: FlutterFlowTheme.of(context).error,
+                              textStyle: FlutterFlowTheme.of(context)
+                                  .titleSmall
+                                  .override(
+                                    fontFamily: 'Readex Pro',
+                                    color: Colors.white,
+                                    letterSpacing: 0.0,
+                                  ),
+                              elevation: 0.0,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
