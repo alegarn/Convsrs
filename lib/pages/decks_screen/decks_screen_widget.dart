@@ -255,6 +255,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                       safeSetState(() {});
                                     },
                                     child: Container(
+                                      key: const ValueKey('deckRow'),
                                       width: MediaQuery.sizeOf(context).width *
                                           1.0,
                                       height: 72.0,
@@ -295,6 +296,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                                         .secondaryBackground,
                                                   ),
                                                   child: Row(
+                                                    key: const ValueKey('Row_xlmt'),
                                                     mainAxisSize:
                                                         MainAxisSize.max,
                                                     children: [
@@ -452,6 +454,8 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                                                       .fromSTEB(
                                                           10.0, 0.0, 0.0, 0.0),
                                                   child: FlutterFlowIconButton(
+                                                    key: const ValueKey(
+                                                        'DeleteButton_89zx'),
                                                     borderColor:
                                                         Colors.transparent,
                                                     borderRadius: 20.0,
@@ -499,6 +503,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
               Align(
                 alignment: const AlignmentDirectional(0.8, 0.9),
                 child: FlutterFlowIconButton(
+                  key: const ValueKey('AddDeckButton_6e6p'),
                   borderColor: FlutterFlowTheme.of(context).alternate,
                   borderRadius: 50.0,
                   borderWidth: 0.0,
@@ -548,6 +553,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                           child: SizedBox(
                             width: MediaQuery.sizeOf(context).width * 1.0,
                             child: TextFormField(
+                              key: const ValueKey('deckNameField'),
                               controller: _model.deckNameFieldTextController,
                               focusNode: _model.deckNameFieldFocusNode,
                               onChanged: (_) => EasyDebounce.debounce(
@@ -617,6 +623,7 @@ class _DecksScreenWidgetState extends State<DecksScreenWidget>
                           ),
                         ),
                         FFButtonWidget(
+                          key: const ValueKey('Button_p32y'),
                           onPressed: () async {
                             // Create Deck
                             await SQLiteManager.instance.deckCREATE(
