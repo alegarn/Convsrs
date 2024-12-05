@@ -223,10 +223,6 @@ class _CheatsheetsScreenWidgetState extends State<CheatsheetsScreenWidget> {
                                                   .id,
                                               ParamType.int,
                                             ),
-                                            'deckId': serializeParam(
-                                              widget.deckId,
-                                              ParamType.int,
-                                            ),
                                             'cheatsheetName': serializeParam(
                                               listViewCheatsheetsREADListIdNameRow
                                                   .name,

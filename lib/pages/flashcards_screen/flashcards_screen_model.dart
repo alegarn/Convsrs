@@ -1,7 +1,7 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/sqlite/sqlite_manager.dart';
-import '/components/tags_list_widget.dart';
 import '/components/ui/list_crud_row/list_crud_row_widget.dart';
+import '/components/ui/tags_list/tags_list_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'flashcards_screen_widget.dart' show FlashcardsScreenWidget;

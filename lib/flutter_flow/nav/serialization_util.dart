@@ -335,6 +335,8 @@ dynamic deserializeParam<T>(
             return TagsGETAllFromCtgRow(data);
           case TagsGETCtgsByIdRow:
             return TagsGETCtgsByIdRow(data);
+          case CheatsheetRowsGETLastRow:
+            return CheatsheetRowsGETLastRow(data);
           default:
             return null;
         }

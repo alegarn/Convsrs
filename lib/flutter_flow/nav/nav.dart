@@ -305,10 +305,6 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               'cheatsheetId',
               ParamType.int,
             ),
-            deckId: params.getParam(
-              'deckId',
-              ParamType.int,
-            ),
           ),
         ),
         FFRoute(

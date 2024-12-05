@@ -15,6 +15,7 @@ class OpenAIRetrievalChatContextCall {
     String? model = 'gpt-4o-mini',
     String? context = '',
     String? apiKey = '',
+    String? language = 'english',
   }) async {
     final ffApiRequestBody = '''
 {
@@ -22,7 +23,7 @@ class OpenAIRetrievalChatContextCall {
   "messages": [
     {
       "role": "system",
-      "content": "${escapeStringForJson(context)}"
+      "content": "language used in the next answers: ${escapeStringForJson(language)} / ${escapeStringForJson(context)}"
     },
     {
       "role": "user",
