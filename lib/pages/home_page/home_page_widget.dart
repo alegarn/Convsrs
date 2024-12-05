@@ -296,6 +296,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                 child: Align(
                                   alignment: const AlignmentDirectional(0.0, 0.0),
                                   child: FFButtonWidget(
+                                    key: const ValueKey('bigButton_5tjy'),
                                     onPressed: () async {
                                       context.pushNamed(
                                         'DecksScreen',
