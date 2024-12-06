@@ -842,18 +842,18 @@ Future performTagsUPDATERemoveCategory(
 }) {
   final query = '''
 UPDATE tags
-SET categories = TRIM(
+SET categories = 
+  TRIM(
     REPLACE(
         REPLACE(
             REPLACE(
                 REPLACE(
                     REPLACE(categories, ', ' || '"$category"', ''),  -- Remove the category with preceding comma
-                    '"$category"', ''),  -- Remove the category without preceding comma
-                ',,', ','),  -- Replace double commas with a single comma
-            '[,', '['),  -- Remove a comma at the start of the list
-        ',]', ']')  -- Remove a comma at the end of the list
-    )
-)
+                  '"$category"', ''),  -- Remove the category without preceding comma
+              ',,', ','),  -- Replace double commas with a single comma
+          '[,', '['),  -- Remove a comma at the start of the list
+      ',]', ']')  -- Remove a comma at the end of the list
+  )
 WHERE id = $id 
 AND categories LIKE '%"$category"%';
 ''';

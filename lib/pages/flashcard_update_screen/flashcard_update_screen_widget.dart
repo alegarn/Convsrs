@@ -1242,6 +1242,14 @@ class _FlashcardUpdateScreenWidgetState
                                                     ?.toList())
                                                 .toList()
                                                 .cast<TagStruct>();
+                                            // AllTags filter
+                                            _model.allTags = functions
+                                                .filterSelectedTagsInAllTags(
+                                                    _model.selectedTags
+                                                        .toList(),
+                                                    _model.allTags.toList())
+                                                .toList()
+                                                .cast<TagStruct>();
                                             // Reset field
                                             safeSetState(() {
                                               _model.newTagFieldTextController
